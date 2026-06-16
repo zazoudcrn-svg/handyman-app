@@ -8,8 +8,8 @@ class User < ApplicationRecord
   has_many :categories, through: :specialties
   has_many :listings
   has_many :offers
-  has_many :reviews
+  has_many :reviews, as: :reviews_given
   has_many :messages
   has_many :bookings, through: :offers
-  has_many :reviews, through: :bookings, as: :received_reviews
+  has_many :reviews, through: :bookings, as: :reviews_received
 end
