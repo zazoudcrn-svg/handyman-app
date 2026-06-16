@@ -10,12 +10,6 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-ActiveRecord::Schema[8.1].define(version: 2026_06_16_090823) do
-=======
-=======
->>>>>>> offer-actions
 ActiveRecord::Schema[8.1].define(version: 2026_06_15_140450) do
   create_table "bookings", force: :cascade do |t|
     t.string "booking_status"
@@ -81,37 +75,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_140450) do
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
-<<<<<<< HEAD
->>>>>>> master
-=======
->>>>>>> offer-actions
   create_table "offers", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "listing_id", null: false
     t.text "note"
     t.string "offer_status"
-<<<<<<< HEAD
-<<<<<<< HEAD
-    t.decimal "quote"
-=======
     t.float "quote"
->>>>>>> master
-=======
-    t.float "quote"
->>>>>>> offer-actions
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["listing_id"], name: "index_offers_on_listing_id"
     t.index ["user_id"], name: "index_offers_on_user_id"
   end
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-  add_foreign_key "offers", "listings"
-  add_foreign_key "offers", "users"
-=======
-=======
->>>>>>> offer-actions
   create_table "reviews", force: :cascade do |t|
     t.integer "booking_id", null: false
     t.text "content"
@@ -164,8 +139,4 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_140450) do
   add_foreign_key "reviews", "users"
   add_foreign_key "specialties", "categories"
   add_foreign_key "specialties", "users"
-<<<<<<< HEAD
->>>>>>> master
-=======
->>>>>>> offer-actions
 end
