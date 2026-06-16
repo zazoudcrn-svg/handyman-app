@@ -2,6 +2,7 @@
 
 one:
 <<<<<<< HEAD
+<<<<<<< HEAD
   listing: one
   user: one
   quote: 9.99
@@ -10,10 +11,16 @@ one:
   listing: one
   quote: 1.5
 >>>>>>> master
+=======
+  user: one
+  listing: one
+  quote: 1.5
+>>>>>>> offer-actions
   note: MyText
   offer_status: MyString
 
 two:
+<<<<<<< HEAD
 <<<<<<< HEAD
   listing: two
   user: two
@@ -23,5 +30,10 @@ two:
   listing: two
   quote: 1.5
 >>>>>>> master
+=======
+  user: two
+  listing: two
+  quote: 1.5
+>>>>>>> offer-actions
   note: MyText
   offer_status: MyString
