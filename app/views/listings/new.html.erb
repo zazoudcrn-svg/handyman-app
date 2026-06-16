@@ -1,0 +1,24 @@
+<h2>Create a New Listing</h2>
+
+<%= form_with model: @listing do |f| %>
+  <div>
+    <%= f.label :title, "What do you need help with?" %><br>
+    <%= f.text_field :title, placeholder: "e.g., Fix leaking kitchen pipe" %>
+  </div>
+
+  <br>
+
+  <div>
+    <%= f.label :description, "Describe the details" %><br>
+    <%= f.text_area :description, placeholder: "Provide as much detail as possible..." %>
+  </div>
+
+  <br>
+
+  <div>
+    <%= f.submit "Post Listing" %>
+  </div>
+<% end %>
+
+<br>
+<%= link_to "Back to Dashboard", dashboard_path %>

@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "listings/new"
+  get "listings/create"
   devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -14,4 +16,5 @@ Rails.application.routes.draw do
   root to: "pages#home"
 
   get "dashboard", to: "dashboards#show", as: :dashboard
+  resources :listings, only: [ :new, :create ]
 end
