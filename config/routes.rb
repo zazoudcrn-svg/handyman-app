@@ -15,8 +15,6 @@ Rails.application.routes.draw do
   root to: "pages#home"
 
   get "dashboard", to: "dashboards#show", as: :dashboard
-    # Defines the root path route ("/")
-    # root "posts#index"
     resources :listings do
     resources :offers, only: [ :index, :show ] do
       member do
