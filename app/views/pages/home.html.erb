@@ -4,5 +4,6 @@
 <hr>
 
 <div class="auth-links">
-  <%= link_to "Sign Up", new_user_registration_path %> |
-  <%= link_to "Log In", new_user_session_path %>
+<%= link_to "Start as Customer", new_user_registration_path(role: "customer"), class: "btn-customer" %>
+
+<%= link_to "Start as Contractor", new_user_registration_path(role: "contractor"), class: "btn-contractor" %>
