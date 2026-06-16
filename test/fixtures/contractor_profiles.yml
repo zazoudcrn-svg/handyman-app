@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  business_name: MyString
+  google_business_profile: MyString
+  travel_radius: 1
+  street: MyString
+  city: MyString
+  postcode: MyString
+  country: MyString
+  weekday_availability: 1
+  time_availability: 1
+
+two:
+  user: two
+  business_name: MyString
+  google_business_profile: MyString
+  travel_radius: 1
+  street: MyString
+  city: MyString
+  postcode: MyString
+  country: MyString
+  weekday_availability: 1
+  time_availability: 1

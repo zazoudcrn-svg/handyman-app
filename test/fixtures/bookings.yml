@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  offer: one
+  listing: one
+  scheduled_date_and_time: 2026-06-15 16:02:01
+  booking_status: MyString
+  new_proposed_date_and_time: 2026-06-15 16:02:01
+  proposed_by: MyString
+
+two:
+  offer: two
+  listing: two
+  scheduled_date_and_time: 2026-06-15 16:02:01
+  booking_status: MyString
+  new_proposed_date_and_time: 2026-06-15 16:02:01
+  proposed_by: MyString
