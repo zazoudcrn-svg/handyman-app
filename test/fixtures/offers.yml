@@ -1,27 +1,15 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-<<<<<<< HEAD
-  listing: one
-  user: one
-  quote: 9.99
-=======
   user: one
   listing: one
   quote: 1.5
->>>>>>> master
   note: MyText
   offer_status: MyString
 
 two:
-<<<<<<< HEAD
-  listing: two
-  user: two
-  quote: 9.99
-=======
   user: two
   listing: two
   quote: 1.5
->>>>>>> master
   note: MyText
   offer_status: MyString
