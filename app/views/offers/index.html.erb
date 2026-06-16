@@ -5,5 +5,6 @@
     <p>Quote: <%= offer.quote %></p>
     <p>Note: <%= offer.note %></p>
     <p>Status: <%= offer.offer_status %></p>
+    <%= link_to "View details", listing_offer_path(@listing, offer) %>
   </div>
 <% end %>
