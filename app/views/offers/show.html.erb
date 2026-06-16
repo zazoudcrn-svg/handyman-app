@@ -1,0 +1,10 @@
+<h1>Offer details</h1>
+
+<p>Quote: <%= @offer.quote %></p>
+<p>Note: <%= @offer.note %></p>
+<p>Status: <%= @offer.offer_status %></p>
+
+<%= button_to "Accept", accept_listing_offer_path(@listing, @offer), method: :patch %>
+<%= button_to "Decline", decline_listing_offer_path(@listing, @offer), method: :patch %>
+
+<%= link_to "Back to all offers", listing_offers_path(@listing) %>

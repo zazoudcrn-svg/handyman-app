@@ -1,0 +1,12 @@
+<h1>Offers for <%= @listing.title %></h1>
+
+<% @offers.each do |offer| %>
+  <div>
+    <p>Quote: <%= offer.quote %></p>
+    <p>Note: <%= offer.note %></p>
+    <p>Status: <%= offer.offer_status %></p>
+    <%= link_to "View details", listing_offer_path(@listing, offer) %>
+    <%= button_to "Accept", accept_listing_offer_path(@listing, offer), method: :patch %>
+    <%= button_to "Decline", decline_listing_offer_path(@listing, offer), method: :patch %>
+  </div>
+<% end %>

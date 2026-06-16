@@ -1,5 +1,4 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   user: one
   business_name: MyString
@@ -9,8 +8,9 @@ one:
   city: MyString
   postcode: MyString
   country: MyString
-  weekday_availability: 1
-  time_availability: 1
+  weekday_availability: MyString
+  start_time: "09:00:00"
+  end_time: "17:00:00"
 
 two:
   user: two
@@ -21,5 +21,6 @@ two:
   city: MyString
   postcode: MyString
   country: MyString
-  weekday_availability: 1
-  time_availability: 1
+  weekday_availability: MyString
+  start_time: "09:00:00"
+  end_time: "17:00:00"
