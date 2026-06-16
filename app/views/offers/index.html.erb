@@ -1,0 +1,9 @@
+<h1>Offers for <%= @listing.title %></h1>
+
+<% @offers.each do |offer| %>
+  <div>
+    <p>Quote: <%= offer.quote %></p>
+    <p>Note: <%= offer.note %></p>
+    <p>Status: <%= offer.offer_status %></p>
+  </div>
+<% end %>

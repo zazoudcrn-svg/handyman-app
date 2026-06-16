@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  listing: one
+  user: one
+  quote: 9.99
+  note: MyText
+  offer_status: MyString
+
+two:
+  listing: two
+  user: two
+  quote: 9.99
+  note: MyText
+  offer_status: MyString
