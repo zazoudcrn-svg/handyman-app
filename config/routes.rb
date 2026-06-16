@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "offers/index"
   devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -14,4 +15,15 @@ Rails.application.routes.draw do
   root to: "pages#home"
 
   get "dashboard", to: "dashboards#show", as: :dashboard
+    # Defines the root path route ("/")
+    # root "posts#index"
+    resources :listings do
+    resources :offers, only: [ :index, :show ] do
+      member do
+        patch :accept
+        patch :decline
+      end
+      resources :messages, only: [ :create ]
+    end
+  end
 end
