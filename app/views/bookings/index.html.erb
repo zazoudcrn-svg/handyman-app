@@ -1,0 +1,12 @@
+<h1>My Bookings</h1>
+
+<% @bookings.each do |booking| %>
+  <div class="booking-card">
+    <h3><%= booking.listing.title %></h3>
+    <p>Contractor: <%= booking.offer.user.first_name %></p>
+    <p>Scheduled: <%= booking.scheduled_date_and_time %></p>
+    <p>Status: <%= booking.booking_status %></p>
+
+    <%= link_to "View Details", booking_path(booking), class: "btn" %>
+  </div>
+<% end %>
