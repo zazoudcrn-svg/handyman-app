@@ -8,8 +8,8 @@ class User < ApplicationRecord
   has_many :categories, through: :specialties
   has_many :listings
   has_many :offers
-  has_many :reviews, as: :reviews_given
   has_many :messages
   has_many :bookings, through: :offers
-  has_many :reviews, through: :bookings, as: :reviews_received
+  has_many :reviews_given, class_name: "Review", foreign_key: "user_id"
+  has_many :reviews_received, class_name: "Review", foreign_key: "reviewee_id"
 end

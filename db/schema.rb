@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_15_140450) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_16_135545) do
   create_table "bookings", force: :cascade do |t|
     t.string "booking_status"
     t.datetime "created_at", null: false
@@ -92,9 +92,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_140450) do
     t.text "content"
     t.datetime "created_at", null: false
     t.integer "rating"
+    t.integer "reviewee_id"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["booking_id"], name: "index_reviews_on_booking_id"
+    t.index ["reviewee_id"], name: "index_reviews_on_reviewee_id"
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
@@ -137,6 +139,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_140450) do
   add_foreign_key "offers", "users"
   add_foreign_key "reviews", "bookings"
   add_foreign_key "reviews", "users"
+  add_foreign_key "reviews", "users", column: "reviewee_id"
   add_foreign_key "specialties", "categories"
   add_foreign_key "specialties", "users"
 end

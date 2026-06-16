@@ -1,0 +1,15 @@
+<div class="container mt-5">
+  <h1>How did it go?</h1>
+  <h2>Leave a review for <%= @booking.offer.user.first_name %></h2>
+
+  <%= simple_form_for @review, url: reviews_path do |f| %>
+    <%= f.error_notification %>
+    
+    <%= hidden_field_tag :booking_id, @booking.id %>
+
+    <%= f.input :rating, collection: [1,2,3,4,5], as: :select, label: "Rating" %>
+    <%= f.input :content, as: :text, label: "Your review", placeholder: "Describe your experience..." %>
+
+    <%= f.submit "Submit Review", class: "btn btn-primary" %>
+  <% end %>
+</div>
