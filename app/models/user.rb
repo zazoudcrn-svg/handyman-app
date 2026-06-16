@@ -9,10 +9,10 @@ class User < ApplicationRecord
   # Ensure all associated listings are deleted when the user account is destroyed
   has_many :listings, dependent: :destroy
   has_many :offers
-  has_many :reviews
   has_many :messages
   has_many :bookings, through: :offers
-  has_many :reviews, through: :bookings, as: :received_reviews
+  has_many :reviews_given, class_name: "Review", foreign_key: "user_id"
+  has_many :reviews_received, class_name: "Review", foreign_key: "reviewee_id"
 
   # Automatically trigger profile creation right after a new user is saved
   after_create :create_contractor_profile_if_needed

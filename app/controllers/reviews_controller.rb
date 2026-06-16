@@ -1,0 +1,48 @@
+class ReviewsController < ApplicationController
+  before_action :authenticate_user!
+  before_action :set_booking
+  def new
+    @review = Review.new
+  end
+
+  def create
+    unless @booking.listing.user == current_user
+      redirect_to new_review_path, alert: "Not authorized."
+      return
+    end
+
+    unless @booking.booking_status == "completed"
+      redirect_to new_review_path, alert: "Booking needs to be completed to submit a review."
+      return
+    end
+
+    if Review.exists?(user_id: current_user.id, booking_id: @booking.id)
+      redirect_to new_review_path, alert: "You have already reviewed this booking."
+      return
+    end
+
+    @review = Review.new(review_params)
+    @review.booking = @booking
+    @review.user = current_user
+    @review.reviewee = @booking.offer.user
+
+    if @review.save
+      redirect_to new_review_path, notice: "Review submitted!"
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def review_params
+    params.require(:review).permit(
+      :rating,
+      :content
+    )
+  end
+
+  def set_booking
+    @booking = Booking.find(params[:booking_id])
+  end
+end
