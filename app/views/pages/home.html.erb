@@ -1,0 +1,9 @@
+<h1>Handyman Landing Page (Backend MVP)</h1>
+<p>Welcome to our handyman application!</p>
+
+<hr>
+
+<div class="auth-links">
+<%= link_to "Start as Customer", new_user_registration_path(role: "customer"), class: "btn-customer" %>
+
+<%= link_to "Start as Contractor", new_user_registration_path(role: "contractor"), class: "btn-contractor" %>
