@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  get "offers/index"
   devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -10,22 +9,27 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
+  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
   root to: "pages#home"
 
   get "dashboard", to: "dashboards#show", as: :dashboard
 
-
-  # Nested routes for listing creation and dependent professional offers
-  resources :listings, only: [:new, :create] do
-    resources :offers, only: [ :index, :show ] do
-      member do
-        patch :accept
-        patch :decline
+    resources :listings, only: [:new, :create] do
+      resources :offers, only: [ :index, :show ] do
+        member do
+          patch :accept
+          patch :decline
+        end
+        resources :messages, only: [ :create ]
       end
-      resources :messages, only: [ :create ]
     end
-  end
+
   resources :listings, only: [:show, :edit, :update, :destroy]
+
+  resources :reviews, only: [ :new, :create ]
+
 end

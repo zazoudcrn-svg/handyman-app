@@ -21,18 +21,26 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   </head>
 
   <body>
+    <% if notice %>
+      <div class="alert alert-success"><%= notice %></div>
+    <% end %>
+    <% if alert %>
+      <div class="alert alert-warning"><%= alert %></div>
+    <% end %>
+
     <nav style="background: #eee; padding: 10px; margin-bottom: 20px; font-family: sans-serif;">
-  <% if user_signed_in? %>
-    <span>Logged in as: <strong><%= current_user.email %></strong></span>
-    | <%= link_to "Log Out", destroy_user_session_path, data: { turbo_method: :delete } %>
-  <% else %>
-    <%= link_to "Log In", new_user_session_path %> |
-    <%= link_to "Sign Up", new_user_registration_path %>
-  <% end %>
-</nav>
+      <% if user_signed_in? %>
+        <span>Logged in as: <strong><%= current_user.email %></strong></span>
+        <%= link_to "Log Out", destroy_user_session_path, data: { turbo_method: :delete } %>
+      <% else %>
+        <%= link_to "Log In", new_user_session_path %> |
+        <%= link_to "Sign Up", new_user_registration_path %>
+      <% end %>
+    </nav>
     <%= yield %>
   </body>
 </html>

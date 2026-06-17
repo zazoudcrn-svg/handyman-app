@@ -1,0 +1,27 @@
+<h1>Booking Details</h1>
+
+<h2><%= @booking.listing.title %></h2>
+
+<p><strong>Contractor:</strong> <%= @booking.offer.user.first_name %></p>
+<p><strong>Scheduled Date:</strong> <%= @booking.scheduled_date_and_time %></p>
+<p><strong>Status:</strong> <%= @booking.booking_status %></p>
+
+<% if @booking.new_proposed_date_and_time.present? %>
+  <p><strong>New Proposed Date:</strong> <%= @booking.new_proposed_date_and_time %></p>
+
+  <% if @booking.proposed_by == "contractor" %>
+    <%= button_to "Accept New Date", accept_date_booking_path(@booking), method: :patch, class: "btn btn-success" %>
+  <% end %>
+<% end %>
+
+<hr>
+
+<h3>Propose a New Date</h3>
+<%= form_with model: @booking, url: propose_date_booking_path(@booking), method: :patch do |f| %>
+  <%= f.datetime_field :new_proposed_date_and_time %>
+  <%= f.submit "Propose New Date", class: "btn btn-warning" %>
+<% end %>
+
+<hr>
+
+<%= button_to "Mark as Completed", complete_booking_path(@booking), method: :patch, class: "btn btn-primary" %>

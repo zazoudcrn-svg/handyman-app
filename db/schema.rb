@@ -120,9 +120,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_210630) do
     t.text "content"
     t.datetime "created_at", null: false
     t.integer "rating"
+    t.integer "reviewee_id"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["booking_id"], name: "index_reviews_on_booking_id"
+    t.index ["reviewee_id"], name: "index_reviews_on_reviewee_id"
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
@@ -167,6 +169,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_210630) do
   add_foreign_key "offers", "users"
   add_foreign_key "reviews", "bookings"
   add_foreign_key "reviews", "users"
+  add_foreign_key "reviews", "users", column: "reviewee_id"
   add_foreign_key "specialties", "categories"
   add_foreign_key "specialties", "users"
 end
