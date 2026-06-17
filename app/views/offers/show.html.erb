@@ -10,10 +10,15 @@
         <p><strong>Status:</strong> <%= @offer.offer_status %></p>
         <p><strong>Contractor:</strong> <%= @offer.user.contractor_profile.business_name %></p>
 
-        <% if current_user == @listing.user && @offer.offer_status == "pending" %>
+        <% if current_user.role == "customer" && @offer.offer_status == "pending" %>
           <div class="d-flex gap-2 mt-3">
-            <%= button_to "Accept", accept_listing_offer_path(@listing, @offer), method: :patch %>
-            <%= button_to "Decline", decline_listing_offer_path(@listing, @offer), method: :patch %>
+            <%= button_to "Accept", accept_listing_offer_path(@listing, @offer), method: :patch, class: "btn btn-success" %>
+            <%= button_to "Decline", decline_listing_offer_path(@listing, @offer), method: :patch, class: "btn btn-danger" %>
+          </div>
+        <% else %>
+          <div class="d-flex gap-2 mt-3">
+            <%= button_to "Edit", "#", method: :get, class: "btn btn-secondary" %>
+            <%= button_to "Cancel Offer", listing_offer_path(@listing, @offer), method: :delete, data: { turbo_confirm: "Are you sure you want to cancel this offer? This cannot be undone." }, class: "btn btn-danger" %>
           </div>
         <% end %>
 
