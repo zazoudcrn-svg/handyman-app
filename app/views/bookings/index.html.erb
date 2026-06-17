@@ -1,12 +1,38 @@
 <h1>My Bookings</h1>
 
-<% @bookings.each do |booking| %>
-  <div class="booking-card">
-    <h3><%= booking.listing.title %></h3>
-    <p>Contractor: <%= booking.offer.user.first_name %></p>
-    <p>Scheduled: <%= booking.scheduled_date_and_time %></p>
-    <p>Status: <%= booking.booking_status %></p>
+<div class="booking-tabs">
+  <%= link_to "All", bookings_path, class: "tab #{'active' if params[:status].blank?}" %>
 
-    <%= link_to "View Details", booking_path(booking), class: "btn" %>
+  <%= link_to "Pending + Declined",
+      bookings_path(status: :pending_declined),
+      class: "tab #{'active' if params[:status] == 'pending_declined'}" %>
+
+  <%= link_to "Confirmed",
+      bookings_path(status: :confirmed),
+      class: "tab #{'active' if params[:status] == 'confirmed'}" %>
+
+  <%= link_to "Cancelled",
+      bookings_path(status: :cancelled),
+      class: "tab #{'active' if params[:status] == 'cancelled'}" %>
+
+  <%= link_to "Completed",
+      bookings_path(status: :completed),
+      class: "tab #{'active' if params[:status] == 'completed'}" %>
+</div>
+
+<% if @bookings.any? %>
+  <% @bookings.each do |booking| %>
+    <div class="booking-card">
+      <h3><%= booking.listing.title %></h3>
+      <p>Contractor: <%= booking.offer.user.first_name %></p>
+      <p>Scheduled: <%= booking.scheduled_date_and_time %></p>
+      <p>Status: <%= booking.booking_status %></p>
+
+      <%= link_to "View Details", booking_path(booking), class: "btn" %>
+    </div>
+  <% end %>
+<% else %>
+  <div class="empty-state">
+    <p>You don’t have any bookings yet.</p>
   </div>
 <% end %>

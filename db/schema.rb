@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_16_210630) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_17_131509) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -40,7 +40,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_210630) do
   end
 
   create_table "bookings", force: :cascade do |t|
-    t.string "booking_status"
+    t.string "booking_status", default: "pending"
+    t.text "cancellation_note"
+    t.string "cancelled_by"
     t.datetime "created_at", null: false
     t.integer "listing_id", null: false
     t.datetime "new_proposed_date_and_time"
