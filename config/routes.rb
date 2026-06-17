@@ -16,7 +16,9 @@ Rails.application.routes.draw do
 
   get "dashboard", to: "dashboards#show", as: :dashboard
 
-    resources :listings, only: [ :new, :create ] do
+
+  # Nested routes for listing creation and dependent professional offers
+  resources :listings, only: [:new, :create] do
     resources :offers, only: [ :index, :show ] do
       member do
         patch :accept
@@ -25,4 +27,5 @@ Rails.application.routes.draw do
       resources :messages, only: [ :create ]
     end
   end
+  resources :listings, only: [:show, :edit, :update, :destroy]
 end
