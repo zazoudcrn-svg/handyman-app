@@ -1,0 +1,30 @@
+<h1><%= @listing.title %></h1>
+
+<p><strong>Category:</strong> <%= @listing.category&.name %></p>
+<p><strong>Status:</strong> <%= @listing.listing_status %></p>
+<p><strong>Description:</strong></p>
+<p><%= @listing.description %></p>
+
+<hr>
+
+<h3>Location Details</h3>
+<p><strong>Street:</strong> <%= @listing.street %></p>
+<p><strong>City:</strong> <%= @listing.postcode %> <%= @listing.city %></p>
+<p><strong>Country:</strong> <%= @listing.country %></p>
+
+<% if @listing.preferred_date_and_time.present? %>
+  <p><strong>Preferred Date/Time:</strong> <%= @listing.preferred_date_and_time %></p>
+<% end %>
+
+<% if @listing.photos.attached? %>
+  <h3>Uploaded Images</h3>
+  <div>
+    <% @listing.photos.each do |photo| %>
+      <%= cl_image_tag photo.key, width: 400, crop: :scale %>
+    <% end %>
+  </div>
+<% end %>
+
+<hr>
+
+<%= link_to "Back to Dashboard", dashboard_path %>

@@ -1,2 +1,38 @@
 <h1>Customer Dashboard (Backend MVP)</h1>
 <p>You are logged in as a Customer.</p>
+
+<%= link_to "Create a New Listing", new_listing_path %>
+
+<hr>
+
+<h2>My Posted Requests</h2>
+
+<% if @listings.any? %>
+  <ul>
+    <% @listings.each do |listing| %>
+      <li>
+        <h3><%= listing.title %></h3>
+
+        <h3><%= link_to listing.title, listing_path(listing) %></h3>
+        <p>Category: <%= listing.category&.name %></p>
+        <p>Description: <%= listing.description %></p>
+        <p>Location: <%= listing.postcode %> <%= listing.city %></p>
+
+        <% if listing.photos.attached? %>
+          <div>
+            <%= cl_image_tag listing.photos.first.key %>
+          </div>
+        <% end %>
+
+        <p>
+          <%= link_to "Edit this listing", edit_listing_path(listing) %>
+          |
+          <%= link_to "Delete this listing", listing_path(listing),
+                      data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
+        </p>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>You haven't posted any requests yet.</p>
+<% end %>
