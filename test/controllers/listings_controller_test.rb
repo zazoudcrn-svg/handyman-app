@@ -2,12 +2,12 @@ require "test_helper"
 
 class ListingsControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
-    get listings_new_url
+    get new_listing_url
     assert_response :success
   end
 
   test "should get create" do
-    get listings_create_url
-    assert_response :success
+    post listings_url, params: { listing: { title: "Test Listing", description: "Test Description" } }
+    assert_response :redirect
   end
 end
