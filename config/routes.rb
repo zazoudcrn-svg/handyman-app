@@ -41,5 +41,6 @@ Rails.application.routes.draw do
      patch :cancel_booking
    end
   end
-    resources :reviews, only: [ :new, :create ]
+  resources :profiles, only: [ :show, :edit, :update ]
+  resources :reviews, only: [ :new, :create ]
 end

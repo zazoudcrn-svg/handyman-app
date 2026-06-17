@@ -1,0 +1,46 @@
+<div class="container my-4">
+  <div class="card p-4">
+    <h1>Profile</h1>
+
+    <h2 class="mt-4">Personal Information</h2>
+    <p><strong>First Name:</strong> <%= @user.first_name %></p>
+    <p><strong>Last Name:</strong> <%= @user.last_name %></p>
+    <p><strong>Email:</strong> <%= @user.email %></p>
+    <p><strong>Street:</strong> <%= @user.street %></p>
+    <p><strong>City:</strong> <%= @user.city %></p>
+    <p><strong>Postcode:</strong> <%= @user.postcode %></p>
+    <p><strong>Country:</strong> <%= @user.country %></p>
+
+    <% if @user.role == "contractor" && @contractor_profile %>
+      <h2 class="mt-4">Business Information</h2>
+      <p><strong>Business Name:</strong> <%= @contractor_profile.business_name %></p>
+      <p><strong>Street:</strong> <%= @contractor_profile.street %></p>
+      <p><strong>City:</strong> <%= @contractor_profile.city %></p>
+      <p><strong>Postcode:</strong> <%= @contractor_profile.postcode %></p>
+      <p><strong>Country:</strong> <%= @contractor_profile.country %></p>
+      <p><strong>Travel Radius:</strong> <%= @contractor_profile.travel_radius %> km</p>
+      <p><strong>Availability:</strong> <%= @contractor_profile.weekday_availability %></p>
+      <p><strong>Working Hours:</strong> <%= @contractor_profile.start_time&.strftime("%H:%M") %> - <%= @contractor_profile.end_time&.strftime("%H:%M") %></p>
+      <p><strong>Google Business Profile:</strong> <%= @contractor_profile.google_business_profile %></p>
+    <% end %>
+
+    <% if current_user == @user %>
+      <%= link_to "Edit Profile", edit_profile_path(@user), class: "btn btn-primary mt-3" %>
+    <% end %>
+
+    <h2 class="mt-4">Reviews</h2>
+    <% if @reviews.any? %>
+      <% @reviews.each do |review| %>
+      <div class="card p-3 mb-3">
+        <p><strong>Rating:</strong> <%= review.rating %>/5</p>
+        <% if review.content.present? %>
+          <p><strong>Review:</strong> <%= review.content %></p>
+        <% end %>
+        <p><small class="text-muted">By <%= review.user.first_name %> <%= review.user.last_name %> · <%= review.created_at.strftime("%b %d, %Y") %></small></p>
+      </div>
+      <% end %>
+    <% else %>
+      <p class="text-muted">No reviews yet.</p>
+    <% end %>
+  </div>
+</div>

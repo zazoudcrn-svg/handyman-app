@@ -4,6 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   has_one :contractor_profile
+  accepts_nested_attributes_for :contractor_profile
   has_many :specialties
   has_many :categories, through: :specialties
   # Ensure all associated listings are deleted when the user account is destroyed
