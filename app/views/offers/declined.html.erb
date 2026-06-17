@@ -1,0 +1,15 @@
+<h1>Declined offers for <%= @listing.title %></h1>
+
+<% if @offers.empty? %>
+  <p>No declined offers yet.</p>
+<% else %>
+  <% @offers.each do |offer| %>
+    <div>
+      <p>Quote: <%= offer.quote %></p>
+      <p>Note: <%= offer.note %></p>
+      <p>Status: <%= offer.offer_status %></p>
+    </div>
+  <% end %>
+<% end %>
+
+<%= link_to "Back to all offers", listing_offers_path(@listing) %>

@@ -18,15 +18,18 @@ Rails.application.routes.draw do
 
   get "dashboard", to: "dashboards#show", as: :dashboard
 
-    resources :listings, only: [ :new, :create ] do
-      resources :offers, only: [ :index, :show ] do
-        member do
-          patch :accept
-          patch :decline
-        end
-        resources :messages, only: [ :create ]
-      end
+  resources :listings, only: [ :new, :create ] do
+   resources :offers, only: [ :index, :show ] do
+    collection do
+      get :declined
     end
+    member do
+      patch :accept
+      patch :decline
+    end
+    resources :messages, only: [ :create ]
+   end
+  end
 
   resources :listings, only: [ :show, :edit, :update, :destroy ]
 
