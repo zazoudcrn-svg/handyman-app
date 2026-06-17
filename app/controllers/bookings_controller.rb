@@ -2,14 +2,24 @@ class BookingsController < ApplicationController
   before_action :set_booking, only: [ :show, :propose_date, :accept_date, :complete ]
   before_action :authenticate_user!
 
-  # CUSTOMER: See all bookings
-  def index
-      if current_user
-     @bookings = Booking.where(listing_id: current_user.listings.pluck(:id))
+# CUSTOMER: See all bookings
+def index
+  if current_user
+    @bookings = Booking.where(listing_id: current_user.listings.pluck(:id))
+
+    if params[:status].present?
+      if params[:status] == "pending_declined"
+        @bookings = @bookings.where(booking_status: [ :pending, :declined ])
       else
-     @bookings = []
+        @bookings = @bookings.where(booking_status: params[:status])
       end
+    end
+  else
+    @bookings = []
   end
+end
+
+
 
   # CUSTOMER: View booking details
   def show
@@ -22,7 +32,7 @@ class BookingsController < ApplicationController
       proposed_by: "customer",
       booking_status: "date_change_requested"
     )
-    redirect_to @booking, notice: "New date proposed."
+    redirect_to booking_path(@booking), notice: "New date proposed successfully"
   end
 
   # CUSTOMER: Accept contractor's proposed date
@@ -42,6 +52,18 @@ class BookingsController < ApplicationController
     @booking.update(booking_status: :completed)
     redirect_to booking_path(@booking)
   end
+
+def cancel_booking
+  @booking = Booking.find(params[:id])
+
+  @booking.update(
+    booking_status: "cancelled",
+    cancellation_note: params[:booking][:cancellation_note],
+  )
+
+  redirect_to booking_path(@booking), notice: "Booking cancelled successfully"
+end
+
 
   private
 
