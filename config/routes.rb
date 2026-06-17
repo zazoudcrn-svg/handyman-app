@@ -26,5 +26,13 @@ Rails.application.routes.draw do
         resources :messages, only: [ :create ]
       end
     end
-  resources :reviews, only: [ :new, :create ]
+
+  resources :bookings, only: [ :index, :show ] do
+    member do
+     patch :propose_date
+     patch :accept_date
+     patch :complete
+   end
+  end
+    resources :reviews, only: [ :new, :create ]
 end

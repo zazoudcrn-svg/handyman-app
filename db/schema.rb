@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema[8.1].define(version: 2026_06_16_135545) do
   create_table "bookings", force: :cascade do |t|
-    t.string "booking_status"
+    t.string "booking_status", default: "pending"
     t.datetime "created_at", null: false
     t.integer "listing_id", null: false
     t.datetime "new_proposed_date_and_time"
