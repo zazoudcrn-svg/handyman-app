@@ -6,6 +6,7 @@ class OffersController < ApplicationController
   def show
     @listing = Listing.find(params[:listing_id])
     @offer = Offer.find(params[:id])
+    @messages = @offer.messages.order(created_at: :asc)
     @message = Message.new
   end
 
