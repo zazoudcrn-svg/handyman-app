@@ -18,7 +18,7 @@ Rails.application.routes.draw do
 
   get "dashboard", to: "dashboards#show", as: :dashboard
 
-    resources :listings, only: [:new, :create] do
+    resources :listings, only: [ :new, :create ] do
       resources :offers, only: [ :index, :show ] do
         member do
           patch :accept
@@ -28,7 +28,7 @@ Rails.application.routes.draw do
       end
     end
 
-  resources :listings, only: [:show, :edit, :update, :destroy]
+  resources :listings, only: [ :show, :edit, :update, :destroy ]
 
   resources :bookings, only: [ :index, :show ] do
     member do
