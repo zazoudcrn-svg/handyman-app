@@ -1,5 +1,7 @@
 <h1>Offers for <%= @listing.title %></h1>
 
+<%= link_to "View declined offers", declined_listing_offers_path(@listing) %>
+
 <% @offers.each do |offer| %>
   <div>
     <p>Quote: <%= offer.quote %></p>
