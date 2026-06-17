@@ -1,10 +1,47 @@
-<h1>Offer details</h1>
+<div class="container my-4">
+  <div class="row g-4">
+    <div class="col-md-8">
 
-<p>Quote: <%= @offer.quote %></p>
-<p>Note: <%= @offer.note %></p>
-<p>Status: <%= @offer.offer_status %></p>
+      <div class="card p-4">
+        <h1>Offer details</h1>
 
-<%= button_to "Accept", accept_listing_offer_path(@listing, @offer), method: :patch %>
-<%= button_to "Decline", decline_listing_offer_path(@listing, @offer), method: :patch %>
+        <p><strong>Quote:</strong> €<%= @offer.quote %></p>
+        <p><strong>Note:</strong> <%= @offer.note %></p>
+        <p><strong>Status:</strong> <%= @offer.offer_status %></p>
+        <p><strong>Contractor:</strong> <%= @offer.user.contractor_profile.business_name %></p>
 
-<%= link_to "Back to all offers", listing_offers_path(@listing) %>
+        <% if current_user == @listing.user && @offer.offer_status == "pending" %>
+          <div class="d-flex gap-2 mt-3">
+            <%= button_to "Accept", accept_listing_offer_path(@listing, @offer), method: :patch %>
+            <%= button_to "Decline", decline_listing_offer_path(@listing, @offer), method: :patch %>
+          </div>
+        <% end %>
+
+        <%= link_to "Back to all offers", listing_offers_path(@listing) %>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card p-4 d-flex flex-column" style="height: 500px;">
+        <div class="flex-grow-1 overflow-auto mb-3">
+          <% @messages.each do |message| %>
+            <div class="mb-3">
+              <small class="text-muted">
+                <%= message.user.first_name %> · <%= message.created_at.strftime("%b %d, %H:%M") %>
+              </small>
+              <p class="mb-0"><%= message.content %></p>
+            </div>
+          <% end %>
+        </div>
+
+        <%= simple_form_for [@listing, @offer, @message] do |f| %>
+          <div class="d-flex gap-2">
+            <%= f.input :content, label: false, placeholder: "Type a message...", wrapper: false, input_html: { class: "form-control" } %>
+            <%= f.submit "Send", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+</div>

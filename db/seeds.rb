@@ -18,8 +18,8 @@ ContractorProfile.destroy_all
 Category.destroy_all
 User.destroy_all
 
-user = User.create!(
-  email: "test@gmail.com",
+contractor = User.create!(
+  email: "contractor@gmail.com",
   password: "password123",
   role: "contractor",
   first_name: "John",
@@ -27,8 +27,16 @@ user = User.create!(
   )
 
 ContractorProfile.create!(
-  user: user,
+  user: contractor,
   business_name: "Fun Painters"
+  )
+
+customer = User.create!(
+  email: "customer@gmail.com",
+  password: "password1234",
+  role: "customer",
+  first_name: "Harry",
+  last_name: "Smith"
   )
 
 category = Category.create!(
@@ -36,18 +44,18 @@ category = Category.create!(
   )
 
 Specialty.create!(
-  user: user,
+  user: contractor,
   category: category
   )
 
 listing = Listing.create!(
-  user: user,
+  user: customer,
   category: category,
   title: "Paint my living room"
   )
 
 offer = Offer.create!(
-  user: user,
+  user: contractor,
   listing: listing,
   quote: 150
   )
@@ -55,17 +63,19 @@ offer = Offer.create!(
 booking = Booking.create!(
   offer: offer,
   listing: listing,
-  booking_status: "confirmed"
+  booking_status: "confirmed",
+  scheduled_date_and_time: "2026-06-12 15:35:00"
   )
 
 Review.create!(
   booking: booking,
-  user: user,
+  user: customer,
+  reviewee: contractor,
   rating: 5
   )
 
 Message.create!(
   offer: offer,
-  user: user,
+  user: customer,
   content: "That quote is too high"
   )
