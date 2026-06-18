@@ -1,4 +1,5 @@
 class OffersController < ApplicationController
+  before_action :require_contractor, only: [ :new, :create ] # ADDED
   def index
   @listing = Listing.find(params[:listing_id])
   @offers = @listing.offers.where(offer_status: [ nil, "pending", "accepted" ])
@@ -48,6 +49,12 @@ class OffersController < ApplicationController
   end
 
   private
+
+  def require_contractor # ADDED
+    unless current_user.role == "contractor"
+      redirect_to root_path, alert: "Only contractors can create offers."
+    end
+  end
 
   def offer_params
     params.require(:offer).permit(:quote, :note)
