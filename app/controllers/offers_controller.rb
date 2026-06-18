@@ -9,6 +9,23 @@ class OffersController < ApplicationController
   @offers = @listing.offers.where(offer_status: "declined")
   end
 
+  def new
+    @listing = Listing.find(params[:listing_id])
+    @offer = Offer.new
+  end
+
+  def create
+    @listing = Listing.find(params[:listing_id])
+    @offer = @listing.offers.new(offer_params)
+    @offer.user = current_user
+
+    if @offer.save
+      redirect_to listing_offer_path(@listing, @offer), notice: "Offer submitted!"
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
   def show
     @listing = Listing.find(params[:listing_id])
     @offer = Offer.find(params[:id])
@@ -28,5 +45,11 @@ class OffersController < ApplicationController
     @offer = Offer.find(params[:id])
     @offer.update(offer_status: "declined")
     redirect_to listing_offers_path(@listing), notice: "The offer has been declined" # CHANGED
+  end
+
+  private
+
+  def offer_params
+    params.require(:offer).permit(:quote, :note)
   end
 end
