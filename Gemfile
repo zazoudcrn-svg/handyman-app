@@ -42,9 +42,14 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
-
+# Simple Form gem
 gem "simple_form"
+
+# Cloudinary gem
 gem "cloudinary"
+
+# Country Select gem for Simple Form
+gem "country_select"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

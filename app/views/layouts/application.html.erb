@@ -26,23 +26,64 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </head>
 
-  <body>
+  <body style="margin: 0; padding: 0;"> <header>
+      <table border="0" cellpadding="15" cellspacing="0" width="100%">
+        <tr>
+          <td><strong>Handyman App</strong></td>
+          <td align="right">
+            <% if user_signed_in? %>
+              Logged in as: <%= current_user.email %> (<%= current_user.role&.capitalize %> Mode)
+            <% end %>
+          </td>
+        </tr>
+      </table>
+    </header>
+
+    <hr style="margin: 0;">
+
     <% if notice %>
-      <div class="alert alert-success"><%= notice %></div>
+      <p style="padding: 10px; margin: 0;"><strong>Notice:</strong> <%= notice %></p>
     <% end %>
     <% if alert %>
-      <div class="alert alert-warning"><%= alert %></div>
+      <p style="padding: 10px; margin: 0;"><strong>Alert:</strong> <%= alert %></p>
     <% end %>
 
-    <nav style="background: #eee; padding: 10px; margin-bottom: 20px; font-family: sans-serif;">
-      <% if user_signed_in? %>
-        <span>Logged in as: <strong><%= current_user.email %></strong></span>
-        <%= link_to "Log Out", destroy_user_session_path, data: { turbo_method: :delete } %>
-      <% else %>
-        <%= link_to "Log In", new_user_session_path %> |
-        <%= link_to "Sign Up", new_user_registration_path %>
-      <% end %>
-    </nav>
-    <%= yield %>
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+
+        <% if user_signed_in? %>
+          <td width="220" bgcolor="#f4f4f4" style="padding: 20px; min-height: 100vh;">
+            <% if current_user.role == "contractor" %>
+              <p><strong>Contractor Menu</strong></p>
+              <ul>
+                <li><%= link_to "Find Jobs (Dashboard)", dashboard_path %></li>
+                <li><%= link_to "My Sent Offers", dashboard_path %></li>
+                <li><%= link_to "My Bookings (Jobs)", bookings_path %></li>
+                <li><%= link_to "Business Profile", profile_path(current_user) %></li>
+              </ul>
+            <% else %>
+              <p><strong>Customer Menu</strong></p>
+              <ul>
+                <li><%= link_to "My Requests (Dashboard)", dashboard_path %></li>
+                <li><%= link_to "Received Offers", dashboard_path %></li>
+                <li><%= link_to "My Bookings", bookings_path %></li>
+                <li><%= link_to "Personal Profile", profile_path(current_user) %></li>
+              </ul>
+            <% end %>
+
+            <br><br>
+            <%= button_to "Log Out", destroy_user_session_path, method: :delete %>
+          </td>
+        <% end %>
+
+        <td style="padding: 30px;">
+          <main>
+            <%= yield %>
+          </main>
+        </td>
+
+      </tr>
+    </table>
+
   </body>
 </html>
