@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_17_131509) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_17_152707) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -78,6 +78,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_131509) do
   end
 
   create_table "listings", force: :cascade do |t|
+    t.json "ai_answers"
+    t.string "availability_profile"
     t.integer "category_id", null: false
     t.string "city"
     t.string "country"
@@ -89,6 +91,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_131509) do
     t.string "street"
     t.string "title"
     t.datetime "updated_at", null: false
+    t.string "urgency"
     t.integer "user_id", null: false
     t.index ["category_id"], name: "index_listings_on_category_id"
     t.index ["user_id"], name: "index_listings_on_user_id"

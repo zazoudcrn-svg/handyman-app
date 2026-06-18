@@ -62,8 +62,20 @@ class ListingsController < ApplicationController
   private
 
   def listing_params
-    # Whitelist accepted attributes including category, address fields, and multiple photos
-    params.require(:listing).permit(:title, :description, :category_id, :postcode, :city, :street, :preferred_date_and_time, photos: [])
+    # Whitelist accepted attributes including category, address fields, multiple photos, and availability
+    params.require(:listing).permit(
+      :title,
+      :description,
+      :category_id,
+      :postcode,
+      :city,
+      :street,
+      :preferred_date_and_time,
+      :availability_profile,
+      :urgency,
+      photos: [],
+      ai_answers: {}
+    )
   end
 
   def ensure_customer
