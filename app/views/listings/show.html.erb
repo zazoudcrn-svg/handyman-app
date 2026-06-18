@@ -27,4 +27,25 @@
 
 <hr>
 
+
+<%# CHANGED: wrapped the whole offers panel in a customer-only check %>
+<% if current_user.role == "customer" %>
+  <%
+    accepted_offer = @listing.offers.find_by(offer_status: "accepted")
+    other_offers = @listing.offers.where.not(offer_status: [ "declined", "accepted" ])
+    visible_offers = [ accepted_offer, *other_offers ].compact
+  %>
+
+  <h3><%= link_to "Offers (#{@listing.offers.where.not(offer_status: "declined").count})", listing_offers_path(@listing) %></h3>
+
+  <% visible_offers.each do |offer| %>
+    <div style="border: 1px solid <%= offer.offer_status == "accepted" ? "green" : "#ccc" %>; padding: 10px; margin-bottom: 10px;">
+      <p><strong>Quote:</strong> €<%= offer.quote %></p>
+      <p><strong>Status:</strong> <%= offer.offer_status %></p>
+      <%= link_to "View Offer", listing_offer_path(@listing, offer) %>
+    </div>
+  <% end %>
+<% end %>
+<%# END CHANGED %>
+
 <%= link_to "Back to Dashboard", dashboard_path %>
