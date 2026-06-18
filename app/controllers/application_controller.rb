@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   # Permit custom fields during Devise authentication processes
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  private
+  protected
 
   # Overwriting the Devise redirect path after a successful sign-in
   def after_sign_in_path_for(resource)

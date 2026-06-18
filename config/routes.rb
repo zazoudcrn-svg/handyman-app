@@ -44,10 +44,9 @@ Rails.application.routes.draw do
   resources :profiles, only: [ :show, :edit, :update ]
   resources :reviews, only: [ :new, :create ]
 
-  # Onboarding routes
   get 'onboarding/customer', to: 'onboardings#customer', as: :onboarding_customer
   patch 'onboarding/customer_update', to: 'onboardings#customer_update', as: :update_onboarding_customer
 
   get 'onboarding/contractor', to: 'onboardings#contractor', as: :onboarding_contractor
-  post 'onboarding/contractor_create', to: 'onboardings#contractor_create', as: :create_onboarding_contractor
+  patch 'onboarding/contractor', to: 'onboardings#contractor_update'
 end

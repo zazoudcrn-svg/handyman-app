@@ -1,2 +1,292 @@
-<h1>Contractor Onboarding</h1>
-<p>If you see this page, Rails successfully detected your role as a Contractor.</p>
+Hier ist noch einmal der komplette, zusammenhängende Code für deine app/views/onboardings/contractor.html.erb. Du kannst deine Datei einfach vollständig löschen und diesen Block hineinkopieren:
+
+Code-Snippet
+<h2>Contractor Onboarding</h2>
+<p>Please complete your business setup in 5 easy steps.</p>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<div id="stepper-bar" style="display: flex; justify-content: space-between; gap: 10px; margin-bottom: 30px;">
+  <div class="step-indicator" style="flex: 1; padding: 10px; border-bottom: 4px solid #38bdf8; font-weight: bold; color: #38bdf8;">1. Basic Info</div>
+  <div class="step-indicator" style="flex: 1; padding: 10px; border-bottom: 4px solid #ccc; color: #94a3b8;">2. Services</div>
+  <div class="step-indicator" style="flex: 1; padding: 10px; border-bottom: 4px solid #ccc; color: #94a3b8;">3. Trust</div>
+  <div class="step-indicator" style="flex: 1; padding: 10px; border-bottom: 4px solid #ccc; color: #94a3b8;">4. Location & Radius</div>
+  <div class="step-indicator" style="flex: 1; padding: 10px; border-bottom: 4px solid #ccc; color: #94a3b8;">5. Availability</div>
+</div>
+
+<hr>
+
+<%= form_with model: @contractor_profile, url: onboarding_contractor_path, method: :patch do |f| %>
+
+  <div class="wizard-step">
+    <h3>1. Personal & Company Name</h3>
+    <%= f.fields_for :user, current_user do |user_fields| %>
+      <p>
+        <%= user_fields.label :first_name, "First Name" %><br>
+        <%= user_fields.text_field :first_name %>
+      </p>
+      <p>
+        <%= user_fields.label :last_name, "Last Name" %><br>
+        <%= user_fields.text_field :last_name %>
+      </p>
+    <% end %>
+    <p>
+      <%= f.label :business_name, "Official Company Name" %><br>
+      <%= f.text_field :business_name %>
+    </p>
+  </div>
+
+  <div class="wizard-step" style="display: none;">
+    <h3>2. Core Services & Specialties</h3>
+    <p>Select the categories you want to work in:</p>
+    <% Category.all.each do |category| %>
+      <p>
+        <%= check_box_tag "category_ids[]", category.id, current_user.categories.include?(category), id: "category_#{category.id}" %>
+        <%= label_tag "category_#{category.id}", category.name %>
+      </p>
+    <% end %>
+  </div>
+
+  <div class="wizard-step" style="display: none;">
+    <h3>3. Trust & Marketing</h3>
+    <p>
+      <%= f.label :google_business_profile, "Google Business Profile Link (Optional)" %><br>
+      <%= f.url_field :google_business_profile, placeholder: "https://business.google.com/..." %>
+    </p>
+  </div>
+
+  <div class="wizard-step" style="display: none;">
+    <h3>4. Location & Operating Area</h3>
+    <%= f.fields_for :user, current_user do |user_fields| %>
+      <p>
+        <%= user_fields.label :street, "Business Street & House Number" %><br>
+        <%= user_fields.text_field :street %>
+      </p>
+      <p>
+        <%= user_fields.label :postcode, "Postcode" %><br>
+        <%= user_fields.text_field :postcode, id: "wizard-postcode" %>
+      </p>
+      <p>
+        <%= user_fields.label :city, "City" %><br>
+        <%= user_fields.text_field :city, id: "wizard-city" %>
+      </p>
+      <p>
+        <%= user_fields.label :country, "Country" %><br>
+        <%= user_fields.text_field :country, value: "Germany", id: "wizard-country" %>
+      </p>
+    <% end %>
+    <p>
+      <%= f.label :travel_radius, "Travel Radius (in km)" %><br>
+      <%= f.number_field :travel_radius, value: 50, min: 1, max: 500, id: "wizard-radius" %> km
+    </p>
+
+    <div id="map" style="height: 300px; width: 100%; margin-top: 20px; border-radius: 8px; border: 1px solid #ccc; z-index: 1;"></div>
+  </div>
+
+  <div class="wizard-step" style="display: none;">
+    <h3>5. Availability & Working Hours</h3>
+
+    <p><strong>Available Days:</strong></p>
+    <%= f.hidden_field :weekday_availability, id: "hidden-weekdays" %>
+
+    <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+      <button type="button" class="day-btn" data-day="Mo" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Mo</button>
+      <button type="button" class="day-btn" data-day="Tu" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Tu</button>
+      <button type="button" class="day-btn" data-day="We" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">We</button>
+      <button type="button" class="day-btn" data-day="Th" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Th</button>
+      <button type="button" class="day-btn" data-day="Fr" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Fr</button>
+      <button type="button" class="day-btn" data-day="Sa" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Sa</button>
+      <button type="button" class="day-btn" data-day="Su" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Su</button>
+    </div>
+
+    <p>
+      <%= f.label :start_time, "Working Hours (Start)" %><br>
+      <%= f.time_select :start_time, { default: Time.parse("08:00") } %>
+    </p>
+    <p>
+      <%= f.label :end_time, "Working Hours (End)" %><br>
+      <%= f.time_select :end_time, { default: Time.parse("17:00") } %>
+    </p>
+  </div>
+
+  <br><br>
+
+  <div>
+    <button type="button" id="prev-btn" style="display: none;">Back</button>
+    <button type="button" id="next-btn">Next</button>
+    <%= f.submit "Complete Onboarding & Go to Dashboard", id: "submit-btn", style: "display: none;" %>
+  </div>
+
+<% end %>
+
+<script>
+  (function() {
+    function initWizard() {
+      let currentStep = 0;
+      const steps = document.querySelectorAll(".wizard-step");
+      const indicators = document.querySelectorAll(".step-indicator");
+      const prevBtn = document.getElementById("prev-btn");
+      const nextBtn = document.getElementById("next-btn");
+      const submitBtn = document.getElementById("submit-btn");
+
+      if (!nextBtn || !prevBtn || steps.length === 0) return;
+
+      // --- MAP SETTINGS ---
+      let map = null;
+      let mapMarker = null;
+      let mapCircle = null;
+
+      // --- WOCIENTAG SELECTION ---
+      const dayButtons = document.querySelectorAll(".day-btn");
+      const hiddenInput = document.getElementById("hidden-weekdays");
+      let selectedDays = [];
+
+      dayButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const day = btn.getAttribute("data-day");
+
+          if (selectedDays.includes(day)) {
+            selectedDays = selectedDays.filter(d => d !== day);
+            btn.style.background = "white";
+            btn.style.color = "black";
+            btn.style.borderColor = "#ccc";
+          } else {
+            selectedDays.push(day);
+            btn.style.background = "#38bdf8";
+            btn.style.color = "white";
+            btn.style.borderColor = "#38bdf8";
+          }
+          hiddenInput.value = selectedDays.join(", ");
+        });
+      });
+
+      function showStep() {
+        steps.forEach((step, index) => {
+          step.style.display = index === currentStep ? "block" : "none";
+        });
+
+        indicators.forEach((indicator, index) => {
+          if (index === currentStep) {
+            indicator.style.borderBottom = "4px solid #38bdf8";
+            indicator.style.color = "#38bdf8";
+            indicator.style.fontWeight = "bold";
+          } else {
+            indicator.style.borderBottom = "4px solid #ccc";
+            indicator.style.color = "#94a3b8";
+            indicator.style.fontWeight = "normal";
+          }
+        });
+
+        prevBtn.style.display = currentStep === 0 ? "none" : "inline-block";
+
+        if (currentStep === steps.length - 1) {
+          nextBtn.style.display = "none";
+          submitBtn.style.display = "inline-block";
+        } else {
+          nextBtn.style.display = "inline-block";
+          submitBtn.style.display = "none";
+        }
+
+        // Trigger Leaflet engine dynamic update when entering Step 4
+        if (currentStep === 3) {
+          setTimeout(() => { setupMap(); }, 50);
+        }
+      }
+
+      // --- LEAFLET CORE ENGINE ---
+      function setupMap() {
+        const mapContainer = document.getElementById('map');
+        if (!mapContainer) return;
+
+        if (!map) {
+          map = L.map('map').setView([51.1657, 10.4515], 6);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(map);
+
+          document.getElementById('wizard-city').addEventListener('change', updateMapRadius);
+          document.getElementById('wizard-postcode').addEventListener('change', updateMapRadius);
+          document.getElementById('wizard-radius').addEventListener('input', updateMapRadius);
+        } else {
+          map.invalidateSize();
+        }
+        updateMapRadius();
+      }
+
+      function updateMapRadius() {
+        const city = document.getElementById('wizard-city').value;
+        const postcode = document.getElementById('wizard-postcode').value;
+        const country = document.getElementById('wizard-country').value || "Germany";
+        const radiusInKm = parseFloat(document.getElementById('wizard-radius').value) || 50;
+
+        if (!city && !postcode) return;
+
+        const searchQuery = `${postcode} ${city}, ${country}`;
+
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data && data.length > 0) {
+              const lat = parseFloat(data[0].lat);
+              const lon = parseFloat(data[0].lon);
+              const centerLatLng = [lat, lon];
+
+              map.setView(centerLatLng, 9);
+
+              if (mapMarker) {
+                mapMarker.setLatLng(centerLatLng);
+              } else {
+                mapMarker = L.marker(centerLatLng).addTo(map);
+              }
+
+              const radiusInMeters = radiusInKm * 1000;
+              if (mapCircle) {
+                mapCircle.setLatLng(centerLatLng);
+                mapCircle.setRadius(radiusInMeters);
+              } else {
+                mapCircle = L.circle(centerLatLng, {
+                  color: '#38bdf8',
+                  fillColor: '#38bdf8',
+                  fillOpacity: 0.2,
+                  radius: radiusInMeters
+                }).addTo(map);
+              }
+
+              map.fitBounds(mapCircle.getBounds());
+            }
+          })
+          .catch(err => console.log("Geocoding failed:", err));
+      }
+
+      // --- PREVENT ACCIDENT-SUBMITS ---
+      nextBtn.replaceWith(nextBtn.cloneNode(true));
+      prevBtn.replaceWith(prevBtn.cloneNode(true));
+
+      const newNextBtn = document.getElementById("next-btn");
+      const newPrevBtn = document.getElementById("prev-btn");
+
+      newNextBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (currentStep < steps.length - 1) {
+          currentStep++;
+          showStep();
+        }
+      });
+
+      newPrevBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (currentStep > 0) {
+          currentStep--;
+          showStep();
+        }
+      });
+
+      showStep();
+    }
+
+    initWizard();
+    document.addEventListener("turbo:load", initWizard);
+  })();
+</script>

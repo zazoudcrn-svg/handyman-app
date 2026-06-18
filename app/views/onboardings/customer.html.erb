@@ -1,2 +1,35 @@
-<h1>Customer Onboarding</h1>
-<p>If you see this page, Rails successfully detected your role as a Customer.</p>
+<div class="container mt-5" style="max-width: 600px;">
+  <h1 class="mb-4">Customer Onboarding</h1>
+  <p class="text-muted">Please complete your profile to continue.</p>
+
+  <%= form_with model: @user, url: update_onboarding_customer_path, method: :patch, local: true do |f| %>
+
+    <div class="mb-3">
+      <%= f.label :first_name, "First Name", class: "form-label" %>
+      <%= f.text_field :first_name, class: "form-control", required: true %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :last_name, "Last Name", class: "form-label" %>
+      <%= f.text_field :last_name, class: "form-control", required: true %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :street, "Street & House Number", class: "form-label" %>
+      <%= f.text_field :street, class: "form-control", required: true %>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <%= f.label :postcode, "Postcode", class: "form-label" %>
+        <%= f.text_field :postcode, class: "form-control", required: true %>
+      </div>
+      <div class="col-md-8 mb-3">
+        <%= f.label :city, "City", class: "form-label" %>
+        <%= f.text_field :city, class: "form-control", required: true %>
+      </div>
+    </div>
+
+    <%= f.submit "Save profile & continue", class: "btn btn-primary w-100 mt-3" %>
+  <% end %>
+</div>
