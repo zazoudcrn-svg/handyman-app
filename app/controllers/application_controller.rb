@@ -14,8 +14,11 @@ class ApplicationController < ActionController::Base
 
   # Overwriting the Devise redirect path after a successful sign-in
   def after_sign_in_path_for(resource)
-    # Redirect directly to the user dashboard page
-    dashboard_path
+    if resource.role == "contractor"
+      onboarding_contractor_path
+    else
+      onboarding_customer_path
+    end
   end
 
   # Allow Devise to accept the :role parameter from the registration smart-buttons flow
