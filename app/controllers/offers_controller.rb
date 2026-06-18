@@ -20,7 +20,7 @@ class OffersController < ApplicationController
     @listing = Listing.find(params[:listing_id])
     @offer = Offer.find(params[:id])
     @offer.update(offer_status: "accepted")
-    redirect_to listing_offer_path(@listing, @offer), notice: "Offer accepted!"
+    redirect_to booking_path(@offer.booking), notice: "Offer accepted!"
   end
 
   def decline
