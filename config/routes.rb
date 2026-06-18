@@ -38,7 +38,9 @@ Rails.application.routes.draw do
      patch :propose_date
      patch :accept_date
      patch :complete
+     patch :cancel_booking
    end
   end
-    resources :reviews, only: [ :new, :create ]
+  resources :profiles, only: [ :show, :edit, :update ]
+  resources :reviews, only: [ :new, :create ]
 end

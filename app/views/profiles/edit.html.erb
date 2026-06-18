@@ -1,0 +1,37 @@
+<div class="container my-4">
+  <div class="card p-4">
+    <h1>Edit Profile</h1>
+
+    <%= simple_form_for @user, url: profile_path(@user), method: :patch do |f| %>
+
+      <h2 class="mt-4">Personal Information</h2>
+      <%= f.input :first_name %>
+      <%= f.input :last_name %>
+      <%= f.input :email %>
+      <%= f.input :street %>
+      <%= f.input :city %>
+      <%= f.input :postcode %>
+      <%= f.input :country %>
+
+      <% if @user.role == "contractor" && @contractor_profile %>
+        <h2 class="mt-4">Business Information</h2>
+        <%= f.simple_fields_for :contractor_profile, @contractor_profile do |cf| %>
+          <%= cf.input :business_name %>
+          <%= cf.input :street %>
+          <%= cf.input :city %>
+          <%= cf.input :postcode %>
+          <%= cf.input :country %>
+          <%= cf.input :travel_radius, label: "Travel Radius (km)" %>
+          <%= cf.input :weekday_availability %>
+          <%= cf.input :start_time, as: :time, label: "Start Time" %>
+          <%= cf.input :end_time, as: :time, label: "End Time" %>
+          <%= cf.input :google_business_profile, label: "Google Business Profile URL" %>
+        <% end %>
+      <% end %>
+
+      <%= f.submit "Save Changes", class: "btn btn-primary mt-3" %>
+    <% end %>
+
+    <%= link_to "Cancel", profile_path(@user), class: "btn btn-secondary mt-3" %>
+  </div>
+</div>
