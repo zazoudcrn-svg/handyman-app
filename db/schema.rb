@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_18_151028) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_19_053425) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -86,7 +86,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_18_151028) do
     t.string "country"
     t.datetime "created_at", null: false
     t.text "description"
+    t.float "latitude"
     t.string "listing_status"
+    t.float "longitude"
     t.string "postcode"
     t.datetime "preferred_date_and_time"
     t.string "street"
@@ -151,6 +153,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_18_151028) do
     t.string "encrypted_password", default: "", null: false
     t.string "first_name"
     t.string "last_name"
+    t.float "latitude"
+    t.float "longitude"
     t.string "postcode"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"

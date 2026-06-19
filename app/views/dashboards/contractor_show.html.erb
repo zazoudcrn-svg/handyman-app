@@ -1,2 +1,20 @@
 <h1>Contractor Dashboard (Backend MVP)</h1>
 <p>You are logged in as a Contractor.</p>
+
+<hr>
+
+<h2>Available Jobs in Your Area</h2>
+
+<% if @listings.any? %>
+  <div class="listings-container">
+    <% @listings.each do |listing| %>
+      <div class="listing-card" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 5px;">
+        <h3><%= listing.title %></h3>
+        <p><strong>Category:</strong> <%= listing.category.name %></p>
+        <p><strong>Location:</strong> <%= listing.city %> (<%= listing.distance.round(1) %> km away)</p>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p>No matching jobs found within your radius at the moment.</p>
+<% end %>
