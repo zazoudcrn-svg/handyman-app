@@ -44,13 +44,19 @@ contractor = User.create!(
   password: "password123",
   role: "contractor",
   first_name: "John",
-  last_name: "Doe"
+  last_name: "Doe",
+  street: "Hauptstraße 5",
+  postcode: "67346",
+  city: "Speyer",
+  country: "Germany",
+  latitude: 49.3297,
+  longitude: 8.4372
   )
 
-ContractorProfile.create!(
-  user: contractor,
-  business_name: "Fun Painters"
-  )
+contractor.contractor_profile.update!(
+  business_name: "Fun Painters",
+  travel_radius: 50
+)
 
 # 4. ASSOCIATE WITH NEW CATEGORIES
 puts "Creating specialties, listings, and bookings..."
@@ -67,7 +73,13 @@ customer = User.create!(
   password: "password1234",
   role: "customer",
   first_name: "Harry",
-  last_name: "Smith"
+  last_name: "Smith",
+  street: "Musterstraße 1",
+  postcode: "67105",
+  city: "Schifferstadt",
+  country: "Germany",
+  latitude: 49.3857,
+  longitude: 8.3786
   )
 
 category = Category.create!(
@@ -76,8 +88,14 @@ category = Category.create!(
 
 listing = Listing.create!(
   user: customer,
-  category: category,
-  title: "Paint my living room"
+  category: painting_category,
+  title: "Paint my living room",
+  street: "Musterstraße 1",
+  postcode: "67105",
+  city: "Schifferstadt",
+  country: "Germany",
+  latitude: 49.3857,
+  longitude: 8.3786
   )
 
 offer = Offer.create!(

@@ -15,8 +15,16 @@ class User < ApplicationRecord
   has_many :reviews_given, class_name: "Review", foreign_key: "user_id"
   has_many :reviews_received, class_name: "Review", foreign_key: "reviewee_id"
 
+  # --- Geocoding Setup ---
+  geocoded_by :full_address
+  after_validation :geocode, if: ->(obj){ obj.street_changed? || obj.postcode_changed? || obj.city_changed? }
+
   # Automatically trigger profile creation right after a new user is saved
   after_create :create_contractor_profile_if_needed
+
+  def full_address
+    [street, postcode, city, country].compact.join(', ')
+  end
 
   private
 
