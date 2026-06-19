@@ -34,7 +34,7 @@ Rails.application.routes.draw do
 
   resources :listings, only: [ :show, :edit, :update, :destroy ]
 
-  resources :bookings, only: [ :index, :show ] do
+  resources :bookings do
     member do
      patch :propose_date
      patch :accept_date
@@ -45,9 +45,9 @@ Rails.application.routes.draw do
   resources :profiles, only: [ :show, :edit, :update ]
   resources :reviews, only: [ :new, :create ]
 
-  get 'onboarding/customer', to: 'onboardings#customer', as: :onboarding_customer
-  patch 'onboarding/customer_update', to: 'onboardings#customer_update', as: :update_onboarding_customer
+  get "onboarding/customer", to: "onboardings#customer", as: :onboarding_customer
+  patch "onboarding/customer_update", to: "onboardings#customer_update", as: :update_onboarding_customer
 
-  get 'onboarding/contractor', to: 'onboardings#contractor', as: :onboarding_contractor
-  patch 'onboarding/contractor', to: 'onboardings#contractor_update'
+  get "onboarding/contractor", to: "onboardings#contractor", as: :onboarding_contractor
+  patch "onboarding/contractor", to: "onboardings#contractor_update"
 end

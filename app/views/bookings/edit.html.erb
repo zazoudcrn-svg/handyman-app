@@ -1,0 +1,52 @@
+<div class="container mt-4">
+
+  <%= link_to "← Back to Booking", booking_path(@booking), class: "btn btn-outline-secondary mb-3" %>
+
+  <div class="card shadow-sm p-4">
+
+    <h2 class="mb-4 text-center">Edit Booking</h2>
+
+    <!-- READ-ONLY DETAILS -->
+    <div class="mb-4">
+      <p><strong>Job:</strong> <%= @booking.listing.title %></p>
+
+      <% if current_user.customer? %>
+        <p><strong>Contractor:</strong> <%= @booking.offer.user.first_name %></p>
+      <% else %>
+        <p><strong>Customer:</strong> <%= @booking.listing.user.first_name %></p>
+      <% end %>
+
+      <p><strong>Address:</strong>
+        <%= [
+              @booking.listing.street,
+              @booking.listing.city,
+              @booking.listing.postcode,
+              @booking.listing.country
+            ].compact.join(", ") %>
+      </p>
+    </div>
+
+    <hr>
+
+    <!-- EDITABLE FORM -->
+    <%= form_with model: @booking, url: booking_path(@booking), method: :patch, class: "row g-3" do |f| %>
+
+      <div class="col-md-6">
+        <%= f.label :scheduled_date_and_time, "Scheduled Date & Time", class: "form-label" %>
+        <%= f.datetime_local_field :scheduled_date_and_time, class: "form-control" %>
+      </div>
+
+      <div class="col-12">
+        <%= f.label :notes, "Additional Notes", class: "form-label" %>
+        <%= f.text_area :notes, rows: 4, class: "form-control" %>
+      </div>
+
+      <div class="col-12 mt-3">
+        <%= f.submit "Save Changes", class: "btn btn-primary" %>
+        <%= link_to "Cancel", booking_path(@booking), class: "btn btn-outline-secondary ms-2" %>
+      </div>
+
+    <% end %>
+
+  </div>
+</div>
