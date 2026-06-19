@@ -33,7 +33,7 @@
         <% end %>
 
         <p><strong>Scheduled Date:</strong> <strong> <%= @booking.scheduled_date_and_time.strftime("%A") %></strong> •
-           <%= @booking.scheduled_date_and_time.strftime("%d %B %Y at %I:%M %p") %></p></p>
+           <%= @booking.scheduled_date_and_time.strftime("%d %B %Y at %I:%M %p") %></p>
         <p><strong>Address:</strong>
         <%= @booking.listing.street %>, <%= @booking.listing.city %> <%= @booking.listing.postcode %>, <%= @booking.listing.country %>
 </p>
