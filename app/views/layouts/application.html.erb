@@ -59,7 +59,7 @@
               <p><strong>Contractor Menu</strong></p>
               <ul>
                 <li><%= link_to "Find Jobs (Dashboard)", dashboard_path %></li>
-                <li><%= link_to "My Sent Offers", dashboard_path %></li>
+                <li><%= link_to "My Sent Offers", offers_path %></li>
                 <li><%= link_to "My Bookings (Jobs)", bookings_path %></li>
                 <li><%= link_to "Business Profile", profile_path(current_user) %></li>
               </ul>
@@ -67,7 +67,7 @@
               <p><strong>Customer Menu</strong></p>
               <ul>
                 <li><%= link_to "My Requests (Dashboard)", dashboard_path %></li>
-                <li><%= link_to "Received Offers", dashboard_path %></li>
+                <li><%= link_to "Received Offers", offers_path %></li>
                 <li><%= link_to "My Bookings", bookings_path %></li>
                 <li><%= link_to "Personal Profile", profile_path(current_user) %></li>
               </ul>
