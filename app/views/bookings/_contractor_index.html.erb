@@ -1,0 +1,17 @@
+<% if bookings.any? %>
+  <% bookings.each do |booking| %>
+    <div class="booking-card">
+      <h3><%= booking.listing.title %></h3>
+
+      <p><strong>Customer:</strong> <%= booking.listing.user.first_name %></p>
+      <p><strong>Scheduled:</strong> <%= booking.scheduled_date_and_time %></p>
+      <p><strong>Status:</strong> <%= booking.booking_status.humanize %></p>
+
+      <%= link_to "View Details", booking_path(booking), class: "btn btn-primary" %>
+    </div>
+  <% end %>
+<% else %>
+  <div class="empty-state">
+    <p>You don’t have any assigned jobs yet.</p>
+  </div>
+<% end %>

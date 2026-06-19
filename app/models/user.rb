@@ -18,6 +18,14 @@ class User < ApplicationRecord
   # Automatically trigger profile creation right after a new user is saved
   after_create :create_contractor_profile_if_needed
 
+  def customer?
+    role == "customer"
+  end
+
+  def contractor?
+    role == "contractor"
+  end
+
   private
 
   # Check the database 'role' column and build a contractor profile if matched
