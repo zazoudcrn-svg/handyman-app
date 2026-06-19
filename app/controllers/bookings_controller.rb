@@ -14,14 +14,12 @@ def index
 
    # Status filtering (works for both roles)
    if params[:status].present?
-    case params[:status]
-    when "pending"
-       @bookings = @bookings.where(booking_status: :pending)
-    when "confirmed"
-       @bookings = @bookings.where(booking_status: [ :confirmed, :date_change_requested ])
-    else
-       @bookings = @bookings.where(booking_status: params[:status])
-    end
+  case params[:status]
+  when "confirmed"
+    @bookings = @bookings.where(booking_status: [ :pending, :confirmed, :date_change_requested ])
+  else
+    @bookings = @bookings.where(booking_status: params[:status])
+  end
    end
 end
 
