@@ -2,27 +2,24 @@
   <div class="card p-4">
     <h1>Profile</h1>
 
+    <% if @user.role == "customer" %>
     <h2 class="mt-4">Personal Information</h2>
     <p><strong>First Name:</strong> <%= @user.first_name %></p>
     <p><strong>Last Name:</strong> <%= @user.last_name %></p>
-    <p><strong>Email:</strong> <%= @user.email %></p>
-    <p><strong>Street:</strong> <%= @user.street %></p>
     <p><strong>City:</strong> <%= @user.city %></p>
-    <p><strong>Postcode:</strong> <%= @user.postcode %></p>
     <p><strong>Country:</strong> <%= @user.country %></p>
+    <% end %>
 
     <% if @user.role == "contractor" && @contractor_profile %>
       <h2 class="mt-4">Business Information</h2>
       <p><strong>Business Name:</strong> <%= @contractor_profile.business_name %></p>
+      <p><strong>Google Business Profile:</strong> <%= @contractor_profile.google_business_profile %></p>
+      <p><strong>Working Hours:</strong> <%= @contractor_profile.start_time&.strftime("%H:%M") %> - <%= @contractor_profile.end_time&.strftime("%H:%M") %></p>
       <p><strong>Street:</strong> <%= @contractor_profile.street %></p>
       <p><strong>City:</strong> <%= @contractor_profile.city %></p>
       <p><strong>Postcode:</strong> <%= @contractor_profile.postcode %></p>
       <p><strong>Country:</strong> <%= @contractor_profile.country %></p>
-      <p><strong>Travel Radius:</strong> <%= @contractor_profile.travel_radius %> km</p>
-      <p><strong>Availability:</strong> <%= @contractor_profile.weekday_availability %></p>
-      <p><strong>Working Hours:</strong> <%= @contractor_profile.start_time&.strftime("%H:%M") %> - <%= @contractor_profile.end_time&.strftime("%H:%M") %></p>
-      <p><strong>Google Business Profile:</strong> <%= @contractor_profile.google_business_profile %></p>
-    <% end %>
+      <% end %>
 
     <% if current_user == @user %>
       <%= link_to "Edit Profile", edit_profile_path(@user), class: "btn btn-primary mt-3" %>
