@@ -31,6 +31,8 @@
           <td align="right">
             <% if user_signed_in? %>
               Logged in as: <%= current_user.email %> (<%= current_user.role&.capitalize %> Mode)
+              <% else %>
+              <%= link_to "Sign In", new_user_session_path, style: "margin-right: 15px;" %>
             <% end %>
           </td>
         </tr>
