@@ -1,14 +1,19 @@
 <h1><%= @listing.title %></h1>
-
 <p><strong>Category:</strong> <%= @listing.category&.name %></p>
 <p><strong>Status:</strong> <%= @listing.listing_status %></p>
-<p><strong>Description:</strong></p>
-<p><%= @listing.description %></p>
+
+<h3>Description</h3>
+<p><%= @listing.description || "No description provided." %></p>
 
 <hr>
 
 <h3>Location Details</h3>
-<p><strong>Street:</strong> <%= @listing.street %></p>
+
+<%# Security Guardrail: Only the owner (customer) OR the contractor with the accepted offer sees the precise street address %>
+<% if current_user.role == "customer" || @listing.offers.find_by(user: current_user, offer_status: "accepted") %>
+  <p><strong>Street:</strong> <%= @listing.street %></p>
+<% end %>
+
 <p><strong>City:</strong> <%= @listing.postcode %> <%= @listing.city %></p>
 <p><strong>Country:</strong> <%= @listing.country %></p>
 
@@ -27,10 +32,10 @@
 
 <hr>
 
-
-<%# CHANGED: wrapped the whole offers panel in a customer-only check %>
+<%# ==================== INTERACTION PANEL: CUSTOMER ROLE ==================== %>
 <% if current_user.role == "customer" %>
   <%
+    # Fetching relevant active and accepted offers for presentation
     accepted_offer = @listing.offers.find_by(offer_status: "accepted")
     other_offers = @listing.offers.where.not(offer_status: [ "declined", "accepted" ])
     visible_offers = [ accepted_offer, *other_offers ].compact
@@ -38,14 +43,34 @@
 
   <h3><%= link_to "Offers (#{@listing.offers.where.not(offer_status: "declined").count})", listing_offers_path(@listing) %></h3>
 
-  <% visible_offers.each do |offer| %>
-    <div style="border: 1px solid <%= offer.offer_status == "accepted" ? "green" : "#ccc" %>; padding: 10px; margin-bottom: 10px;">
-      <p><strong>Quote:</strong> €<%= offer.quote %></p>
-      <p><strong>Status:</strong> <%= offer.offer_status %></p>
-      <%= link_to "View Offer", listing_offer_path(@listing, offer) %>
-    </div>
-  <% end %>
+  <div>
+    <% visible_offers.each do |offer| %>
+      <div>
+        <p><strong>Quote:</strong> €<%= offer.quote %></p>
+        <p><strong>Status:</strong> <%= offer.offer_status || "Pending" %></p>
+        <%= link_to "View Offer", listing_offer_path(@listing, offer) %>
+      </div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= link_to "Edit Listing", edit_listing_path(@listing) %> |
+    <%= link_to "Delete Listing", listing_path(@listing), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this listing permanently?" } %>
+  </div>
+
+<%# ==================== INTERACTION PANEL: CONTRACTOR ROLE ==================== %>
+<% elsif current_user.role == "contractor" %>
+
+  <div>
+    <%# TASK: Accept Job -> Straightforwardly redirects to the team's pre-built 'new offer' quote form %>
+    <p><%= link_to "Accept Job & Make Offer", new_listing_offer_path(@listing) %></p>
+
+    <%# TASK: Decline -> Returns the contractor to their main dashboard instantly %>
+    <p><%= link_to "Decline / Not Interested", dashboard_path %></p>
+  </div>
+
 <% end %>
-<%# END CHANGED %>
+
+<hr>
 
 <%= link_to "Back to Dashboard", dashboard_path %>
