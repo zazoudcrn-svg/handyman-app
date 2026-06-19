@@ -1,8 +1,11 @@
 class OffersController < ApplicationController
   before_action :require_contractor, only: [ :new, :create ] # ADDED
   def index
-  @listing = Listing.find(params[:listing_id])
-  @offers = @listing.offers.where(offer_status: [ nil, "pending", "accepted" ])
+    if current_user.role == "customer"
+      @offers = Offer.where(listing: current_user.listings)
+    else
+      @offers = current_user.offers
+    end
   end
 
   def declined
