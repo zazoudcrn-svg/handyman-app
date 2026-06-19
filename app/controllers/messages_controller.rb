@@ -8,9 +8,9 @@ class MessagesController < ApplicationController
     @message.user = current_user
 
     if @message.save
-      redirect_to listing_offer_path(@listing, @offer), notice: "Message sent."
+      redirect_back fallback_location: listing_offer_path(@listing, @offer), notice: "Message sent."
     else
-      redirect_to listing_offer_path(@listing, @offer), alert: "Message could not be sent. Please try again."
+      redirect_back fallback_location: listing_offer_path(@listing, @offer), alert: "Message could not be sent. Please try again."
     end
   end
 

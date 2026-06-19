@@ -26,7 +26,9 @@ end
   # CUSTOMER: View booking details
   def show
     @booking = Booking.find(params[:id])
-   @offer = @booking.offer
+    @offer = @booking.offer
+    @messages = @offer.messages.order(:created_at)
+    @message = Message.new
   end
 
   # CUSTOMER or CONTRACTOR: Propose a new date
