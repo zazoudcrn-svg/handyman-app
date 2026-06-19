@@ -30,7 +30,7 @@
           <span class="badge bg-info text-dark"><%= @booking.booking_status %></span>
         </p>
 
-        <% unless @booking.booking_status == "pending" %>
+        <% if current_user.role == "customer" && @booking.booking_status != "pending" %>
         <hr>
 
           <h4>Offer Details</h4>

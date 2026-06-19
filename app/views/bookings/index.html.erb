@@ -1,7 +1,6 @@
 <h1>My Bookings</h1>
 
 <div class="booking-tabs">
-  <%= link_to "Pending", bookings_path(status: :pending), class: "btn btn-outline-primary me-2 #{'active' if params[:status] == 'pending'}" %>
   <%= link_to "Confirmed", bookings_path(status: :confirmed), class: "btn btn-outline-primary me-2 #{'active' if params[:status] == 'confirmed'}" %>
   <%= link_to "Cancelled", bookings_path(status: :cancelled), class: "btn btn-outline-primary me-2 #{'active' if params[:status] == 'cancelled'}" %>
   <%= link_to "Completed", bookings_path(status: :completed), class: "btn btn-outline-primary #{'active' if params[:status] == 'completed'}" %>

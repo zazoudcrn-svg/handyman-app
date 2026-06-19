@@ -12,14 +12,15 @@ def index
     @bookings = Booking.joins(:offer).where(offers: { user_id: current_user.id })
   end
 
-  # Status filtering (works for both roles)
-  if params[:status].present?
-    if params[:status] == "pending"
-      @bookings = @bookings.where(booking_status: [ :pending, :declined, :date_change_requested ])
-    else
-      @bookings = @bookings.where(booking_status: params[:status])
-    end
+   # Status filtering (works for both roles)
+   if params[:status].present?
+  case params[:status]
+  when "confirmed"
+    @bookings = @bookings.where(booking_status: [ :pending, :confirmed, :date_change_requested ])
+  else
+    @bookings = @bookings.where(booking_status: params[:status])
   end
+   end
 end
 
 
