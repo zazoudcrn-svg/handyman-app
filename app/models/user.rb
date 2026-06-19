@@ -22,17 +22,16 @@ class User < ApplicationRecord
   # Automatically trigger profile creation right after a new user is saved
   after_create :create_contractor_profile_if_needed
 
-<<<<<<< HEAD
   def full_address
     [street, postcode, city, country].compact.join(', ')
-=======
+  end
+
   def customer?
     role == "customer"
   end
 
   def contractor?
     role == "contractor"
->>>>>>> 3a6e4650acd00ce285cba6ad88d7562472c695b6
   end
 
   private
