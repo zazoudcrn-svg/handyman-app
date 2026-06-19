@@ -3,152 +3,181 @@
   <!-- Back Button -->
   <%= link_to "← Back to Bookings", bookings_path, class: "btn btn-outline-secondary mb-3" %>
 
-  <div class="card shadow-sm p-4">
+  <div class="row g-4">
 
-    <h2 class="mb-4 text-center">Booking Details</h2>
+    <div class="col-md-8">
 
-    <h4 class="text-primary"><%= @booking.listing.title %></h4>
+      <div class="card shadow-sm p-4">
 
-    <%# CUSTOMER VIEW %>
-    <% if current_user.customer? %>
-      <p><strong>Contractor:</strong> <%= @booking.offer.user.first_name %></p>
-    <% end %>
+        <h2 class="mb-4 text-center">Booking Details</h2>
 
-    <%# CONTRACTOR VIEW %>
-    <% if current_user.contractor? %>
-      <p><strong>Customer:</strong> <%= @booking.listing.user.first_name %></p>
-    <% end %>
+        <h4 class="text-primary"><%= @booking.listing.title %></h4>
 
-    <p><strong>Scheduled Date:</strong> <%= @booking.scheduled_date_and_time %></p>
-
-    <p>
-      <strong>Status:</strong>
-      <span class="badge bg-info text-dark"><%= @booking.booking_status %></span>
-    </p>
-
-    <% unless @booking.booking_status == "pending" %>
-    <hr>
-
-      <h4>Offer Details</h4>
-      <p><strong>Quote:</strong> <%= @offer.quote %></p>
-      <% if @offer.note.present? %>
-      <p><strong>Note:</strong> <%= @offer.note %></p>
-      <% else %>
-      <p><strong>Note:</strong> No note provided.</p>
-      <% end %>
-
-      <hr>
-      <% end %>
-
-     <% if current_user.contractor? &&
-      @booking.booking_status == "confirmed" &&
-      @booking.accepted_by == "customer" &&
-      @booking.new_proposed_date_and_time.nil? %>
-
-       <p class="text-success"><strong>The customer accepted your proposed date.</strong></p>
-
-     <% end %>
-
-
-    <% if current_user.customer? &&
-      @booking.booking_status == "confirmed" &&
-      @booking.accepted_by == "contractor" &&
-      @booking.new_proposed_date_and_time.nil? %>
-
-      <p class="text-success"><strong>The contractor accepted your proposed date.</strong></p>
-
-    <% end %>
-
-    <% if @booking.booking_status == "cancelled" %>
-      <div class="mt-3" style="border-left: 4px solid #d9534f; padding-left: 10px;">
-        <strong style="color:#d9534f;">Booking Cancelled</strong>
-
-        <% if @booking.cancellation_note.present? %>
-          <p class="mt-2"><strong>Reason:</strong> <%= @booking.cancellation_note %></p>
+        <%# CUSTOMER VIEW %>
+        <% if current_user.customer? %>
+          <p><strong>Contractor:</strong> <%= @booking.offer.user.first_name %></p>
         <% end %>
-      </div>
-    <% end %>
 
-   <% unless ["cancelled", "completed"].include?(@booking.booking_status) %>
+        <%# CONTRACTOR VIEW %>
+        <% if current_user.contractor? %>
+          <p><strong>Customer:</strong> <%= @booking.listing.user.first_name %></p>
+        <% end %>
 
-      <% if @booking.new_proposed_date_and_time.present? %>
-        <p><strong>New Proposed Date:</strong> <%= @booking.new_proposed_date_and_time %></p>
+        <p><strong>Scheduled Date:</strong> <%= @booking.scheduled_date_and_time %></p>
 
-        <%# Only CUSTOMER sees Accept button if contractor proposed %>
-        <% if @booking.new_proposed_date_and_time.present? && @booking.proposed_by != current_user.role %>
-         <%= button_to "Accept New Date",
-           accept_date_booking_path(@booking),
-           method: :patch,
-          data: { turbo: false },
-          class: "btn btn-success mb-3" %>
-       <% end %>
-      <% end %>
+        <p>
+          <strong>Status:</strong>
+          <span class="badge bg-info text-dark"><%= @booking.booking_status %></span>
+        </p>
 
-      <hr>
+        <% unless @booking.booking_status == "pending" %>
+        <hr>
 
-      <%# PROPOSE NEW DATE (Both roles) %>
-      <h4 class="mb-3">Propose a New Date</h4>
+          <h4>Offer Details</h4>
+          <p><strong>Quote:</strong> <%= @offer.quote %></p>
+          <% if @offer.note.present? %>
+          <p><strong>Note:</strong> <%= @offer.note %></p>
+          <% else %>
+          <p><strong>Note:</strong> No note provided.</p>
+          <% end %>
 
-      <%= form_with model: @booking,
-              url: propose_date_booking_path(@booking),
+          <hr>
+          <% end %>
+
+        <% if current_user.contractor? &&
+          @booking.booking_status == "confirmed" &&
+          @booking.accepted_by == "customer" &&
+          @booking.new_proposed_date_and_time.nil? %>
+
+          <p class="text-success"><strong>The customer accepted your proposed date.</strong></p>
+
+        <% end %>
+
+
+        <% if current_user.customer? &&
+          @booking.booking_status == "confirmed" &&
+          @booking.accepted_by == "contractor" &&
+          @booking.new_proposed_date_and_time.nil? %>
+
+          <p class="text-success"><strong>The contractor accepted your proposed date.</strong></p>
+
+        <% end %>
+
+        <% if @booking.booking_status == "cancelled" %>
+          <div class="mt-3" style="border-left: 4px solid #d9534f; padding-left: 10px;">
+            <strong style="color:#d9534f;">Booking Cancelled</strong>
+
+            <% if @booking.cancellation_note.present? %>
+              <p class="mt-2"><strong>Reason:</strong> <%= @booking.cancellation_note %></p>
+            <% end %>
+          </div>
+        <% end %>
+
+      <% unless ["cancelled", "completed"].include?(@booking.booking_status) %>
+
+          <% if @booking.new_proposed_date_and_time.present? %>
+            <p><strong>New Proposed Date:</strong> <%= @booking.new_proposed_date_and_time %></p>
+
+            <%# Only CUSTOMER sees Accept button if contractor proposed %>
+            <% if @booking.new_proposed_date_and_time.present? && @booking.proposed_by != current_user.role %>
+            <%= button_to "Accept New Date",
+              accept_date_booking_path(@booking),
               method: :patch,
               data: { turbo: false },
-              class: "row g-3" do |f| %>
+              class: "btn btn-success mb-3" %>
+          <% end %>
+          <% end %>
+
+          <hr>
+
+          <%# PROPOSE NEW DATE (Both roles) %>
+          <h4 class="mb-3">Propose a New Date</h4>
+
+          <%= form_with model: @booking,
+                  url: propose_date_booking_path(@booking),
+                  method: :patch,
+                  data: { turbo: false },
+                  class: "row g-3" do |f| %>
 
 
-        <div class="col-md-6">
-          <%= f.label :new_proposed_date_and_time, "Select Date & Time", class: "form-label" %>
-          <%= f.text_field :new_proposed_date_and_time, class: "form-control date-picker" %>
-        </div>
+            <div class="col-md-6">
+              <%= f.label :new_proposed_date_and_time, "Select Date & Time", class: "form-label" %>
+              <%= f.text_field :new_proposed_date_and_time, class: "form-control date-picker" %>
+            </div>
 
-        <div class="col-12">
-          <%= f.submit "Propose New Date", class: "btn btn-secondary mt-2" %>
-        </div>
+            <div class="col-12">
+              <%= f.submit "Propose New Date", class: "btn btn-secondary mt-2" %>
+            </div>
 
+          <% end %>
+
+          <hr class="my-4">
+
+          <%# CANCEL BOOKING (Both roles) %>
+          <h4 class="mb-3" style="color:#d9534f;">Cancel Booking</h4>
+
+          <%= form_with model: @booking,
+                        url: cancel_booking_booking_path(@booking),
+                        method: :patch,
+                        data: { turbo: false } do |f| %>
+
+            <div class="mb-3">
+              <%= f.label :cancellation_note, "Reason for cancellation", class: "form-label" %>
+              <%= f.text_area :cancellation_note, rows: 4, class: "form-control" %>
+            </div>
+
+            <%= f.submit "Cancel Booking",
+                        class: "btn",
+                        style: "background-color:#f8d7da; color:#a94442; border:1px solid #f5c6cb;",
+                        data: { confirm: "Are you sure you want to cancel this booking?" } %>
+
+          <% end %>
+
+          <hr class="my-4">
+
+          <%# MARK AS COMPLETED (Both roles) %>
+          <% if ["confirmed", "date_change_requested", "rescheduled"].include?(@booking.booking_status) %>
+            <%= link_to "Mark as Completed",
+                complete_booking_path(@booking),
+                data: { turbo_method: :patch },
+                class: "btn btn-success" %>
+
+
+          <% end %>
+
+        <% end %>
+
+    <%# REVIEW BUTTON %>
+        <% if @booking.booking_status == "completed" %>
+        <%= link_to "Leave a Review",
+                    new_review_path(booking_id: @booking.id),
+                    class: "btn btn-primary mt-3" %>
       <% end %>
 
-      <hr class="my-4">
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-4 d-flex flex-column" style="height: 500px;">
+        <h5 class="mb-3">Messages</h5>
 
-      <%# CANCEL BOOKING (Both roles) %>
-      <h4 class="mb-3" style="color:#d9534f;">Cancel Booking</h4>
-
-      <%= form_with model: @booking,
-                    url: cancel_booking_booking_path(@booking),
-                    method: :patch,
-                    data: { turbo: false } do |f| %>
-
-        <div class="mb-3">
-          <%= f.label :cancellation_note, "Reason for cancellation", class: "form-label" %>
-          <%= f.text_area :cancellation_note, rows: 4, class: "form-control" %>
+        <div class="flex-grow-1 overflow-auto mb-3">
+          <% @messages.each do |message| %>
+            <div class="mb-3">
+              <small class="text-muted">
+                <%= message.user.first_name %> · <%= message.created_at.strftime("%b %d, %H:%M") %>
+              </small>
+              <p class="mb-0"><%= message.content %></p>
+            </div>
+          <% end %>
         </div>
 
-        <%= f.submit "Cancel Booking",
-                     class: "btn",
-                     style: "background-color:#f8d7da; color:#a94442; border:1px solid #f5c6cb;",
-                     data: { confirm: "Are you sure you want to cancel this booking?" } %>
-
-      <% end %>
-
-      <hr class="my-4">
-
-      <%# MARK AS COMPLETED (Both roles) %>
-      <% if ["confirmed", "date_change_requested", "rescheduled"].include?(@booking.booking_status) %>
-        <%= link_to "Mark as Completed",
-            complete_booking_path(@booking),
-            data: { turbo_method: :patch },
-            class: "btn btn-success" %>
-
-
-      <% end %>
-
-    <% end %>
-
-<%# REVIEW BUTTON %>
-    <% if @booking.booking_status == "completed" %>
-    <%= link_to "Leave a Review",
-                new_review_path(booking_id: @booking.id),
-                class: "btn btn-primary mt-3" %>
-  <% end %>
-
+        <%= simple_form_for [@booking.listing, @offer, @message] do |f| %>
+          <div class="d-flex gap-2">
+            <%= f.input :content, label: false, placeholder: "Type a message...", wrapper: false, input_html: { class: "form-control" } %>
+            <%= f.submit "Send", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>
