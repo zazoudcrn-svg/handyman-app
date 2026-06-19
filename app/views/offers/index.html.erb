@@ -1,14 +1,20 @@
-<h1>Offers for <%= @listing.title %></h1>
-
-<%= link_to "View declined offers", declined_listing_offers_path(@listing) %>
+<% if current_user.role == "customer" %>
+  <h1>Offers I've Received</h1>
+<% else %>
+  <h1>Offers I've Made</h1>
+<% end %>
 
 <% @offers.each do |offer| %>
   <div>
+    <p>Listing: <%= offer.listing.title %></p>
     <p>Quote: <%= offer.quote %></p>
     <p>Note: <%= offer.note %></p>
     <p>Status: <%= offer.offer_status %></p>
-    <%= link_to "View details", listing_offer_path(@listing, offer) %>
-    <%= button_to "Accept", accept_listing_offer_path(@listing, offer), method: :patch %>
-    <%= button_to "Decline", decline_listing_offer_path(@listing, offer), method: :patch %>
+    <%= link_to "View details", listing_offer_path(offer.listing, offer) %>
+
+    <% if current_user.role == "customer" && offer.offer_status != "accepted" && offer.offer_status != "declined" %>
+      <%= button_to "Accept", accept_listing_offer_path(offer.listing, offer), method: :patch %>
+      <%= button_to "Decline", decline_listing_offer_path(offer.listing, offer), method: :patch %>
+    <% end %>
   </div>
 <% end %>

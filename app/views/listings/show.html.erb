@@ -36,7 +36,7 @@
     visible_offers = [ accepted_offer, *other_offers ].compact
   %>
 
-  <h3><%= link_to "Offers (#{@listing.offers.where.not(offer_status: "declined").count})", listing_offers_path(@listing) %></h3>
+  <h3><%= link_to "Offers (#{@listing.offers.where.not(offer_status: "declined").count})", offers_path %></h3>
 
   <% visible_offers.each do |offer| %>
     <div style="border: 1px solid <%= offer.offer_status == "accepted" ? "green" : "#ccc" %>; padding: 10px; margin-bottom: 10px;">

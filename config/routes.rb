@@ -18,8 +18,9 @@ Rails.application.routes.draw do
 
   get "dashboard", to: "dashboards#show", as: :dashboard
 
+  resources :offers, only: [ :index ] # ADDED
   resources :listings, only: [ :new, :create ] do
-   resources :offers, only: [ :index, :show, :new, :create ] do
+   resources :offers, only: [ :show, :new, :create ] do
     collection do
       get :declined
     end
