@@ -1,0 +1,589 @@
+<div id="step-indicator" style="margin-bottom: 20px; font-weight: bold;">
+  <span class="step-label" id="label-1" style="color: blue;">1. What</span> &rarr;
+  <span class="step-label" id="label-2" style="color: gray;">2. Category</span> &rarr;
+  <span class="step-label" id="label-3" style="color: gray;">3. Photos</span> &rarr;
+  <span class="step-label" id="label-4" style="color: gray;">4. Details</span> &rarr;
+  <span class="step-label" id="label-5" style="color: gray;">5. Availability</span> &rarr;
+  <span class="step-label" id="label-6" style="color: gray;">6. Location</span>
+</div>
+
+<hr>
+
+<%= simple_form_for(@listing, html: {
+  data: { turbo: false },
+  onsubmit: "if(this.dataset.submitting === 'true') { event.preventDefault(); return false; } else { this.dataset.submitting = 'true'; return true; }",
+  onkeydown: "if(event.keyCode == 13 && event.target.tagName == 'INPUT') { event.preventDefault(); const visibleStep = document.querySelector('.form-step:not([style*=\"display: none\"])'); const btn = visibleStep ? visibleStep.querySelector('.next-btn') : null; if(btn) { btn.click(); } return false; }"
+}) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-step" id="step-1">
+    <h2>What do you need help with?</h2>
+    <p>A short, clear description goes a long way.</p>
+    <%= f.input :title, placeholder: "e.g. Garden maintenance needed", label: "One-line summary" %>
+
+    <button type="button" class="next-btn">Continue &rarr;</button>
+  </div>
+
+  <div class="form-step" id="step-2" style="display: none;">
+    <h2>Select the trade category</h2>
+    <%= f.association :category, label_method: :name, value_method: :id, prompt: "Choose a category" %>
+
+    <div id="subcategories-container" style="margin-top: 20px; display: none; padding: 15px; border: 1px dashed #ccc; background: #f9f9f9;">
+      <h4>Specify your request (Optional):</h4>
+      <div id="subcategories-list">
+      </div>
+    </div>
+
+    <br>
+    <button type="button" class="prev-btn">&larr; Back</button>
+    <button type="button" class="next-btn">Continue &rarr;</button>
+  </div>
+
+  <div class="form-step" id="step-3" style="display: none;">
+    <h2>Add photos or videos</h2>
+    <p>A picture saves a thousand calls.</p>
+    <%= f.input :photos, as: :file, input_html: { multiple: true, accept: 'image/*' }, label: "Click to upload or drag and drop" %>
+
+    <br>
+    <button type="button" class="prev-btn">&larr; Back</button>
+    <button type="button" class="next-btn">Continue &rarr;</button>
+  </div>
+
+  <div class="form-step" id="step-4" style="display: none;">
+    <h2>Tell us more details</h2>
+    <%= f.input :description, as: :text, placeholder: "Describe the job as best as you can...", input_html: { rows: 5 } %>
+
+    <h2 id="ai-steps-heading">Our AI tailors follow-ups based on your category</h2>
+
+    <%= f.input :issue_duration,
+                as: :string,
+                input_html: { name: "listing[ai_answers][issue_duration]", placeholder: "Your answer..." },
+                label: "How long has the issue been present?",
+                label_html: { id: "ai-label-1" } %>
+
+    <%= f.input :attempted_fix,
+                as: :string,
+                input_html: { name: "listing[ai_answers][attempted_fix]", placeholder: "Your answer..." },
+                label: "Have you already tried fixing it?",
+                label_html: { id: "ai-label-2" } %>
+
+    <%= f.input :material_preferences,
+                as: :string,
+                input_html: { name: "listing[ai_answers][material_preferences]", placeholder: "Your answer..." },
+                label: "Are there any specific brand preferences or materials?",
+                label_html: { id: "ai-label-3" } %>
+
+    <button type="button" class="prev-btn">&larr; Back</button>
+    <button type="button" class="next-btn">Continue &rarr;</button>
+  </div>
+
+  <div class="form-step" id="step-5" style="display: none;">
+    <h2>When does it suit you best?</h2>
+
+    <div>
+      <label>
+        <input type="radio" name="listing[availability_profile]" value="after_hours_and_weekend">
+        After hours & Weekend (Workdays from 4 PM + Sat/Sun all day)
+      </label>
+    </div>
+    <div>
+      <label>
+        <input type="radio" name="listing[availability_profile]" value="completely_flexible">
+        Completely flexible (Home office / available anytime)
+      </label>
+    </div>
+    <div>
+      <label>
+        <input type="radio" name="listing[availability_profile]" value="workdays_daytime">
+        Workdays during daytime only (Mon–Fri from 8 AM to 4 PM)
+      </label>
+    </div>
+    <div>
+      <label>
+        <input type="radio" name="listing[availability_profile]" value="other" id="availability-other-radio">
+        Other (Specific schedule / shift work)
+      </label>
+    </div>
+
+    <div id="other-availability-container" style="display: none; margin-top: 10px; margin-bottom: 10px;">
+      <label for="custom_availability_input">Please specify your availability:</label>
+      <input type="text" name="listing[ai_answers][custom_availability]" id="custom_availability_input" placeholder="Please specify your schedule...">
+    </div>
+
+    <h2>How urgent is your request?</h2>
+    <div>
+      <label>
+        <input type="radio" name="listing[urgency]" value="emergency">
+        Emergency (Need help as soon as possible)
+      </label>
+    </div>
+    <div>
+      <label>
+        <input type="radio" name="listing[urgency]" value="this_week">
+        This week (Flexible within the next few days)
+      </label>
+    </div>
+    <div>
+      <label>
+        <input type="radio" name="listing[urgency]" value="flexible">
+        Flexible (No rush, anytime)
+      </label>
+    </div>
+
+    <br><br>
+    <button type="button" class="prev-btn">&larr; Back</button>
+    <button type="button" class="next-btn">Continue &rarr;</button>
+  </div>
+
+  <div class="form-step" id="step-6" style="display: none;">
+    <h2>Where do you need the service?</h2>
+    <%= f.input :street %>
+    <%= f.input :postcode %>
+    <%= f.input :city %>
+    <%= f.input :country, as: :string, placeholder: "e.g. Germany" %>
+
+    <br>
+    <button type="button" class="prev-btn">&larr; Back</button>
+    <%= f.button :submit, "Post Listing", class: "submit-btn" %>
+  </div>
+
+<% end %>
+
+<script>
+  function initializeMultiStepForm() {
+    const steps = Array.from(document.querySelectorAll(".form-step"));
+    const nextButtons = document.querySelectorAll(".next-btn");
+    const prevButtons = document.querySelectorAll(".prev-btn");
+    const indicator = document.getElementById("step-indicator");
+
+    // SENIOR GUARDRAIL: Detect if this form handles an edit session
+    const isEditMode = <%= @listing.persisted? %>;
+
+    if (isEditMode) {
+      // Show all steps stacked naturally on a single screen
+      steps.forEach(step => step.style.display = "block");
+
+      // Clear out sequential tracking mechanisms
+      nextButtons.forEach(btn => btn.style.display = "none");
+      prevButtons.forEach(btn => btn.style.display = "none");
+      if (indicator) indicator.style.display = "none";
+
+      // Stop execution immediately to keep automatic selectors from scrambling data
+      return;
+    }
+
+    let currentStep = 0;
+
+    const getCategorySelect = () => document.querySelector('select[name^="listing[category"]');
+    const getTitleInput = () => document.querySelector('input[name="listing[title]"]');
+    const getDescriptionArea = () => document.querySelector('textarea[name="listing[description]"]');
+
+    const keywordMapping = {
+      "plumbing, heating & ac": ["water", "faucet", "pipe", "shower", "wc", "toilet", "heating", "leak", "sink", "boiler"],
+      "electrical & smart home": ["power", "cable", "lamp", "socket", "light", "switch", "electricity", "wire", "oven"],
+      "woodwork & carpentry": ["wood", "cabinet", "table", "bed", "door", "window", "assembly", "kitchen", "furniture", "wardrobe"],
+      "painting & drywall": ["paint", "wall", "color", "wallpaper", "plaster", "ceiling"],
+      "construction, tiling & flooring": ["tile", "floor", "laminat", "parquet", "masonry", "brick"],
+      "garden & outdoor": ["garden", "lawn", "tree", "fence", "hedge", "patio", "roof"],
+      "locksmith & security": ["lock", "key", "door lock", "locksmith", "safe", "security", "schloss"],
+      "moving & clearance": ["move", "moving", "box", "transport", "clearance", "furniture moving", "truck", "carrying"],
+      "cleaning services": ["clean", "cleaning", "window clean", "wash", "vacuum", "maid"]
+    };
+
+    const subcategoryMapping = {
+      "plumbing, heating & ac": ["Fix a leak", "Unclog a drain", "Install a faucet", "Repair radiator/heating", "Boiler maintenance"],
+      "electrical & smart home": ["Hang a lamp/light", "Fix an outlet/switch", "Connect kitchen oven", "Smart Home setup", "Rewiring"],
+      "woodwork & carpentry": ["Assemble IKEA furniture", "Repair cabinet/door", "Build a terrace/deck", "Fix wooden floor"],
+      "painting & drywall": ["Paint entire room", "Wallpapering", "Plaster a hole", "Paint doors/windows"],
+      "construction, tiling & flooring": ["Lay laminate/parquet", "Tile a bathroom", "Minor brick/masonry work"],
+      "garden & outdoor": ["Lawn mowing & care", "Hedge & tree trimming", "Patio power-washing", "Weeding & planting", "Fence repair"],
+      "locksmith & security": ["Emergency lockout", "Change door cylinder", "Install window locks"],
+      "moving & clearance": ["Carry heavy items/furniture", "Full apartment move", "Basement clearance/entruempelung"],
+      "cleaning services": ["End of tenancy clean", "Window cleaning", "Regular house cleaning"]
+    };
+
+    const aiQuestionsMapping = {
+      "fix a leak": [
+        "Where exactly is the leak located (e.g., under the sink, behind the wall)?",
+        "Is water currently actively dripping, or has the main valve been shut off?",
+        "Is the leaking pipe easily accessible, or is it enclosed/hidden?"
+      ],
+      "unclog a drain": [
+        "Which drain is clogged (kitchen sink, shower, bathtub, or toilet)?",
+        "Is the water draining slowly, or is it completely blocked and standing?",
+        "Have you already tried using chemical drain cleaners or a plunger?"
+      ],
+      "install a faucet": [
+        "Do you already have the new faucet purchased and ready on-site?",
+        "Are the existing shut-off valves under the sink working properly?",
+        "Does the new faucet require any additional drilling or modifications?"
+      ],
+      "repair radiator/heating": [
+        "What is the main issue (radiator stays cold, leaks water, or makes noises)?",
+        "Do you live in an apartment with central heating or a house with a boiler?",
+        "Has the radiator been bled (air released) recently?"
+      ],
+      "boiler maintenance": [
+        "What is the brand and approximate age of your boiler?",
+        "Is the boiler currently displaying any error codes or dropping pressure?",
+        "When was the last time the boiler was serviced or maintained?"
+      ],
+      "hang a lamp/light": [
+        "How high is the ceiling, and do you have a stable ladder on-site?",
+        "Are the electrical wires/connections already exposed and ready?",
+        "What type of ceiling material is it (e.g., concrete, drywall, wood)?"
+      ],
+      "fix an outlet/switch": [
+        "Is the outlet/switch completely dead, loose, or sparking/scorched?",
+        "Does this issue affect other outlets or lights in the same room?",
+        "Have you checked if the fuse/circuit breaker has tripped?"
+      ],
+      "connect kitchen oven": [
+        "Is a high-voltage outlet (Starkstrom/3-phase power) already installed?",
+        "Is the old stove/oven already disconnected and removed?",
+        "Do you have the necessary connection cable supplied with the new appliance?"
+      ],
+      "smart home setup": [
+        "Which Smart Home system or brand are you looking to integrate?",
+        "Is a stable Wi-Fi connection and the required hub/bridge already set up?",
+        "How many devices (bulbs, switches, thermostats) need to be configured?"
+      ],
+      "rewiring": [
+        "Is this for a single room, an entire apartment, or a specific appliance line?",
+        "Are the walls currently open, or should wires run inside existing conduits?",
+        "Do you require a completely new fuse box/distribution board update?"
+      ],
+      "assemble ikea furniture": [
+        "What specific furniture pieces need assembly (e.g., PAX wardrobe, bed)?",
+        "Are all boxes already delivered to the exact room where it will stand?",
+        "Is there enough clear floor space in the room to assemble it flat?"
+      ],
+      "repair cabinet/door": [
+        "What is the main damage (broken hinge, sagging door, swollen wood)?",
+        "Is it an interior door, a heavy entrance door, or furniture?",
+        "Do you have replacement parts (like matching hinges or handles) ready?"
+      ],
+      "build a terrace/deck": [
+        "What material do you prefer for the deck (e.g., wood, WPC, or stone)?",
+        "What is the exact size of the planned terrace (in square meters)?",
+        "What kind of surface/foundation is currently there (grass, concrete)?"
+      ],
+      "fix wooden floor": [
+        "What type of flooring is it (solid hardwood, parquet, or laminate)?",
+        "What is the damage (scratches, loose planks, squeaking, water damage)?",
+        "Does the entire floor need to be sanded or just a specific spot repaired?"
+      ],
+      "paint entire room": [
+        "What are the approximate dimensions of the room (floor space and height)?",
+        "Do the ceilings need to be painted as well, or just the walls?",
+        "Are the walls currently painted dark, or do they have wallpaper?"
+      ],
+      "wallpapering": [
+        "Have the old wallpapers been removed, and are the walls smooth?",
+        "Do you already have the wallpaper and matching adhesive/glue purchased?",
+        "Does the wallpaper have a complex pattern that requires precise matching?"
+      ],
+      "plaster a hole": [
+        "How large and deep is the hole or crack (e.g., nail hole, fist-sized)?",
+        "What caused the damage (e.g., old anchor removal, physical impact)?",
+        "Is the wall made of drywall (Rigips) or solid brick/concrete plaster?"
+      ],
+      "paint doors/windows": [
+        "How many doors or windows need painting, and what material are they?",
+        "Is the old paint currently peeling, or does it just need a fresh topcoat?",
+        "Do the frames need to be sanded and painted as well?"
+      ],
+      "lay laminate/parquet": [
+        "What is the total size of the area (in sqm) where the floor needs to be laid?",
+        "Is the subfloor flat and dry, or does old flooring need to be removed?",
+        "Do you also need transition strips and baseboards installed?"
+      ],
+      "tile a bathroom": [
+        "What is the total surface area to be tiled (floor, walls, or both) in sqm?",
+        "Are old tiles removed, or should new tiles be laid on top of old ones?",
+        "Have you already purchased the tiles, grout, and waterproofing?"
+      ],
+      "minor brick/masonry work": [
+        "What exactly needs to be built or repaired (e.g., a small garden wall)?",
+        "Are the necessary bricks/stones and mortar already available on site?",
+        "Is this an indoor project or an outdoor construction exposed to weather?"
+      ],
+      "lawn mowing & care": [
+        "How large is the lawn area approximately (in square meters)?",
+        "Is the grass currently very high, or is it a regular maintenance cut?",
+        "Should grass clippings be disposed of, or put into your compost?"
+      ],
+      "hedge & tree trimming": [
+        "How tall and long is the hedge, or how high are the tree branches?",
+        "Do you have electricity/an outdoor outlet available for corded tools?",
+        "Is there a large amount of green waste that needs to be hauled away?"
+      ],
+      "patio power-washing": [
+        "What material is the patio made of (e.g., concrete blocks, stone, wood)?",
+        "Do you have a working outdoor water connection (garden hose faucet)?",
+        "What is the approximate size of the area that needs cleaning (in sqm)?"
+      ],
+      "weeding & planting": [
+        "How large is the flower bed or garden section that needs weeding?",
+        "Do you already have the new plants, soil, or mulch ready for planting?",
+        "Are gardening tools available, or should the craftsman bring them?"
+      ],
+      "fence repair": [
+        "What material is the fence made of (wood, metal, wire) and how old is it?",
+        "What needs fixing (broken posts, sagging gate, damaged panels)?",
+        "Are the fence posts anchored in concrete or pushed into the soil?"
+      ],
+      "emergency lockout": [
+        "Is the door just slammed shut, or is it locked twice with the key?",
+        "Is the key still inside the lock on the other side of the door?",
+        "Do you have a valid ID or proof of residence with you to confirm access?"
+      ],
+      "change door cylinder": [
+        "What is the reason for changing the cylinder (lost key, moving in)?",
+        "Do you know the exact measurements of your current cylinder (in mm)?",
+        "Do you already have the new lock profile cylinder and keys ready?"
+      ],
+      "install window locks": [
+        "How many windows or patio doors need to be equipped with security locks?",
+        "What material are the window frames made of (wood, plastic, aluminum)?",
+        "Do you prefer locks that open with the same master key or individual keys?"
+      ],
+      "carry heavy items/furniture": [
+        "What specific heavy items need to be carried (e.g., washing machine)?",
+        "From which floor to which floor do the items need to be moved?",
+        "Is there an elevator available, or must they go through the stairs?"
+      ],
+      "full apartment move": [
+        "How many rooms does the apartment have, and what is the approx. volume?",
+        "What are the starting and destination zip codes/addresses?",
+        "Is a parking zone reservation (Halteverbotszone) required?"
+      ],
+      "basement clearance/entruempelung": [
+        "How large is the room, and is it packed full or just a few items?",
+        "What kind of items predominate (furniture, electronic waste, trash)?",
+        "Can the clearance vehicle park directly in front of the basement exit?"
+      ],
+      "end of tenancy clean": [
+        "What is the size of the apartment (in sqm) and number of bathrooms?",
+        "Does the cleaning include specific extras like inside the oven or fridge?",
+        "Must the apartment be completely empty of furniture before starting?"
+      ],
+      "window cleaning": [
+        "How many windows are there, and what type (standard, floor-to-ceiling)?",
+        "Are windows easily accessible from the inside, or is a ladder needed?",
+        "Should the window frames and blinds (Rollläden) be cleaned as well?"
+      ],
+      "regular house cleaning": [
+        "How often do you need the cleaning service (e.g., weekly, bi-weekly)?",
+        "What are the main tasks required (vacuuming, mopping, dusting)?",
+        "Do you provide all cleaning supplies and equipment?"
+      ],
+      "plumbing, heating & ac": [
+        "How long has the leak or plumbing issue been present?",
+        "Is water currently running or successfully shut off?",
+        "Do you know the pipe material or boiler brand if applicable?"
+      ],
+      "electrical & smart home": [
+        "Is the power in the affected area completely out?",
+        "Have you checked the fuse box/circuit breaker?",
+        "Do you already have the new fixtures/appliances purchased?"
+      ],
+      "woodwork & carpentry": [
+        "What type of wood or furniture needs attention?",
+        "Do you have the assembly instructions or necessary replacement parts?",
+        "Are all materials and screws complete and available?"
+      ],
+      "garden & outdoor": [
+        "How big is the green/outdoor area approximately (in sqm)?",
+        "Should green waste be removed or composted on site?",
+        "Do you provide the tools or should the craftsman bring them?"
+      ]
+    };
+
+    function updateAIQuestions() {
+      const categorySelect = getCategorySelect();
+      const label1 = document.getElementById("ai-label-1");
+      const label2 = document.getElementById("ai-label-2");
+      const label3 = document.getElementById("ai-label-3");
+      const heading = document.getElementById("ai-steps-heading");
+
+      if (!label1 || !label2 || !label3) return;
+
+      const checkedSubcategory = document.querySelector(".sub-cb:checked");
+      let lookupKey = checkedSubcategory ? checkedSubcategory.value.toLowerCase().trim() : "";
+
+      if (!lookupKey && categorySelect) {
+        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+        lookupKey = selectedOption ? selectedOption.text.toLowerCase().trim() : "";
+      }
+
+      const defaultQuestions = [
+        "How long has the issue been present?",
+        "Have you already tried fixing it?",
+        "Are there any specific brand preferences or materials?"
+      ];
+
+      const questions = aiQuestionsMapping[lookupKey] || defaultQuestions;
+
+      label1.innerText = questions[0];
+      label2.innerText = questions[1];
+      label3.innerText = questions[2];
+
+      if (lookupKey) {
+        heading.innerText = `Customized questions for your request`;
+      } else {
+        heading.innerText = `Our AI tailors follow-ups based on your category`;
+      }
+    }
+
+    const subContainer = document.getElementById("subcategories-container");
+    if (subContainer) {
+      subContainer.addEventListener("change", (e) => {
+        if (e.target && e.target.classList.contains("sub-cb")) {
+          updateAIQuestions();
+        }
+      });
+    }
+
+    function handleSubcategories() {
+      const categorySelect = getCategorySelect();
+      const subContainer = document.getElementById("subcategories-container");
+      const subList = document.getElementById("subcategories-list");
+
+      if (!categorySelect || !subContainer || !subList) return;
+
+      const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+      const currentCategoryName = selectedOption ? selectedOption.text.toLowerCase().trim() : "";
+
+      const subchoices = subcategoryMapping[currentCategoryName];
+
+      if (subchoices && subchoices.length > 0) {
+        subList.innerHTML = "";
+        subchoices.forEach(sub => {
+          const div = document.createElement("div");
+          div.style.marginBottom = "5px";
+          div.innerHTML = `
+            <label style="font-weight: normal; cursor: pointer;">
+              <input type="checkbox" class="sub-cb" value="${sub}"> ${sub}
+            </label>
+          `;
+          subList.appendChild(div);
+        });
+        subContainer.style.display = "block";
+      } else {
+        subContainer.style.display = "none";
+      }
+      updateAIQuestions();
+    }
+
+    const categorySelectEl = getCategorySelect();
+    if (categorySelectEl) {
+      categorySelectEl.addEventListener("change", handleSubcategories);
+    }
+
+    function autoSelectCategory() {
+      const titleInput = getTitleInput();
+      const categorySelect = getCategorySelect();
+
+      if (!titleInput || !categorySelect) return;
+      const titleValue = titleInput.value.toLowerCase();
+
+      for (const [categoryName, keywords] of Object.entries(keywordMapping)) {
+        const hasKeyword = keywords.some(keyword => titleValue.includes(keyword));
+
+        if (hasKeyword) {
+          const options = Array.from(categorySelect.options);
+          const matchingOption = options.find(opt => opt.text.toLowerCase().trim() === categoryName.toLowerCase().trim());
+
+          if (matchingOption) {
+            categorySelect.value = matchingOption.value;
+            break;
+          }
+        }
+      }
+    }
+
+    function injectSubcategoriesToDescription() {
+      const checkedBoxes = document.querySelectorAll(".sub-cb:checked");
+      const descriptionArea = getDescriptionArea();
+
+      if (checkedBoxes.length > 0 && descriptionArea) {
+        let textToAdd = "Selected requirements:\n";
+        checkedBoxes.forEach(cb => { textToAdd += `- ${cb.value}\n`; });
+        textToAdd += "\nAdditional details: ";
+
+        if (!descriptionArea.value.includes("Selected requirements:")) {
+          descriptionArea.value = textToAdd + descriptionArea.value;
+        }
+      }
+    }
+
+    function updateFormSteps() {
+      steps.forEach((step, index) => {
+        step.style.display = index === currentStep ? "block" : "none";
+      });
+
+      steps.forEach((_, index) => {
+        const label = document.getElementById(`label-${index + 1}`);
+        if (label) {
+          if (index === currentStep) {
+            label.style.color = "blue";
+            label.style.fontWeight = "bold";
+          } else if (index < currentStep) {
+            label.style.color = "green";
+          } else {
+            label.style.color = "gray";
+          }
+        }
+      });
+    }
+
+    const step5Container = document.getElementById("step-5");
+    if (step5Container) {
+      step5Container.addEventListener("change", (e) => {
+        if (e.target && e.target.name === "listing[availability_profile]") {
+          const otherContainer = document.getElementById("other-availability-container");
+          if (otherContainer) {
+            otherContainer.style.display = e.target.value === "other" ? "block" : "none";
+          }
+        }
+      });
+    }
+
+    nextButtons.forEach(button => {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+
+        if (currentStep === 0) {
+          autoSelectCategory();
+          const categorySelect = getCategorySelect();
+          if (categorySelect) {
+            categorySelect.dispatchEvent(new Event('change'));
+          }
+        }
+
+        if (currentStep === 1) {
+          injectSubcategoriesToDescription();
+        }
+
+        if (currentStep < steps.length - 1) {
+          currentStep++;
+          updateFormSteps();
+        }
+      });
+    });
+
+    prevButtons.forEach(button => {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (currentStep > 0) {
+          currentStep--;
+          updateFormSteps();
+        }
+      });
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", initializeMultiStepForm);
+  document.addEventListener("turbo:load", initializeMultiStepForm);
+</script>
