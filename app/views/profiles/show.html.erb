@@ -10,16 +10,25 @@
     <p><strong>Country:</strong> <%= @user.country %></p>
     <% end %>
 
-    <% if @user.role == "contractor" && @contractor_profile %>
+    <% if @user.role == "contractor" %>
       <h2 class="mt-4">Business Information</h2>
-      <p><strong>Business Name:</strong> <%= @contractor_profile.business_name %></p>
-      <p><strong>Google Business Profile:</strong> <%= @contractor_profile.google_business_profile %></p>
-      <p><strong>Working Hours:</strong> <%= @contractor_profile.start_time&.strftime("%H:%M") %> - <%= @contractor_profile.end_time&.strftime("%H:%M") %></p>
-      <p><strong>Street:</strong> <%= @contractor_profile.street %></p>
-      <p><strong>City:</strong> <%= @contractor_profile.city %></p>
-      <p><strong>Postcode:</strong> <%= @contractor_profile.postcode %></p>
-      <p><strong>Country:</strong> <%= @contractor_profile.country %></p>
+
+      <% if @contractor_profile %>
+        <p><strong>Business Name:</strong> <%= @contractor_profile.business_name %></p>
+        <p><strong>Working Hours:</strong>
+          <% if @contractor_profile.start_time && @contractor_profile.end_time %>
+            <%= @contractor_profile.start_time.strftime("%H:%M") %> - <%= @contractor_profile.end_time.strftime("%H:%M") %>
+          <% else %>
+            Not specified
+          <% end %>
+        </p>
       <% end %>
+
+      <p><strong>Street:</strong> <%= @user.street.presence || "Not provided" %></p>
+      <p><strong>City:</strong> <%= @user.city.presence || "Not provided" %></p>
+      <p><strong>Postcode:</strong> <%= @user.postcode.presence || "Not provided" %></p>
+      <p><strong>Country:</strong> <%= @user.country.presence || "Not provided" %></p>
+    <% end %>
 
     <% if current_user == @user %>
       <%= link_to "Edit Profile", edit_profile_path(@user), class: "btn btn-primary mt-3" %>
