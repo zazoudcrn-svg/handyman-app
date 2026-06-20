@@ -1,0 +1,25 @@
+<%# app/views/pages/landing/_final_cta.html.erb %>
+<section class="relative overflow-hidden" style="background-color: #FFFFFF; padding: 100px 0;">
+  <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style="max-w: 896px; position: relative;">
+    <h2 class="fw-semibold tracking-tight mb-4" style="color: var(--cf-text-primary); font-size: calc(1.5rem + 2vw); font-family: var(--cf-font-heading); line-height: 1.1;">
+      Spend less time on paperwork.<br>
+      <span style="background: linear-gradient(to right, #2F6BFF, #5B8DFF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        More time building.
+      </span>
+    </h2>
+    <p class="mt-4 text-base md:text-lg mx-auto" style="color: var(--cf-text-secondary); max-width: 36rem;">
+      Join the craftsmen and homeowners reimagining how great work gets done.
+    </p>
+
+    <div class="mt-5 d-flex flex-column flex-sm-row items-center justify-center gap-3">
+      <%= link_to new_user_registration_path(role: 'contractor'), class: "btn-cf-primary d-inline-flex align-items-center justify-content-center text-decoration-none", style: "height: 48px;" do %>
+        Join as Craftsman
+        <i data-lucide="arrow-right" class="ms-2" style="width: 18px; height: 18px;"></i>
+      <% end %>
+
+      <%= link_to new_listing_path, class: "btn-cf-secondary d-inline-flex align-items-center justify-content-center text-decoration-none", style: "height: 48px;" do %>
+        Post a Project
+      <% end %>
+    </div>
+  </div>
+</section>

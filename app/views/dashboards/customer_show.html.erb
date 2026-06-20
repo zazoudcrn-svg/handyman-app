@@ -1,38 +1,186 @@
-<h1>Customer Dashboard (Backend MVP)</h1>
-<p>You are logged in as a Customer.</p>
+<%
+  # Filter listings by digging safely through the offers association to see booking statuses
+  # This avoids making changes to your controller code or missing associations
+  open_requests   = @listings.select { |l| l.offers.empty? }
+  offers_received = @listings.select { |l| l.offers.any? && l.offers.none? { |o| o.booking.present? } }
+  booked_jobs     = @listings.select { |l| l.offers.any? { |o| o.booking.present? && o.booking.booking_status != 'completed' } }
+  past_jobs       = @listings.select { |l| l.offers.any? { |o| o.booking.present? && o.booking.booking_status == 'completed' } }
+%>
 
-<%= link_to "Create a New Listing", new_listing_path %>
+<div class="container mt-5">
 
-<hr>
+  <% # ==================== HEADER SECTION ==================== %>
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start mb-5 gap-3">
+    <div>
+      <h1 class="fw-bold" style="color: var(--cf-text-primary); font-family: var(--cf-font-heading); font-size: 36px; letter-spacing: -0.02em;">
+        Welcome to your Handyman Dashboard!
+      </h1>
+      <p class="text-secondary mb-0" style="font-size: 16px; max-width: 700px; line-height: 1.5;">
+        Manage your project requests, track incoming offers, and coordinate your bookings all in one place.
+      </p>
+    </div>
 
-<h2>My Posted Requests</h2>
+    <div>
+      <%= link_to "Create a New Listing", new_listing_path, class: "btn btn-primary px-4 py-2 text-nowrap", style: "background-color: #2F6BFF; border-color: #2F6BFF; border-radius: 8px; font-weight: 500;" %>
+    </div>
+  </div>
 
-<% if @listings.any? %>
-  <ul>
-    <% @listings.each do |listing| %>
-      <li>
-        <h3><%= listing.title %></h3>
-
-        <h3><%= link_to listing.title, listing_path(listing) %></h3>
-        <p>Category: <%= listing.category&.name %></p>
-        <p>Description: <%= listing.description %></p>
-        <p>Location: <%= listing.postcode %> <%= listing.city %></p>
-
-        <% if listing.photos.attached? %>
-          <div>
-            <%= cl_image_tag listing.photos.first.key %>
-          </div>
-        <% end %>
-
-        <p>
-          <%= link_to "Edit this listing", edit_listing_path(listing) %>
-          |
-          <%= link_to "Delete this listing", listing_path(listing),
-                      data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
-        </p>
-      </li>
-    <% end %>
+  <% # ==================== DASHBOARD TABS NAVIGATION ==================== %>
+  <ul class="nav nav-tabs mb-4" id="customerDashboardTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="open-requests-tab" data-bs-toggle="tab" data-bs-target="#open-requests" type="button" role="tab" aria-controls="open-requests" aria-selected="true">
+        Open Requests (<%= open_requests.size %>)
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="offers-received-tab" data-bs-toggle="tab" data-bs-target="#offers-received" type="button" role="tab" aria-controls="offers-received" aria-selected="false">
+        Offers Received (<%= offers_received.size %>)
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="booked-jobs-tab" data-bs-toggle="tab" data-bs-target="#booked-jobs" type="button" role="tab" aria-controls="booked-jobs" aria-selected="false">
+        Booked Jobs (<%= booked_jobs.size %>)
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="past-jobs-tab" data-bs-toggle="tab" data-bs-target="#past-jobs" type="button" role="tab" aria-controls="past-jobs" aria-selected="false">
+        Past Jobs & Reviews (<%= past_jobs.size %>)
+      </button>
+    </li>
   </ul>
-<% else %>
-  <p>You haven't posted any requests yet.</p>
-<% end %>
+
+  <% # ==================== TABS CONTENT SECTION ==================== %>
+  <div class="tab-content" id="customerDashboardTabsContent">
+
+    <% # TAB 1: OPEN REQUESTS (No offers made yet) %>
+    <div class="tab-pane fade show active" id="open-requests" role="tabpanel" aria-labelledby="open-requests-tab">
+      <% if open_requests.any? %>
+        <div class="listings-container">
+          <% open_requests.each do |listing| %>
+            <div class="listing-card card p-4 mb-4 shadow-sm bg-white border-1">
+              <h2 class="h3 fw-bold mb-2">
+                <%= link_to listing.title, listing_path(listing), style: "text-decoration: none; color: #007bff;" %>
+              </h2>
+              <p class="text-muted small mb-2"><strong>Category:</strong> <%= listing.category&.name %> | <strong>Location:</strong> <%= listing.postcode %> <%= listing.city %></p>
+              <p class="mb-3"><strong>Description:</strong> <%= listing.description %></p>
+
+              <% if listing.photos.attached? %>
+                <div class="mb-3">
+                  <%= cl_image_tag listing.photos.first.key, class: "img-fluid rounded", style: "max-height: 200px; object-fit: cover;" %>
+                </div>
+              <% end %>
+
+              <div class="d-flex gap-2">
+                <%= link_to "Edit this listing", edit_listing_path(listing), class: "btn btn-sm btn-outline-secondary" %>
+                <%= link_to "Delete this listing", listing_path(listing), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-outline-danger" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted">You have no open requests at the moment.</p>
+      <% end %>
+    </div>
+
+    <% # TAB 2: OFFERS RECEIVED %>
+    <div class="tab-pane fade" id="offers-received" role="tabpanel" aria-labelledby="offers-received-tab">
+      <% if offers_received.any? %>
+        <div class="listings-container">
+          <% offers_received.each do |listing| %>
+            <div class="listing-card card p-4 mb-4 shadow-sm border-info" style="background-color: #f7fcfe;">
+              <span class="badge bg-info text-dark mb-2 align-self-start p-2">Offers Received</span>
+              <h2 class="h3 fw-bold mb-2">
+                <% target_offer = listing.offers.first %>
+                <%= link_to listing.title, target_offer ? listing_offer_path(listing, target_offer) : listing_path(listing), style: "text-decoration: none; color: #055160;" %>
+              </h2>
+              <p class="text-muted small mb-2"><strong>Category:</strong> <%= listing.category&.name %> | <strong>Location:</strong> <%= listing.postcode %> <%= listing.city %></p>
+              <p class="mb-3"><strong>Description:</strong> <%= listing.description %></p>
+
+              <% if listing.photos.attached? %>
+                <div class="mb-3">
+                  <%= cl_image_tag listing.photos.first.key, class: "img-fluid rounded", style: "max-height: 200px; object-fit: cover;" %>
+                </div>
+              <% end %>
+
+              <% if target_offer %>
+                <%= link_to "View Offer & Chat", listing_offer_path(listing, target_offer), class: "btn btn-info btn-sm text-dark fw-bold align-self-start" %>
+              <% else %>
+                <%= link_to "View Details", listing_path(listing), class: "btn btn-primary btn-sm align-self-start" %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted">No pending offers received yet.</p>
+      <% end %>
+    </div>
+
+    <% # TAB 3: BOOKED JOBS %>
+    <div class="tab-pane fade" id="booked-jobs" role="tabpanel" aria-labelledby="booked-jobs-tab">
+      <% if booked_jobs.any? %>
+        <div class="listings-container">
+          <% booked_jobs.each do |listing| %>
+            <% active_offer = listing.offers.find { |o| o.booking.present? && o.booking.booking_status != 'completed' } %>
+            <% active_booking = active_offer&.booking %>
+
+            <div class="listing-card card p-4 mb-4 shadow-sm border-success" style="background-color: #f4f9f6;">
+              <span class="badge bg-success mb-2 align-self-start p-2">Confirmed Booking</span>
+              <h2 class="h3 fw-bold mb-2">
+                <%= link_to listing.title, active_booking ? booking_path(active_booking) : listing_path(listing), style: "text-decoration: none; color: #0f5132;" %>
+              </h2>
+              <p class="text-muted small mb-2"><strong>Category:</strong> <%= listing.category&.name %> | <strong>Location:</strong> <%= listing.postcode %> <%= listing.city %></p>
+              <p class="mb-3"><strong>Description:</strong> <%= listing.description %></p>
+
+              <% if listing.photos.attached? %>
+                <div class="mb-3">
+                  <%= cl_image_tag listing.photos.first.key, class: "img-fluid rounded", style: "max-height: 200px; object-fit: cover;" %>
+                </div>
+              <% end %>
+
+              <% if active_booking %>
+                <%= link_to "Open Booking & Chat", booking_path(active_booking), class: "btn btn-success btn-sm align-self-start" %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted">You don't have any active confirmed bookings yet.</p>
+      <% end %>
+    </div>
+
+    <% # TAB 4: PAST JOBS & REVIEWS %>
+    <div class="tab-pane fade" id="past-jobs" role="tabpanel" aria-labelledby="past-jobs-tab">
+      <% if past_jobs.any? %>
+        <div class="listings-container">
+          <% past_jobs.each do |listing| %>
+            <% completed_offer = listing.offers.find { |o| o.booking.present? && o.booking.booking_status == 'completed' } %>
+            <% completed_booking = completed_offer&.booking %>
+
+            <div class="listing-card card p-4 mb-4 shadow-sm bg-light">
+              <span class="badge bg-secondary mb-2 align-self-start p-2">Archived / Completed</span>
+              <h2 class="h3 fw-bold mb-2">
+                <%= link_to listing.title, completed_booking ? booking_path(completed_booking) : listing_path(listing), style: "text-decoration: none; color: #495057;" %>
+              </h2>
+              <p class="text-muted small mb-2"><strong>Category:</strong> <%= listing.category&.name %> | <strong>Location:</strong> <%= listing.postcode %> <%= listing.city %></p>
+              <p class="mb-3"><strong>Description:</strong> <%= listing.description %></p>
+
+              <% if listing.photos.attached? %>
+                <div class="mb-3">
+                  <%= cl_image_tag listing.photos.first.key, class: "img-fluid rounded", style: "max-height: 200px; object-fit: cover;" %>
+                </div>
+              <% end %>
+
+              <% if completed_booking %>
+                <%= link_to "View History & Review", booking_path(completed_booking), class: "btn btn-outline-dark btn-sm align-self-start" %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted">No completed history entries found.</p>
+      <% end %>
+    </div>
+
+  </div>
+
+</div>

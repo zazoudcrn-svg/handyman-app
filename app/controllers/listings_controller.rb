@@ -2,6 +2,7 @@ class ListingsController < ApplicationController
   before_action :authenticate_user!
   # SENIOR FIX: Extended to ensure only the customer who owns the listing can edit/update/destroy it
   before_action :ensure_customer, only: [ :new, :create, :edit, :update, :destroy ]
+  before_action :ensure_onboarding_completed, only: [:new, :create]
 
   def new
     # Initialize a clean, empty instance for the form
@@ -60,6 +61,12 @@ class ListingsController < ApplicationController
   end
 
   private
+
+  def ensure_onboarding_completed
+    if current_user.city.blank?
+      redirect_to onboarding_customer_path, alert: "Please complete your profile details before creating a project request!"
+    end
+  end
 
   def listing_params
     # Whitelist accepted attributes including category, address fields, multiple photos, and availability

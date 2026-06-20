@@ -1,0 +1,86 @@
+<%# app/views/pages/landing/_request_preview.html.erb %>
+<%
+  customer_screens = [
+    { num: "01", title: "What do you need?", desc: "Describe the work in a few words.", icon: "file-text" },
+    { num: "02", title: "Category", desc: "Plumbing, electrical, painting, more.", icon: "layers" },
+    { num: "03", title: "Photos & videos", desc: "Show the problem visually.", icon: "camera" },
+    { num: "04", title: "Measurements", desc: "Add dimensions if you know them.", icon: "ruler" },
+    { num: "05", title: "Urgency level", desc: "Flexible → Emergency ASAP.", icon: "zap" },
+    { num: "06", title: "AI follow-ups", desc: "Smart questions complete the brief.", icon: "sparkles" },
+    { num: "07", title: "Review summary", desc: "See exactly what craftsmen will see.", icon: "eye" },
+    { num: "08", title: "Publish request", desc: "Matched in minutes. Offers within hours.", icon: "send" }
+  ]
+%>
+
+<section id="customer-flow" class="py-20" style="background-color: var(--cf-brand-soft-blue); padding: 80px 0;">
+  <div class="container" style="max-w: 1280px;">
+    <div class="row align-items-center g-5 mb-5">
+      <div class="col-12 col-lg-6 order-2 order-lg-1">
+        <div class="cf-card bg-white" style="box-shadow: 0 24px 60px rgba(11,27,51,0.10);">
+          <div class="row g-0">
+            <div class="col-5 p-4 d-none d-sm-block" style="background-color: var(--cf-brand-soft-blue);">
+              <p class="font-heading fw-semibold mb-2" style="color: var(--cf-text-primary); font-size: 14px;">Tell us what you need</p>
+              <p class="text-muted leading-relaxed" style="font-size: 10px;">Our AI will fill in the gaps — so craftsmen can quote with confidence.</p>
+              <div class="mt-4 p-3 rounded-3 bg-white border" style="border-color: var(--cf-brand-accent) !important;">
+                <p class="fw-semibold mb-1" style="font-size: 10px; color: var(--cf-text-primary);">💧 Water leak</p>
+                <p class="text-muted mb-0" style="font-size: 9px;">Kitchen · 2 days · photo attached</p>
+              </div>
+            </div>
+            <div class="col-12 col-sm-7 p-4">
+              <p class="font-medium tracking-widest uppercase mb-1" style="color: var(--cf-brand-primary); font-size: 10px;">New request</p>
+              <p class="font-heading fw-semibold mb-3" style="color: var(--cf-text-primary); font-size: 16px;">How urgent is it?</p>
+
+              <div class="d-flex flex-column gap-2 mb-3">
+                <% [
+                  { label: "Flexible", color: "#94A3B8", active: false },
+                  { label: "This week", color: "#2F6BFF", active: false },
+                  { label: "Within 48h", color: "#F59E0B", active: false },
+                  { label: "Emergency ASAP", color: "#EF4444", active: true }
+                ].each do |u| %>
+                  <div class="d-flex align-items-center gap-2.5 p-2 rounded-3 border" style="<%= u[:active] ? 'border-color: var(--cf-brand-primary) !important; background-color: var(--cf-brand-soft-blue);' : 'border-color: var(--cf-border-light) !important; bg-white;' %>">
+                    <div class="rounded-circle" style="width: 12px; height: 12px; background-color: <%= u[:color] %>;"></div>
+                    <span class="fw-medium text-xs" style="color: var(--cf-text-primary); font-size: 12px;"><%= u[:label] %></span>
+                  </div>
+                <% end %>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted" style="font-size: 10px;">Step 5 of 8</span>
+                <div class="px-3 py-1.5 rounded-pill text-white fw-medium" style="background-color: var(--cf-brand-primary); font-size: 10px;">Continue →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-6 order-1 order-lg-2">
+        <p class="text-xs font-medium tracking-widest uppercase" style="color: var(--cf-brand-primary); font-size: 0.75rem;">Customer request</p>
+        <h2 class="font-heading mt-3 fw-semibold tracking-tight" style="color: var(--cf-text-primary); font-size: calc(1.375rem + 1.5vw); line-height: 1.1;">
+          Tell us once. We do the rest.
+        </h2>
+        <p class="mt-4 text-base md:text-lg" style="color: var(--cf-text-secondary);">
+          A guided, friendly wizard that captures every detail craftsmen need. No more back-and-forth. No more incomplete requests.
+        </p>
+        <%= link_to new_listing_path, class: "btn-cf-primary text-decoration-none d-inline-flex align-items-center mt-3" do %>
+          Post a project <i data-lucide="arrow-right" class="ms-2" style="width: 16px;"></i>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <% customer_screens.each do |s| %>
+        <div class="col-6 col-md-3">
+          <div class="p-4 rounded-4 border h-100 bg-white" style="border-color: var(--cf-border-light) !important;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <span class="font-heading text-uppercase tracking-wider fw-medium" style="color: var(--cf-text-tertiary); font-size: 10px;">SCREEN <%= s[:num] %></span>
+              <div class="rounded-3 d-flex align-items-center justify-content-center border" style="width: 32px; height: 32px; background-color: var(--cf-brand-soft-blue); border-color: var(--cf-brand-accent) !important;">
+                <i data-lucide="<%= s[:icon] %>" style="color: var(--cf-brand-primary); width: 14px;"></i>
+              </div>
+            </div>
+            <h4 class="font-heading fw-semibold text-sm mb-1" style="color: var(--cf-text-primary); font-size: 14px;"><%= s[:title] %></h4>
+            <p class="text-muted mb-0" style="font-size: 12px; line-height: 1.4;"><%= s[:desc] %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

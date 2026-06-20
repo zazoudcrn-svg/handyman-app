@@ -74,6 +74,22 @@ Specialty.create!(
 )
 
 # ==============================================================================
+# MASTER DEMO CUSTOMER (DAVID BROWN) - Defined early to reuse IDs safely
+# ==============================================================================
+puts "Creating Master Demo Customer (David Brown)..."
+customer_5 = User.create!(
+  email: "c5@gmail.com",
+  password: "password123",
+  role: "customer",
+  first_name: "David",
+  last_name: "Brown",
+  city: "Brixton",
+  country: "United Kingdom",
+  latitude: 51.4623,
+  longitude: -0.1149
+)
+
+# ==============================================================================
 # SCENARIO 1: EMERGENCY JOB (Tab 1 - Appears on very top via SQL order)
 # ==============================================================================
 puts "Creating Scenario 1: Emergency Job..."
@@ -88,13 +104,11 @@ Listing.create!(
 )
 
 # ==============================================================================
-# SCENARIO 2: NORMAL JOB (Tab 1 - Appears below Emergency)
+# SCENARIO 2: NORMAL JOB (Tab 1 - Connected to David Brown for Open Requests)
 # ==============================================================================
 puts "Creating Scenario 2: Normal Available Job..."
-customer_2 = User.create!(email: "c2@gmail.com", password: "password123", role: "customer", first_name: "Anna", last_name: "Jones", city: "Croydon", latitude: 51.3742, longitude: -0.0964)
-
 Listing.create!(
-  user: customer_2,
+  user: customer_5,
   category: plumbing_category,
   title: "Install new kitchen sink and mixer tap",
   description: "We recently bought a composite granite kitchen sink and a new pull-out mixer tap from IKEA. We need a professional plumber to remove the old stainless steel sink, fit the new one into the wooden worktop, and connect all the new plumbing and waste pipes underneath.",
@@ -102,13 +116,11 @@ Listing.create!(
 )
 
 # ==============================================================================
-# SCENARIO 3: PENDING OFFER WITH CONVERSATION HISTORY (Tab 2)
+# SCENARIO 3: PENDING OFFER WITH CONVERSATION HISTORY (Tab 2 - Connected to David Brown)
 # ==============================================================================
 puts "Creating Scenario 3: Sent Offer Pending with Chat History..."
-customer_3 = User.create!(email: "c3@gmail.com", password: "password123", role: "customer", first_name: "Bob", last_name: "Miller", city: "Stratford", latitude: 51.5416, longitude: 0.0021)
-
 listing_offer = Listing.create!(
-  user: customer_3,
+  user: customer_5,
   category: plumbing_category,
   title: "Low water pressure and leaking bathroom boiler",
   description: "Our Combi boiler has been losing pressure rapidly over the last week. I noticed a small, constant drip coming from one of the copper pipe connections directly underneath the unit. Looking for someone to inspect the system, tighten or replace the valve, and repressurize the boiler.",
@@ -126,31 +138,30 @@ offer_pending = Offer.create!(
 
 Message.create!(
   offer: offer_pending,
-  user: customer_3,
+  user: customer_5,
   content: "Hi John, thanks for the quote. Does the £250 include all the materials for the boiler valve repair?"
 )
 
 Message.create!(
   offer: offer_pending,
   user: contractor,
-  content: "Hi Bob! Yes, that includes the standard replacement valves and 1 hour of labor. If we find deeper issues, I will let you know on-site."
+  content: "Hi David! Yes, that includes the standard replacement valves and 1 hour of labor. If we find deeper issues, I will let you know on-site."
 )
 
 Message.create!(
   offer: offer_pending,
-  user: customer_3,
+  user: customer_5,
   content: "Sounds fair. Let me check with my landlord tonight and I'll get back to you!"
 )
 
 # ==============================================================================
-# SCENARIO 4: ACTIVE BOOKINGS FOR CALENDAR VIEW DENSITY (Tab 3)
+# SCENARIO 4: ACTIVE BOOKINGS FOR CALENDAR VIEW DENSITY (Tab 3 - Connected to David Brown)
 # ==============================================================================
 puts "Creating Scenario 4: Ongoing Bookings and Schedule Patterns..."
 
-# Booking 1: Morning slot on Thursday
-customer_4 = User.create!(email: "c4@gmail.com", password: "password123", role: "customer", first_name: "Alice", last_name: "Green", city: "Greenwich", latitude: 51.4826, longitude: -0.0077)
+# Booking 1: Morning slot on Thursday (David's active booking)
 listing_booking_ongoing = Listing.create!(
-  user: customer_4, category: plumbing_category,
+  user: customer_5, category: plumbing_category,
   title: "Replace radiator valves in commercial office",
   description: "We have 4 manual radiator valves across our office space that are seized up and cannot be adjusted. We need them replaced with modern Thermostatic Radiator Valves (TRVs).",
   street: "Greenwich High Rd 15", postcode: "SE10 8JA", city: "London", country: "United Kingdom", latitude: 51.4826, longitude: -0.0077
@@ -161,9 +172,9 @@ offer_ongoing = Offer.create!(
   suggested_date_and_time: "2026-06-25 09:00:00", estimated_duration_hours: 3.5
 )
 Booking.create!(offer: offer_ongoing, listing: listing_booking_ongoing, booking_status: "confirmed", scheduled_date_and_time: "2026-06-25 09:00:00")
-Message.create!(offer: offer_ongoing, user: contractor, content: "Good morning Alice, I'm scheduled to replace your radiator valves on June 25th at 09:00. Where is the best place to park my van near the office?")
+Message.create!(offer: offer_ongoing, user: contractor, content: "Good morning David, I'm scheduled to replace your radiator valves on June 25th at 09:00. Where is the best place to park my van near the office?")
 
-# Booking 2: Afternoon slot on the same Thursday
+# Booking 2: Afternoon slot on the same Thursday (Density filler)
 customer_extra_1 = User.create!(email: "ce1@gmail.com", password: "password123", role: "customer", first_name: "Tom", last_name: "Baker", city: "London", latitude: 51.5110, longitude: -0.1420)
 listing_extra_1 = Listing.create!(user: customer_extra_1, category: plumbing_category, title: "Emergency drain unblocking and cleanup", street: "Piccadilly 50", city: "London", country: "United Kingdom", latitude: 51.5110, longitude: -0.1420)
 offer_extra_1 = Offer.create!(
@@ -173,7 +184,7 @@ offer_extra_1 = Offer.create!(
 )
 Booking.create!(offer: offer_extra_1, listing: listing_extra_1, booking_status: "confirmed", scheduled_date_and_time: "2026-06-25 14:30:00")
 
-# Booking 3: Midday slot on Wednesday
+# Booking 3: Midday slot on Wednesday (Density filler)
 customer_extra_2 = User.create!(email: "ce2@gmail.com", password: "password123", role: "customer", first_name: "Sarah", last_name: "Connor", city: "London", latitude: 51.5120, longitude: -0.1430)
 listing_extra_2 = Listing.create!(user: customer_extra_2, category: plumbing_category, title: "Annual safety check and power flush", street: "Regent Street 20", city: "London", country: "United Kingdom", latitude: 51.5120, longitude: -0.1430)
 offer_extra_2 = Offer.create!(
@@ -188,8 +199,7 @@ Booking.create!(offer: offer_extra_2, listing: listing_extra_2, booking_status: 
 # ==============================================================================
 puts "Creating Scenario 5: Multiple Completed Bookings with Two-Way Ratings..."
 
-# Historical Job 1: Two-Way Review
-customer_5 = User.create!(email: "c5@gmail.com", password: "password123", role: "customer", first_name: "David", last_name: "Brown", city: "Brixton", latitude: 51.4623, longitude: -0.1149)
+# Historical Job 1: Two-Way Review (David's completed job)
 listing_completed_1 = Listing.create!(
   user: customer_5, category: plumbing_category,
   title: "Fix leaking shower enclosure and reseal tray",
@@ -256,7 +266,7 @@ listing_declined = Listing.create!(
   user: customer_6,
   category: plumbing_category,
   title: "Fix leaking outdoor garden tap",
-  description: "Our brass outdoor garden tap has developed a constant leak from the spindle when turned on. It's wasting water in the garden.",
+  description: "Our brass outdoor garden tap has been leaking constantly from the spindle when turned on. It's wasting water in the garden.",
   street: "High Street 45", postcode: "WD17 2DJ", city: "Watford", country: "United Kingdom", latitude: 51.6565, longitude: -0.3942
 )
 

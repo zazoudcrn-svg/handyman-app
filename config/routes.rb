@@ -50,4 +50,5 @@ Rails.application.routes.draw do
 
   get 'onboarding/contractor', to: 'onboardings#contractor', as: :onboarding_contractor
   patch 'onboarding/contractor', to: 'onboardings#contractor_update'
+  patch '/skip_onboarding', to: 'onboardings#skip', as: :skip_onboarding
 end
