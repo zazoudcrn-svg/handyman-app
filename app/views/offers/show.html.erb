@@ -6,6 +6,17 @@
         <h1>Offer details</h1>
 
         <p><strong>Quote:</strong> €<%= @offer.quote %></p>
+        <% # NEW: Suggested Date & Time %>
+        <p>
+          <strong>Suggested Date & Time:</strong>
+          <%= @offer.suggested_date_and_time.present? ? @offer.suggested_date_and_time.strftime("%B %d, %Y at %H:%M") : "Not specified" %>
+        </p>
+
+        <% # NEW: Estimated Duration %>
+        <p>
+          <strong>Estimated Duration:</strong>
+          <%= @offer.estimated_duration_hours.present? ? "#{@offer.estimated_duration_hours} hours" : "Not specified" %>
+        </p>
         <p><strong>Note:</strong> <%= @offer.note %></p>
         <p><strong>Status:</strong> <%= @offer.offer_status %></p>
         <p><strong>Contractor:</strong> <%= @offer.user.contractor_profile.business_name %></p>

@@ -7,6 +7,9 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+# ==============================================================================
+# DATABASE RESET & CLEANUP
+# ==============================================================================
 puts "Cleaning database..."
 Message.destroy_all
 Review.destroy_all
@@ -19,6 +22,9 @@ ContractorProfile.destroy_all
 Category.destroy_all
 User.destroy_all
 
+# ==============================================================================
+# CATEGORIES CREATION
+# ==============================================================================
 puts "Creating trade categories..."
 category_names = [
   "plumbing, heating & ac",
@@ -39,9 +45,9 @@ end
 
 plumbing_category = categories["plumbing, heating & ac"]
 
-# ==========================================
-# THE MAIN CONTRACTOR (PLUMBER HQ)
-# ==========================================
+# ==============================================================================
+# THE MAIN CONTRACTOR PROFILE (LONDON PREMIER PLUMBERS)
+# ==============================================================================
 puts "Creating the Plumber Contractor..."
 contractor = User.create!(
   email: "contractor@gmail.com",
@@ -67,9 +73,9 @@ Specialty.create!(
   category: plumbing_category
 )
 
-# ==========================================
-# SCENARIO 1: EMERGENCY (Tab 1 - On Top)
-# ==========================================
+# ==============================================================================
+# SCENARIO 1: EMERGENCY JOB (Tab 1 - Appears on very top via SQL order)
+# ==============================================================================
 puts "Creating Scenario 1: Emergency Job..."
 customer_1 = User.create!(email: "c1@gmail.com", password: "password123", role: "customer", first_name: "Harry", last_name: "Smith", city: "London", latitude: 51.5135, longitude: -0.1320)
 
@@ -81,9 +87,9 @@ Listing.create!(
   street: "Dean Street 12", postcode: "W1D 3R7", city: "London", country: "United Kingdom", latitude: 51.5135, longitude: -0.1320
 )
 
-# ==========================================
-# SCENARIO 2: NORMAL JOB (Tab 1 - Below Emergency)
-# ==========================================
+# ==============================================================================
+# SCENARIO 2: NORMAL JOB (Tab 1 - Appears below Emergency)
+# ==============================================================================
 puts "Creating Scenario 2: Normal Available Job..."
 customer_2 = User.create!(email: "c2@gmail.com", password: "password123", role: "customer", first_name: "Anna", last_name: "Jones", city: "Croydon", latitude: 51.3742, longitude: -0.0964)
 
@@ -95,9 +101,9 @@ Listing.create!(
   street: "George Street 5", postcode: "CR0 1PE", city: "Croydon", country: "United Kingdom", latitude: 51.3742, longitude: -0.0964
 )
 
-# ==========================================
-# SCENARIO 3: PENDING OFFER (Tab 2) + MESSAGES
-# ==========================================
+# ==============================================================================
+# SCENARIO 3: PENDING OFFER WITH CONVERSATION HISTORY (Tab 2)
+# ==============================================================================
 puts "Creating Scenario 3: Sent Offer Pending with Chat History..."
 customer_3 = User.create!(email: "c3@gmail.com", password: "password123", role: "customer", first_name: "Bob", last_name: "Miller", city: "Stratford", latitude: 51.5416, longitude: 0.0021)
 
@@ -109,7 +115,14 @@ listing_offer = Listing.create!(
   street: "Broadway 10", postcode: "E15 4QS", city: "London", country: "United Kingdom", latitude: 51.5416, longitude: 0.0021
 )
 
-offer_pending = Offer.create!(user: contractor, listing: listing_offer, quote: 250)
+offer_pending = Offer.create!(
+  user: contractor,
+  listing: listing_offer,
+  quote: 250,
+  note: "I can come over on Friday morning to inspect the combi boiler, tighten the copper connections, and run a pressure test. The price includes standard replacement seals and minor valves.",
+  suggested_date_and_time: "2026-06-26 10:00:00",
+  estimated_duration_hours: 2.0
+)
 
 Message.create!(
   offer: offer_pending,
@@ -129,75 +142,113 @@ Message.create!(
   content: "Sounds fair. Let me check with my landlord tonight and I'll get back to you!"
 )
 
-# ==========================================
-# SCENARIO 4: BOOKING WITHOUT REVIEW (Tab 3 - Ongoing) + MESSAGES
-# ==========================================
-puts "Creating Scenario 4: Active Booking (No Review yet) with Chat History..."
-customer_4 = User.create!(email: "c4@gmail.com", password: "password123", role: "customer", first_name: "Alice", last_name: "Green", city: "Greenwich", latitude: 51.4826, longitude: -0.0077)
+# ==============================================================================
+# SCENARIO 4: ACTIVE BOOKINGS FOR CALENDAR VIEW DENSITY (Tab 3)
+# ==============================================================================
+puts "Creating Scenario 4: Ongoing Bookings and Schedule Patterns..."
 
+# Booking 1: Morning slot on Thursday
+customer_4 = User.create!(email: "c4@gmail.com", password: "password123", role: "customer", first_name: "Alice", last_name: "Green", city: "Greenwich", latitude: 51.4826, longitude: -0.0077)
 listing_booking_ongoing = Listing.create!(
-  user: customer_4,
-  category: plumbing_category,
+  user: customer_4, category: plumbing_category,
   title: "Replace radiator valves in commercial office",
-  description: "We have 4 manual radiator valves across our office space that are seized up and cannot be adjusted. We need them replaced with modern Thermostatic Radiator Valves (TRVs) so our staff can control the temperature. The heating system will need to be partially drained to complete the installation.",
+  description: "We have 4 manual radiator valves across our office space that are seized up and cannot be adjusted. We need them replaced with modern Thermostatic Radiator Valves (TRVs).",
   street: "Greenwich High Rd 15", postcode: "SE10 8JA", city: "London", country: "United Kingdom", latitude: 51.4826, longitude: -0.0077
 )
-
-offer_ongoing = Offer.create!(user: contractor, listing: listing_booking_ongoing, quote: 450)
-
-Booking.create!(
-  offer: offer_ongoing,
-  listing: listing_booking_ongoing,
-  booking_status: "confirmed",
-  scheduled_date_and_time: "2026-06-25 09:00:00"
+offer_ongoing = Offer.create!(
+  user: contractor, listing: listing_booking_ongoing, quote: 450,
+  note: "Quote includes 4 high-quality Thermostatic Radiator Valves (TRVs) and draining down the commercial heating system loop. Fully certified for office installations.",
+  suggested_date_and_time: "2026-06-25 09:00:00", estimated_duration_hours: 3.5
 )
+Booking.create!(offer: offer_ongoing, listing: listing_booking_ongoing, booking_status: "confirmed", scheduled_date_and_time: "2026-06-25 09:00:00")
+Message.create!(offer: offer_ongoing, user: contractor, content: "Good morning Alice, I'm scheduled to replace your radiator valves on June 25th at 09:00. Where is the best place to park my van near the office?")
 
-Message.create!(
-  offer: offer_ongoing,
-  user: contractor,
-  content: "Good morning Alice, I'm scheduled to replace your radiator valves on June 25th at 09:00. Where is the best place to park my van near the office?"
+# Booking 2: Afternoon slot on the same Thursday
+customer_extra_1 = User.create!(email: "ce1@gmail.com", password: "password123", role: "customer", first_name: "Tom", last_name: "Baker", city: "London", latitude: 51.5110, longitude: -0.1420)
+listing_extra_1 = Listing.create!(user: customer_extra_1, category: plumbing_category, title: "Emergency drain unblocking and cleanup", street: "Piccadilly 50", city: "London", country: "United Kingdom", latitude: 51.5110, longitude: -0.1420)
+offer_extra_1 = Offer.create!(
+  user: contractor, listing: listing_extra_1, quote: 320,
+  note: "Urgent response slot booked. Bringing industrial hydro-jetting equipment to clear out the blocked pipe system.",
+  suggested_date_and_time: "2026-06-25 14:30:00", estimated_duration_hours: 2.0
 )
+Booking.create!(offer: offer_extra_1, listing: listing_extra_1, booking_status: "confirmed", scheduled_date_and_time: "2026-06-25 14:30:00")
 
-Message.create!(
-  offer: offer_ongoing,
-  user: customer_4,
-  content: "Hi John! You can park right in our visitor loading bay at the back of the building. Just ring the buzzer and reception will let you in."
+# Booking 3: Midday slot on Wednesday
+customer_extra_2 = User.create!(email: "ce2@gmail.com", password: "password123", role: "customer", first_name: "Sarah", last_name: "Connor", city: "London", latitude: 51.5120, longitude: -0.1430)
+listing_extra_2 = Listing.create!(user: customer_extra_2, category: plumbing_category, title: "Annual safety check and power flush", street: "Regent Street 20", city: "London", country: "United Kingdom", latitude: 51.5120, longitude: -0.1430)
+offer_extra_2 = Offer.create!(
+  user: contractor, listing: listing_extra_2, quote: 580,
+  note: "Comprehensive central heating service including full system power flush with protective chemicals to clean sludge from radiators.",
+  suggested_date_and_time: "2026-06-24 11:00:00", estimated_duration_hours: 4.0
 )
+Booking.create!(offer: offer_extra_2, listing: listing_extra_2, booking_status: "confirmed", scheduled_date_and_time: "2026-06-24 11:00:00")
 
-# ==========================================
-# SCENARIO 5: BOOKING WITH REVIEW (Tab 3 - Completed)
-# ==========================================
-puts "Creating Scenario 5: Completed Booking with 5-Star Review..."
+# ==============================================================================
+# SCENARIO 5: ARCHIVED COMPLETED PROJECTS WITH REVIEWS (Tab 4)
+# ==============================================================================
+puts "Creating Scenario 5: Multiple Completed Bookings with Two-Way Ratings..."
+
+# Historical Job 1: Two-Way Review
 customer_5 = User.create!(email: "c5@gmail.com", password: "password123", role: "customer", first_name: "David", last_name: "Brown", city: "Brixton", latitude: 51.4623, longitude: -0.1149)
-
-listing_completed = Listing.create!(
-  user: customer_5,
-  category: plumbing_category,
+listing_completed_1 = Listing.create!(
+  user: customer_5, category: plumbing_category,
   title: "Fix leaking shower enclosure and reseal tray",
-  description: "Water has started seeping through the bathroom floor into the hallway downstairs whenever someone showers. The silicone seals around the bottom of the glass enclosure look worn out. Needs old silicone stripped out, area sanitized, and a fresh bead of heavy-duty waterproof silicone applied.",
+  description: "Water has started seeping through the bathroom floor into the hallway downstairs whenever someone showers. Needs old silicone stripped out, area sanitized, and a fresh bead applied.",
   street: "Brixton Rd 200", postcode: "SW9 6AP", city: "London", country: "United Kingdom", latitude: 51.4623, longitude: -0.1149
 )
-
-offer_completed = Offer.create!(user: contractor, listing: listing_completed, quote: 180)
-
-booking_completed = Booking.create!(
-  offer: offer_completed,
-  listing: listing_completed,
-  booking_status: "completed",
-  scheduled_date_and_time: "2026-06-10 14:00:00"
+offer_completed_1 = Offer.create!(
+  user: contractor, listing: listing_completed_1, quote: 180,
+  note: "Will remove all degraded silicone sealants, apply professional anti-mould sanitary sealant, and check the drain alignment underneath.",
+  suggested_date_and_time: "2026-06-10 14:00:00", estimated_duration_hours: 1.5
 )
+booking_completed_1 = Booking.create!(offer: offer_completed_1, listing: listing_completed_1, booking_status: "completed", scheduled_date_and_time: "2026-06-10 14:00:00")
 
-Review.create!(
-  booking: booking_completed,
-  user: customer_5,
-  reviewee: contractor,
-  rating: 5,
-  content: "Brilliant service, fixed the leak within an hour. Highly recommended!"
+# 1a. Customer reviews Contractor
+Review.create!(booking: booking_completed_1, user: customer_5, reviewee: contractor, rating: 5, content: "Brilliant service, fixed the leak within an hour. Highly recommended!")
+# 1b. Contractor reviews Customer
+Review.create!(booking: booking_completed_1, user: contractor, reviewee: customer_5, rating: 5, content: "David was very welcoming, clearly explained the issue, and paid immediately. Great customer!")
+
+# Historical Job 2: Two-Way Review
+customer_history_1 = User.create!(email: "ch1@gmail.com", password: "password123", role: "customer", first_name: "Michael", last_name: "Caine", city: "Chelsea", latitude: 51.4875, longitude: -0.1682)
+listing_completed_2 = Listing.create!(
+  user: customer_history_1, category: plumbing_category,
+  title: "Blocked toilet drainage and pipe inspection",
+  description: "Main bathroom toilet is completely blocked and backing up. Tried plunging but didn't help. Need professional drainage clearance equipment."
 )
+offer_completed_2 = Offer.create!(
+  user: contractor, listing: listing_completed_2, quote: 120,
+  note: "Standard fixed price drainage clearance call-out including high-power auger tool usage.",
+  suggested_date_and_time: "2026-05-28 09:30:00", estimated_duration_hours: 1.0
+)
+booking_completed_2 = Booking.create!(offer: offer_completed_2, listing: listing_completed_2, booking_status: "completed", scheduled_date_and_time: "2026-05-28 09:30:00")
 
-# ==========================================
-# SCENARIO 6: DECLINED JOB (Tab 4)
-# ==========================================
+# 2a. Customer reviews Contractor
+Review.create!(booking: booking_completed_2, user: customer_history_1, reviewee: contractor, rating: 5, content: "Very fast response time. Cleared the blockage in no time and gave useful maintenance tips.")
+# 2b. Contractor reviews Customer
+Review.create!(booking: booking_completed_2, user: contractor, reviewee: customer_history_1, rating: 5, content: "Access to the bathroom was cleared before I arrived. Smooth communication, highly recommended property owner.")
+
+# Historical Job 3: Two-Way Review
+customer_history_2 = User.create!(email: "ch2@gmail.com", password: "password123", role: "customer", first_name: "Emma", last_name: "Watson", city: "Camden", latitude: 51.5364, longitude: -0.1412)
+listing_completed_3 = Listing.create!(
+  user: customer_history_2, category: plumbing_category,
+  title: "Fit new designer vertical radiator in hallway",
+  description: "Need an old standard radiator swapped out for a new anthracite vertical designer radiator. Pipes will need slight modification to fit the new layout."
+)
+offer_completed_3 = Offer.create!(
+  user: contractor, listing: listing_completed_3, quote: 380,
+  note: "Includes mounting the new designer radiator bracket on brick wall, aligning the copper pipe work, and testing the system loop for leaks.",
+  suggested_date_and_time: "2026-05-14 11:00:00", estimated_duration_hours: 3.0
+)
+booking_completed_3 = Booking.create!(offer: offer_completed_3, listing: listing_completed_3, booking_status: "completed", scheduled_date_and_time: "2026-05-14 11:00:00")
+
+# 3a. Customer reviews Contractor
+Review.create!(booking: booking_completed_3, user: customer_history_2, reviewee: contractor, rating: 4, content: "Great craftsmanship, tidy worker. The custom radiator pipe modification looks very neat. Took slightly longer than expected but happy with the result.")
+# 3b. Contractor reviews Customer
+Review.create!(booking: booking_completed_3, user: contractor, reviewee: customer_history_2, rating: 4, content: "Nice job to work on. Hallway was a bit crowded with boxes which delayed the pipe layout setup slightly, but Emma was super friendly and offered coffee!")
+
+# ==============================================================================
+# SCENARIO 6: DECLINED LISTINGS (Tab 6)
+# ==============================================================================
 puts "Creating Scenario 6: Declined Job..."
 customer_6 = User.create!(email: "c6@gmail.com", password: "password123", role: "customer", first_name: "Lucy", last_name: "Heart", city: "Watford", latitude: 51.6565, longitude: -0.3942)
 
@@ -205,10 +256,13 @@ listing_declined = Listing.create!(
   user: customer_6,
   category: plumbing_category,
   title: "Fix leaking outdoor garden tap",
-  description: "Our brass outdoor garden tap has developed a constant leak from the spindle when turned on. It's wasting water in the garden. Needs a quick washer replacement or a completely new outdoor tap unit fitted to the external wall pipeline.",
+  description: "Our brass outdoor garden tap has developed a constant leak from the spindle when turned on. It's wasting water in the garden.",
   street: "High Street 45", postcode: "WD17 2DJ", city: "Watford", country: "United Kingdom", latitude: 51.6565, longitude: -0.3942
 )
 
 DeclinedListing.create!(user: contractor, listing: listing_declined)
 
+# ==============================================================================
+# SEED TERMINATION FEEDBACK
+# ==============================================================================
 puts "Seeds rebuilt successfully!"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_20_082905) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_20_155207) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -122,10 +122,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_20_082905) do
 
   create_table "offers", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.float "estimated_duration_hours"
     t.integer "listing_id", null: false
     t.text "note"
     t.string "offer_status"
     t.float "quote"
+    t.datetime "suggested_date_and_time"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["listing_id"], name: "index_offers_on_listing_id"
