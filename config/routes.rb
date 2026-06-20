@@ -43,7 +43,7 @@ Rails.application.routes.draw do
    end
   end
   resources :profiles, only: [ :show, :edit, :update ]
-  resources :reviews, only: [ :new, :create ]
+  resources :reviews, only: [ :index, :new, :create ]
 
   get 'onboarding/customer', to: 'onboardings#customer', as: :onboarding_customer
   patch 'onboarding/customer_update', to: 'onboardings#customer_update', as: :update_onboarding_customer
