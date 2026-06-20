@@ -10,9 +10,14 @@ class DashboardsController < ApplicationController
       # Step 1: Get all category IDs the contractor specializes in
       contractor_category_ids = current_user.categories.pluck(:id)
 
-      # Step 2: Filter listings by radius AND matching categories
-      matching_listings = Listing.near(current_user, profile.travel_radius, units: :km)
-                                 .where(category_id: contractor_category_ids)
+      # Step 2: Filter listings by radius AND matching categories (with safety fallback for skip onboarding)
+      if current_user.latitude.present? && current_user.longitude.present?
+        matching_listings = Listing.near([current_user.latitude, current_user.longitude], profile.travel_radius, units: :km)
+                                   .where(category_id: contractor_category_ids)
+      else
+        # Fallback: If onboarding was skipped, show all listings matching the contractor's categories without radius filter
+        matching_listings = Listing.where(category_id: contractor_category_ids)
+      end
 
       # Tab 1: Available Listings
       # Filters out jobs that the contractor has already declined or submitted an offer for.

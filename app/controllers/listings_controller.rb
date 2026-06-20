@@ -1,6 +1,6 @@
 class ListingsController < ApplicationController
   before_action :authenticate_user!
-  # SENIOR FIX: Extended to ensure only the customer who owns the listing can edit/update/destroy it
+  # Extended to ensure only the customer who owns the listing can edit/update/destroy it
   before_action :ensure_customer, only: [ :new, :create, :edit, :update, :destroy ]
   before_action :ensure_onboarding_completed, only: [:new, :create]
 
