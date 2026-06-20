@@ -61,12 +61,77 @@
 <%# ==================== INTERACTION PANEL: CONTRACTOR ROLE ==================== %>
 <% elsif current_user.role == "contractor" %>
 
-  <div>
-    <%# TASK: Accept Job -> Straightforwardly redirects to the team's pre-built 'new offer' quote form %>
-    <p><%= link_to "Accept Job & Make Offer", new_listing_offer_path(@listing) %></p>
+  <%
+    # Fallback-Logik aus der Datenbank, falls man über das Menü (ohne Parameter) kommt
+    current_from = params[:from]
 
-    <%# TASK: Decline -> Returns the contractor to their main dashboard instantly %>
-    <p><%= link_to "Decline / Not Interested", dashboard_path %></p>
+    if current_from.blank?
+      booking = @listing.offers.find_by(user: current_user)&.booking
+      if booking
+        current_from = booking.booking_status == 'completed' ? 'completed' : 'bookings'
+      elsif @listing.offers.exists?(user: current_user)
+        current_from = 'offered'
+      elsif current_user.respond_to?(:declined_listings) && current_user.declined_listings.exists?(listing: @listing)
+        current_from = 'declined'
+      end
+    end
+  %>
+
+  <div class="actions-container mt-4 p-4 border rounded bg-light shadow-sm">
+    <%# Hier prüfen wir direkt params[:from] für die Tabs und nutzen current_from als Absicherung %>
+    <% case params[:from] || current_from %>
+    <% when 'declined' %>
+      <div class="d-flex align-items-center mb-3">
+        <span class="badge bg-secondary p-2 me-2">Archived / Declined</span>
+        <h5 class="text-muted mb-0 fw-bold">You previously declined this job</h5>
+      </div>
+      <p class="text-muted small mb-3">If your availability has changed, you can restore this job and move it back to your active feed.</p>
+      <%= link_to "Reopen Job", "#", class: "btn btn-outline-primary w-100 fw-bold" %>
+
+     <% when 'completed' %>
+      <div class="alert alert-success fw-bold text-center mb-3 p-3 shadow-sm">
+        ✓ This job has been successfully completed!
+      </div>
+
+      <% booking = @listing.offers.find_by(user: current_user)&.booking %>
+      <% if booking %>
+        <div class="d-flex flex-column gap-2">
+          <%= link_to "Leave a Review", new_review_path(booking_id: booking.id), class: "btn btn-primary w-100 fw-bold p-2 text-center" %>
+
+          <%= link_to "View Booking & Messages", booking_path(booking), class: "btn btn-outline-secondary btn-sm w-100 text-center" %>
+        </div>
+      <% end %>
+
+    <% when 'bookings' %>
+      <div class="d-flex align-items-center mb-3">
+        <span class="badge bg-success p-2 me-2">Confirmed</span>
+        <h5 class="text-success mb-0 fw-bold">You have a confirmed booking for this job</h5>
+      </div>
+      <p class="small text-muted mb-3">Have you finished the work on site? Manage your schedule or mark it as completed.</p>
+
+      <% booking = @listing.offers.find_by(user: current_user)&.booking %>
+      <% if booking %>
+        <%= link_to "Go to Booking Details to Manage Schedule", booking_path(booking), class: "btn btn-success w-100 fw-bold p-2 text-center" %>
+      <% end %>
+
+    <% when 'offered' %>
+      <div class="alert alert-warning text-center fw-bold mb-3 p-3 text-dark">
+        ⏱ Offer Pending – Waiting for customer response
+      </div>
+      <p class="text-muted small text-center mb-3">The customer has received your quotation. You can view the chat or status details on the offer page.</p>
+
+      <% offer = @listing.offers.find_by(user: current_user) %>
+      <% if offer %>
+        <%= link_to "View My Offer & Chat", listing_offer_path(@listing, offer), class: "btn btn-info text-dark w-100 fw-bold" %>
+      <% end %>
+
+    <% else %>
+      <h5 class="fw-bold mb-3">Are you interested in this job?</h5>
+      <div class="d-flex gap-3">
+        <%= link_to "Accept & Quote", new_listing_offer_path(@listing), class: "btn btn-primary flex-grow-1 fw-bold p-2" %>
+        <%= link_to "Decline / Not Interested", dashboard_path, class: "btn btn-outline-danger fw-bold px-4" %>
+      </div>
+    <% end %>
   </div>
 
 <% end %>

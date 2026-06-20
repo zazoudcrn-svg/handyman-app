@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_19_053425) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_20_082905) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -41,7 +41,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_19_053425) do
 
   create_table "bookings", force: :cascade do |t|
     t.string "accepted_by"
-    t.string "booking_status", default: "pending"
+    t.string "booking_status"
     t.text "cancellation_note"
     t.string "cancelled_by"
     t.datetime "created_at", null: false
@@ -76,6 +76,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_19_053425) do
     t.integer "user_id", null: false
     t.string "weekday_availability"
     t.index ["user_id"], name: "index_contractor_profiles_on_user_id"
+  end
+
+  create_table "declined_listings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "listing_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["listing_id"], name: "index_declined_listings_on_listing_id"
+    t.index ["user_id"], name: "index_declined_listings_on_user_id"
   end
 
   create_table "listings", force: :cascade do |t|
@@ -171,6 +180,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_19_053425) do
   add_foreign_key "bookings", "listings"
   add_foreign_key "bookings", "offers"
   add_foreign_key "contractor_profiles", "users"
+  add_foreign_key "declined_listings", "listings"
+  add_foreign_key "declined_listings", "users"
   add_foreign_key "listings", "categories"
   add_foreign_key "listings", "users"
   add_foreign_key "messages", "offers"
