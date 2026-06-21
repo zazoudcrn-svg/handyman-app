@@ -60,6 +60,6 @@ class OffersController < ApplicationController
   end
 
   def offer_params
-    params.require(:offer).permit(:quote, :note)
+    params.require(:offer).permit(:quote, :note, :estimated_duration_hours, :suggested_date_and_time)
   end
 end

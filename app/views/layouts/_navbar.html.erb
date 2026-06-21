@@ -1,0 +1,98 @@
+<%# app/views/layouts/_navbar.html.erb %>
+
+<nav class="navbar navbar-expand-lg sticky-top bg-white/80 backdrop-blur-xl border-b py-3" style="border-bottom: 1px solid var(--cf-border-light); z-index: 1050; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+  <div class="container" style="max-w: 1280px;">
+
+    <%= link_to user_signed_in? ? dashboard_path : root_path, class: "navbar-brand d-flex align-items-center gap-2 fw-bold text-decoration-none", style: "color: var(--cf-text-primary); font-family: var(--cf-font-heading); font-size: 20px;" do %>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 14C4 9 8 4 12 4C16 4 20 9 20 14C20 19 16 20 12 20C8 20 4 19 4 14Z" fill="#2F6BFF"/>
+        <path d="M8 12C10 10 14 10 16 12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Handyman App
+    <% end %>
+
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+
+      <% if current_page?(root_path) %>
+        <ul class="navbar-nav mx-auto gap-1">
+          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#solution" style="color: var(--cf-text-secondary); font-size: 14px;">Product</a></li>
+          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#how-it-works" style="color: var(--cf-text-secondary); font-size: 14px;">How it works</a></li>
+          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#features" style="color: var(--cf-text-secondary); font-size: 14px;">Features</a></li>
+          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#trust" style="color: var(--cf-text-secondary); font-size: 14px;">Trust</a></li>
+          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#vision" style="color: var(--cf-text-secondary); font-size: 14px;">Vision</a></li>
+        </ul>
+      <% else %>
+        <ul class="navbar-nav mx-auto gap-1">
+          <% if user_signed_in? %>
+            <% if current_user.role == 'contractor' %>
+              <li class="nav-item"><%= link_to "Find Jobs (Dashboard)", dashboard_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(dashboard_path)}", style: "font-size: 14px;" %></li>
+              <li class="nav-item"><%= link_to "My Sent Offers", offers_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(offers_path)}", style: "font-size: 14px;" %></li>
+              <li class="nav-item"><%= link_to "My Bookings (Jobs)", bookings_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(bookings_path)}", style: "font-size: 14px;" %></li>
+            <% else %>
+              <li class="nav-item"><%= link_to "My Requests (Dashboard)", dashboard_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(dashboard_path)}", style: "font-size: 14px;" %></li>
+              <li class="nav-item"><%= link_to "Received Offers", offers_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(offers_path)}", style: "font-size: 14px;" %></li>
+              <li class="nav-item"><%= link_to "My Bookings", bookings_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(bookings_path)}", style: "font-size: 14px;" %></li>
+            <% end %>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+        <% if user_signed_in? %>
+          <ul class="navbar-nav mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle px-3 py-1.5 rounded-pill border d-flex align-items-center gap-2 fw-medium text-sm" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: var(--cf-text-primary); border-color: var(--cf-border-light) !important; font-size: 14px; background-color: #F8FAFC;">
+                <span>👤 <%= current_user.email %></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end shadow-lg p-3 border-0 rounded-4 mt-2" aria-labelledby="userDropdown" style="min-width: 240px; box-shadow: 0 20px 40px rgba(11,27,51,0.08) !important;">
+                <li>
+                  <div class="dropdown-header px-0 pt-0 text-uppercase tracking-wider fw-bold text-muted" style="font-size: 10px;">
+                    <%= current_user.role&.capitalize %> Mode
+                  </div>
+                </li>
+
+                <li>
+                  <div class="px-3 py-2 my-2 rounded-3 text-center small border" style="background-color: var(--cf-brand-soft-blue); border-color: var(--cf-brand-accent) !important;">
+                    <span class="text-muted" style="font-size: 11px;">Your Rating:</span>
+                    <div class="fw-bold mt-0.5" style="color: #F59E0B; font-size: 13px;">
+                      <% received_reviews = Review.where(reviewee_id: current_user.id) %>
+                      <% if received_reviews.any? %>
+                        ⭐ <%= (received_reviews.average(:rating) || 0).round(1) %>
+                      <% else %>
+                        <span class="text-muted small" style="font-size: 11px;">No ratings yet</span>
+                      <% end %>
+                    </div>
+                  </div>
+                </li>
+
+                <li><hr class="dropdown-divider" style="border-color: var(--cf-border-light);"></li>
+
+                <li>
+                  <%= link_to "View Profile", profile_path(current_user), class: "dropdown-item rounded-3 py-2 text-sm #{'active fw-semibold' if current_page?(profile_path(current_user))}", style: "font-size: 13.5px;" %>
+                </li>
+
+                <li>
+                  <%= link_to "My Reviews", reviews_path, class: "dropdown-item rounded-3 py-2 text-sm #{'active fw-semibold' if current_page?(reviews_path)}", style: "font-size: 13.5px;" %>
+                </li>
+
+                <li><hr class="dropdown-divider" style="border-color: var(--cf-border-light);"></li>
+
+                <li>
+                  <%= link_to "Log Out", destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item text-danger fw-bold rounded-3 py-2 text-sm", style: "font-size: 13.5px;" %>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        <% else %>
+          <%= link_to "For Customers", new_user_registration_path(role: 'customer'), class: "text-decoration-none text-sm fw-medium px-2", style: "color: var(--cf-text-primary); font-size: 14px;" %>
+          <%= link_to "For Craftsmen", new_user_registration_path(role: 'contractor'), class: "btn-cf-primary text-decoration-none text-sm py-2 d-inline-flex align-items-center justify-content-center", style: "font-size: 14px; height: 40px; padding: 0 20px;" %>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</nav>

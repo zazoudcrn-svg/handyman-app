@@ -14,9 +14,8 @@ class ApplicationController < ActionController::Base
 
   # Overwriting the Devise redirect path after a successful sign-in
   def after_sign_in_path_for(resource)
-    # SENIOR GUARDRAIL: Check if the user has already completed their onboarding profile.
+    # Check if the user has already completed their onboarding profile.
     # We look if a core onboarding field (like 'city' or 'postcode') is present.
-    # (Change ':city' to whatever field your onboarding wizard actually saves, e.g., :first_name)
     if resource.city.present?
       # If they are fully onboarded, bypass onboarding and send them straight to the dashboard
       dashboard_path

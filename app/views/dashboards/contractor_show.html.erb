@@ -1,20 +1,256 @@
-<h1>Contractor Dashboard (Backend MVP)</h1>
-<p>You are logged in as a Contractor.</p>
+<% # Check at the absolute top if the user is flipping weeks inside the calendar %>
+<% is_calendar_active = params[:start_date].present? || params[:prev_date].present? || params[:date].present? %>
 
-<hr>
+<div class="dashboard-header mb-3">
+  <h1 class="fw-bold text-dark mb-0"><%= current_user.contractor_profile&.business_name || "Workspace" %></h1>
+</div>
 
-<h2>Available Jobs in Your Area</h2>
+<hr class="mb-4">
 
-<% if @listings.any? %>
-  <div class="listings-container">
-    <% @listings.each do |listing| %>
-      <div class="listing-card" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 5px;">
-        <h3><%= link_to listing.title, listing_path(listing), style: "text-decoration: none; color: #007bff;" %></h3>
-        <p><strong>Category:</strong> <%= listing.category.name %></p>
-        <p><strong>Location:</strong> <%= listing.city %> (<%= listing.distance.round(1) %> km away)</p>
+<% # ==================== DASHBOARD TABS NAVIGATION ==================== %>
+<ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <% # Changed: Active class is now dynamic %>
+    <button class="nav-link <%= 'active' unless is_calendar_active %>" id="available-tab" data-bs-toggle="tab" data-bs-target="#available" type="button" role="tab" aria-controls="available" aria-selected="<%= !is_calendar_active %>">
+      Available Jobs (<%= @available_listings.size %>)
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="offered-tab" data-bs-toggle="tab" data-bs-target="#offered" type="button" role="tab" aria-controls="offered" aria-selected="false">
+      My Offers (<%= @offered_listings.size %>)
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings" type="button" role="tab" aria-controls="bookings" aria-selected="false">
+      Ongoing Bookings (<%= @ongoing_bookings.size %>)
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab" aria-controls="completed" aria-selected="false">
+      Completed Bookings (<%= @completed_bookings.size %>)
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <% # Changed: Active class is now dynamic %>
+    <button class="nav-link <%= 'active' if is_calendar_active %>" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar-view" type="button" role="tab" aria-controls="calendar-view" aria-selected="<%= is_calendar_active %>">
+      My Schedule
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="archived-tab" data-bs-toggle="tab" data-bs-target="#archived" type="button" role="tab" aria-controls="archived" aria-selected="false">
+      Archived / Declined (<%= @archived_listings.size %>)
+    </button>
+  </li>
+</ul>
+
+<% # ==================== TABS CONTENT SECTION ==================== %>
+<div class="tab-content" id="dashboardTabsContent">
+
+  <% # TAB 1: AVAILABLE LISTINGS %>
+  <% # Changed: Tab visibility matches the dynamic active header button %>
+  <div class="tab-pane fade <%= 'show active' unless is_calendar_active %>" id="available" role="tabpanel" aria-labelledby="available-tab">
+    <% if @available_listings.any? %>
+      <div class="listings-container">
+        <% @available_listings.each do |listing| %>
+          <% is_emergency = listing.title.include?("EMERGENCY") %>
+          <%
+            image_path = if listing.title.include?("EMERGENCY") then "listings/burst_pipe.png"
+                         elsif listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
+                         elsif listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
+                         elsif listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
+                         elsif listing.title.downcase.include?("shower") then "listings/shower_seal.png"
+                         else "listings/garden_tap.png" end
+          %>
+          <div class="listing-card" style="border: <%= is_emergency ? '1px solid #dc3545' : '1px solid #ccc' %>; padding: 20px; margin-bottom: 24px; border-radius: 8px; background-color: <%= is_emergency ? '#fff5f5' : '#fff' %>; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <%= image_tag image_path, class: "img-fluid rounded mb-3", style: "max-height: 400px; object-fit: cover; width: 100%;" %>
+            <% if is_emergency %>
+              <span class="badge bg-danger mb-2 p-2">HIGH PRIORITY / EMERGENCY</span>
+            <% end %>
+            <h2 class="h3 fw-bold"><%= link_to listing.title, listing_path(listing, from: 'available'), style: "text-decoration: none; color: #007bff;" %></h2>
+            <p><strong>Category:</strong> <%= listing.category.name %></p>
+            <p><strong>Location:</strong> <%= listing.city %> (<%= listing.distance.round(1) %> km away)</p>
+          </div>
+        <% end %>
       </div>
+    <% else %>
+      <p class="text-muted">No matching jobs found within your radius at the moment.</p>
     <% end %>
   </div>
-<% else %>
-  <p>No matching jobs found within your radius at the moment.</p>
-<% end %>
+
+  <% # TAB 2: PENDING OFFERS %>
+  <div class="tab-pane fade" id="offered" role="tabpanel" aria-labelledby="offered-tab">
+    <% if @offered_listings.any? %>
+      <div class="listings-container">
+        <% @offered_listings.each do |listing| %>
+          <%
+            image_path = if listing.title.include?("EMERGENCY") then "listings/burst_pipe.png"
+                         elsif listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
+                         elsif listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
+                         elsif listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
+                         elsif listing.title.downcase.include?("shower") then "listings/shower_seal.png"
+                         else "listings/garden_tap.png" end
+          %>
+          <div class="listing-card" style="border: 1px solid #0dcaf0; padding: 20px; margin-bottom: 24px; border-radius: 8px; background-color: #f7fcfe; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <%= image_tag image_path, class: "img-fluid rounded mb-3", style: "max-height: 400px; object-fit: cover; width: 100%;" %>
+            <span class="badge bg-info text-dark mb-2 p-2">Offer Pending</span>
+            <h2 class="h3 fw-bold"><%= link_to listing.title, listing_path(listing, from: 'offered'), style: "text-decoration: none; color: #055160;" %></h2>
+            <p><strong>Category:</strong> <%= listing.category.name %></p>
+            <p><strong>Location:</strong> <%= listing.city %> (<%= listing.distance.round(1) %> km away)</p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-muted">You haven't submitted any offers yet.</p>
+    <% end %>
+  </div>
+
+  <% # TAB 3: ONGOING BOOKINGS %>
+  <div class="tab-pane fade" id="bookings" role="tabpanel" aria-labelledby="bookings-tab">
+    <% if @ongoing_bookings.any? %>
+      <div class="listings-container">
+        <% @ongoing_bookings.each do |listing| %>
+          <%
+            image_path = if listing.title.include?("EMERGENCY") then "listings/burst_pipe.png"
+                         elsif listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
+                         elsif listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
+                         elsif listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
+                         elsif listing.title.downcase.include?("shower") then "listings/shower_seal.png"
+                         else "listings/garden_tap.png" end
+          %>
+          <div class="listing-card" style="border: 1px solid #198754; padding: 20px; margin-bottom: 24px; border-radius: 8px; background-color: #f4f9f6; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <%= image_tag image_path, class: "img-fluid rounded mb-3", style: "max-height: 400px; object-fit: cover; width: 100%;" %>
+            <span class="badge bg-success mb-2 p-2">Confirmed Booking</span>
+            <h2 class="h3 fw-bold"><%= link_to listing.title, listing_path(listing, from: 'bookings'), style: "text-decoration: none; color: #0f5132;" %></h2>
+            <p><strong>Category:</strong> <%= listing.category.name %></p>
+            <p><strong>Location:</strong> <%= listing.city %> (<%= listing.distance.round(1) %> km away)</p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-muted">You don't have any active confirmed bookings yet.</p>
+    <% end %>
+  </div>
+
+  <% # TAB 4: COMPLETED BOOKINGS %>
+  <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
+    <% if @completed_bookings.any? %>
+      <div class="listings-container">
+        <% @completed_bookings.each do |listing| %>
+          <%
+            image_path = if listing.title.include?("EMERGENCY") then "listings/burst_pipe.png"
+                         elsif listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
+                         elsif listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
+                         elsif listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
+                         elsif listing.title.downcase.include?("shower") then "listings/shower_seal.png"
+                         else "listings/garden_tap.png" end
+          %>
+          <div class="listing-card" style="border: 1px solid #198754; padding: 20px; margin-bottom: 24px; border-radius: 8px; background-color: #f4f9f6; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <%= image_tag image_path, class: "img-fluid rounded mb-3", style: "max-height: 400px; object-fit: cover; width: 100%;" %>
+            <span class="badge bg-success mb-2 p-2">Job Completed</span>
+            <h2 class="h3 fw-bold"><%= link_to listing.title, listing_path(listing, from: 'completed'), style: "text-decoration: none; color: #0f5132;" %></h2>
+            <p><strong>Category:</strong> <%= listing.category.name %></p>
+            <p><strong>Location:</strong> <%= listing.city %></p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-muted">No completed jobs yet.</p>
+    <% end %>
+  </div>
+
+  <% # TAB 5: EXCLUSIVE SCHEDULE CALENDAR VIEW %>
+  <% # Changed: Tab visibility matches the dynamic active header button %>
+  <div class="tab-pane fade <%= 'show active' if is_calendar_active %>" id="calendar-view" role="tabpanel" aria-labelledby="calendar-tab">
+    <div class="card p-4 shadow-sm bg-white border-0" style="border-radius: 12px;">
+      <h3 class="fw-bold text-dark mb-3">Your Weekly Schedule</h3>
+
+      <%= week_calendar(number_of_weeks: 1, events: @bookings, attribute: :scheduled_date_and_time) do |date, bookings| %>
+        <div class="day-header text-muted small fw-bold mb-1">
+          <%= date.strftime("%a %d") %>
+        </div>
+
+        <div class="d-flex flex-column gap-1" style="min-height: 120px;">
+          <% bookings.each do |booking| %>
+            <div class="p-2 rounded text-white bg-primary small shadow-sm border-start border-4 border-warning" title="<%= booking.listing.title %>">
+              <div class="d-flex justify-content-between align-items-center fw-bold mb-1" style="font-size: 0.75rem;">
+                <% if booking.offer&.estimated_duration_hours.present? %>
+                  <% end_time = booking.scheduled_date_and_time + booking.offer.estimated_duration_hours.hours %>
+                  <span><%= booking.scheduled_date_and_time.strftime("%H:%M") %> - <%= end_time.strftime("%H:%M") %></span>
+                <% else %>
+                  <span><%= booking.scheduled_date_and_time.strftime("%H:%M") %></span>
+                <% end %>
+                <span class="badge bg-light text-dark font-monospace">€<%= booking.offer&.quote %></span>
+              </div>
+              <div class="text-truncate fw-semibold" style="max-width: 100%; font-size: 0.8rem;">
+                <%= booking.listing.title %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <% # TAB 6: ARCHIVED / DECLINED LISTINGS %>
+  <div class="tab-pane fade" id="archived" role="tabpanel" aria-labelledby="archived-tab">
+    <% if @archived_listings.any? %>
+      <div class="listings-container">
+        <% @archived_listings.each do |listing| %>
+          <%
+            image_path = if listing.title.include?("EMERGENCY") then "listings/burst_pipe.png"
+                         elsif listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
+                         elsif listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
+                         elsif listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
+                         elsif listing.title.downcase.include?("shower") then "listings/shower_seal.png"
+                         else "listings/garden_tap.png" end
+          %>
+          <div class="listing-card" style="border: 1px solid #ccc; padding: 20px; margin-bottom: 24px; border-radius: 8px; opacity: 0.65; background-color: #f8f9fa; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <%= image_tag image_path, class: "img-fluid rounded mb-3", style: "max-height: 400px; object-fit: cover; width: 100%;" %>
+            <span class="badge bg-secondary mb-2 p-2">Declined</span>
+            <h2 class="h3 fw-bold"><%= link_to listing.title, listing_path(listing, from: 'declined'), style: "text-decoration: none; color: #6c757d;" %></h2>
+            <p><strong>Category:</strong> <%= listing.category.name %></p>
+            <p><strong>Location:</strong> <%= listing.city %></p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-muted">No archived or declined jobs yet.</p>
+    <% end %>
+  </div>
+
+</div>
+
+<% # ==================== JAVASCRIPT BULLETPROOF FIX ==================== %>
+<script>
+  document.addEventListener("turbo:load", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Catch any calendar navigation query parameters
+    if (urlParams.has('start_date') || urlParams.has('prev_date') || urlParams.has('date')) {
+
+      // 1. Clear active states from navigation buttons
+      document.querySelectorAll('#dashboardTabs .nav-link').forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-selected', 'false');
+      });
+
+      // 2. Clear visible states from all pane views
+      document.querySelectorAll('#dashboardTabsContent .tab-pane').forEach(pane => {
+        pane.classList.remove('show', 'active');
+      });
+
+      // 3. Pin active classes manually onto the calendar tab button
+      const calendarBtn = document.getElementById('calendar-tab');
+      if (calendarBtn) {
+        calendarBtn.classList.add('active');
+        calendarBtn.setAttribute('aria-selected', 'true');
+      }
+
+      // 4. Pin visible classes manually onto the calendar container pane
+      const calendarPane = document.getElementById('calendar-view');
+      if (calendarPane) {
+        calendarPane.classList.add('show', 'active');
+      }
+    }
+  });
+</script>

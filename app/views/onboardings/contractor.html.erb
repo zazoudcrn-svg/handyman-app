@@ -109,10 +109,16 @@
 
   <br><br>
 
-  <div>
-    <button type="button" id="prev-btn" style="display: none;">Back</button>
-    <button type="button" id="next-btn">Next</button>
-    <%= f.submit "Complete Onboarding & Go to Dashboard", id: "submit-btn", style: "display: none;" %>
+  <%# Dynamic Steering Navigation Layout %>
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+    <div style="display: flex; gap: 10px;">
+      <button type="button" id="prev-btn" class="btn btn-light" style="display: none; border: 1px solid #ccc; border-radius: 8px; padding: 8px 20px; font-weight: 500;">Back</button>
+      <button type="button" id="next-btn" class="btn btn-primary" style="background-color: #2F6BFF; border-color: #2F6BFF; border-radius: 8px; padding: 8px 25px; font-weight: 500;">Next</button>
+      <%= f.submit "Complete Onboarding & Go to Dashboard", id: "submit-btn", class: "btn btn-success", style: "display: none; background-color: #10B981; border-color: #10B981; border-radius: 8px; padding: 8px 25px; font-weight: 500;" %>
+    </div>
+
+    <%# Smart UX Skip Link %>
+    <%= link_to "Skip onboarding for now →", skip_onboarding_path, data: { turbo_method: :patch }, id: "skip-link", class: "text-muted text-decoration-none small fw-medium", style: "font-size: 13px;" %>
   </div>
 
 <% end %>
@@ -134,7 +140,7 @@
       let mapMarker = null;
       let mapCircle = null;
 
-      // --- WOCIENTAG SELECTION ---
+      // --- WEEKDAY SELECTION ---
       const dayButtons = document.querySelectorAll(".day-btn");
       const hiddenInput = document.getElementById("hidden-weekdays");
       let selectedDays = [];
@@ -177,6 +183,12 @@
         });
 
         prevBtn.style.display = currentStep === 0 ? "none" : "inline-block";
+
+        // Dynamic skip-link visibility: Only show on Step 1 (index 0)
+        const skipLink = document.getElementById("skip-link");
+        if (skipLink) {
+          skipLink.style.display = currentStep === 0 ? "inline-block" : "none";
+        }
 
         if (currentStep === steps.length - 1) {
           nextBtn.style.display = "none";

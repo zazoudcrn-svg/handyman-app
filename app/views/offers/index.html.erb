@@ -5,16 +5,32 @@
 <% end %>
 
 <% @offers.each do |offer| %>
-  <div>
-    <p>Listing: <%= offer.listing.title %></p>
-    <p>Quote: <%= offer.quote %></p>
-    <p>Note: <%= offer.note %></p>
-    <p>Status: <%= offer.offer_status %></p>
-    <%= link_to "View details", listing_offer_path(offer.listing, offer) %>
+  <div class="offer-card mb-4" style="border: 1px solid #eee; padding: 20px; border-radius: 8px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+    <p><strong>Listing:</strong> <%= offer.listing.title %></p>
+    <p><strong>Quote:</strong> €<%= offer.quote %></p>
+
+    <% # NEW: Display Suggested Date and Time if available %>
+    <p>
+      <strong>Suggested Date & Time:</strong>
+      <%= offer.suggested_date_and_time.present? ? offer.suggested_date_and_time.strftime("%B %d, %Y at %H:%M") : "Not specified" %>
+    </p>
+
+    <% # NEW: Display Estimated Duration if available %>
+    <p>
+      <strong>Estimated Duration:</strong>
+      <%= offer.estimated_duration_hours.present? ? "#{offer.estimated_duration_hours} hours" : "Not specified" %>
+    </p>
+
+    <p><strong>Note:</strong> <%= offer.note.present? ? offer.note : "No notes provided" %></p>
+    <p><strong>Status:</strong> <%= offer.offer_status || "Pending" %></p>
+
+    <%= link_to "View details", listing_offer_path(offer.listing, offer), class: "d-inline-block mb-3" %>
 
     <% if current_user.role == "customer" && offer.offer_status != "accepted" && offer.offer_status != "declined" %>
-      <%= button_to "Accept", accept_listing_offer_path(offer.listing, offer), method: :patch %>
-      <%= button_to "Decline", decline_listing_offer_path(offer.listing, offer), method: :patch %>
+      <div class="d-flex gap-2">
+        <%= button_to "Accept", accept_listing_offer_path(offer.listing, offer), method: :patch, class: "btn btn-success" %>
+        <%= button_to "Decline", decline_listing_offer_path(offer.listing, offer), method: :patch, class: "btn btn-danger" %>
+      </div>
     <% end %>
   </div>
 <% end %>

@@ -5,6 +5,7 @@ class Listing < ApplicationRecord
   has_many :offers
   has_one :booking
   has_many_attached :photos
+  has_many :declined_listings, dependent: :destroy
 
   # --- Geocoding Setup ---
   geocoded_by :full_address
