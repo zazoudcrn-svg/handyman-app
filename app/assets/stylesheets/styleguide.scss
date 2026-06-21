@@ -1,0 +1,118 @@
+/* Google Fonts Integration */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap');
+
+:root {
+  /* Brand Identity Colors */
+  --cf-brand-blue: #2F6BFF;
+  --cf-brand-blue-hover: #1E5FFF;
+  --cf-brand-shadow: 0 10px 25px rgba(47, 107, 255, 0.25);
+
+  /* Soft Premium Light Blue for Sidebar Background */
+  --cf-bg-soft-blue: #F4F7FC;
+
+  --cf-text-dark: #0B1B33;
+  --cf-text-muted: #475569;
+  --cf-border-light: #E2E8F0;
+  --cf-shadow-card: 0 8px 30px rgba(11, 27, 51, 0.06);
+}
+
+/* Base Typography Configuration */
+.cf-login-wrapper {
+  font-family: 'Manrope', sans-serif;
+  color: var(--cf-text-muted);
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    color: var(--cf-text-dark);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   GLOBAL BUTTON OVERRIDE (Clean Specificity Match)
+   By combining 'input[type="submit"].btn.cf-btn-primary-fixed', this rule
+   becomes naturally stronger than Bootstrap's standard styles.
+   -------------------------------------------------------------------------- */
+input[type="submit"].btn.cf-btn-primary-fixed,
+button.btn.cf-btn-primary-fixed,
+.btn.cf-btn-primary-fixed {
+  background-color: var(--cf-brand-blue);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9999px; /* Smooth capsule shape */
+  padding: 0.85rem 2rem;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  transition: all 0.25s ease-in-out;
+  box-shadow: var(--cf-brand-shadow); /* Soft blue shadow from mockup */
+  display: block;
+  width: 100%;
+
+  &:hover, &:focus, &:active {
+    background-color: var(--cf-brand-blue-hover);
+    color: #FFFFFF;
+    box-shadow: 0 12px 30px rgba(47, 107, 255, 0.35);
+    transform: translateY(-1px);
+  }
+}
+
+/* Reusable Form Inputs & Structure */
+.cf-input-control {
+  width: 100%;
+  border-radius: 0.75rem; /* rounded-xl (12px) */
+  border: 1px solid var(--cf-border-light);
+  background-color: #FFFFFF;
+  padding: 0.8rem 1rem;
+  font-size: 15px;
+  color: var(--cf-text-dark);
+  outline: none;
+  transition: all 0.2s ease-in-out;
+
+  &:focus {
+    border-color: var(--cf-brand-blue);
+    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.1);
+  }
+}
+
+.cf-login-card {
+  width: 100%;
+  max-width: 440px;
+  background-color: #FFFFFF;
+  border: 1px solid var(--cf-border-light);
+  border-radius: 1rem; /* rounded-2xl (16px) */
+  padding: 3rem;
+  box-shadow: var(--cf-shadow-card);
+}
+
+.cf-value-prop-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  color: var(--cf-brand-blue);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--cf-border-light);
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   SPLIT LAYOUT WITH THE NEW SOFT BLUE SIDEBAR
+   -------------------------------------------------------------------------- */
+.cf-brand-column {
+  background-color: var(--cf-bg-soft-blue); /* Clean background assignment */
+  padding: 6rem 5rem 5rem 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-right: 1px solid var(--cf-border-light);
+}
+
+.cf-login-main {
+  background-color: #FFFFFF;
+  padding: 6rem 5rem 5rem 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
