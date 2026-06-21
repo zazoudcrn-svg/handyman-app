@@ -18,10 +18,7 @@
         </h1>
       </div>
 
-      <div class="text-end d-none d-md-block">
-        <p class="small text-muted m-0">Logged in as</p>
-        <span class="fw-medium text-dark" style="font-size: 14px;"><%= current_user.email %></span>
-      </div>
+      <% # Right side is now empty to give the brand name more room and avoid duplicate emails %>
     </div>
 
     <% # ==================== 2. PREMIUM TABS NAVIGATION ==================== %>
@@ -189,7 +186,6 @@
                              else "listings/garden_tap.png" end
               %>
               <div class="col-12">
-                <% # UX IMPROVEMENT: Clean gray border, light blue tint background %>
                 <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
                   <div class="row g-0">
                     <div class="col-md-4 position-relative" style="min-height: 220px;">
