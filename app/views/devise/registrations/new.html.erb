@@ -1,30 +1,123 @@
-<h2>Sign up</h2>
+<%# Main container utilizing the Premium SaaS design wrapper %>
+<div class="container-fluid p-0 cf-login-wrapper" style="font-family: 'Manrope', sans-serif; background-color: #FFFFFF;">
+  <div class="row g-0 min-vh-100">
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= f.hidden_field :role, value: params[:role] %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+    <%# LEFT COLUMN: FULL VISUAL BLEND - HELLBLAU FROM TOP TO BOTTOM %>
+    <div class="col-lg-5 d-none d-lg-flex px-5" style="background-color: #F4F7FC; border-right: 1px solid #E2E8F0; flex-direction: column; justify-content: flex-start; padding-top: 100px !important; padding-bottom: 50px !important;">
+      <%# Content container sitting beautifully aligned at the 100px threshold %>
+      <div class="w-100 mx-auto" style="max-width: 85%;">
 
-  <div class="field">
-    <p><%= f.label :email %></p>
-    <p><%= f.email_field :email, autofocus: true, autocomplete: "email" %></p>
+        <%# Dynamic Headline based on the target role from URL parameters %>
+        <h1 class="text-5xl tracking-tight font-semibold mb-5" style="font-family: 'Outfit', sans-serif; color: #0B1B33; line-height: 1.15;">
+          <% if params[:role] == 'contractor' %>
+            Grow your business with Craftsman.
+          <% else %>
+            Find the perfect expert for your home.
+          <% end %>
+        </h1>
+
+        <%# Clean, card-based value propositions to establish trust %>
+        <div class="d-flex flex-column gap-4 mt-5">
+          <div class="d-flex align-items-center gap-3 bg-white p-4" style="border-radius: 12px; border: 1px solid #E2E8F0; box-shadow: 0 2px 10px rgba(11, 27, 51, 0.04);">
+            <div class="fs-5 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; border-radius: 50%; background-color: #FFFFFF; color: #2F6BFF; border: 1px solid #E2E8F0; flex-shrink: 0;">
+              <i class="bi bi-person-badge-fill"></i>
+            </div>
+            <div>
+              <h6 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Professional Profiles</h6>
+              <p class="small text-muted m-0">Only verified and highly rated specialists.</p>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center gap-3 bg-white p-4" style="border-radius: 12px; border: 1px solid #E2E8F0; box-shadow: 0 2px 10px rgba(11, 27, 51, 0.04);">
+            <div class="fs-5 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; border-radius: 50%; background-color: #FFFFFF; color: #2F6BFF; border: 1px solid #E2E8F0; flex-shrink: 0;">
+              <i class="bi bi-stars"></i>
+            </div>
+            <div>
+              <h6 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Smart Matching</h6>
+              <p class="small text-muted m-0">Our AI finds the best fit for your specific project.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <%# RIGHT COLUMN: FOCUSED REGISTRATION CARD & BALANCED MINI FOOTER (Reduced column padding to px-4) %>
+    <div class="col-lg-7 col-12 d-flex px-4" style="background-color: #FFFFFF; flex-direction: column; justify-content: flex-start; align-items: center;">
+
+      <%# MAXIMUM WIDTH SAAS CARD: Expanded max-width to 680px for wide, premium proportions %>
+      <div class="mx-auto" style="width: 100%; max-width: 680px; margin-top: 100px; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 4rem; box-shadow: 0 8px 30px rgba(11, 27, 51, 0.06);">
+
+        <%# Header section indicating the community context and role %>
+        <div class="mb-5">
+          <span class="text-uppercase tracking-wider fw-bold text-primary" style="font-size: 11px; letter-spacing: 2px;">Join the Community</span>
+          <h2 class="fw-bold tracking-tight mt-2 mb-1" style="font-family: 'Outfit', sans-serif; color: #0B1B33; letter-spacing: -0.75px;">Create Account</h2>
+          <p class="small text-muted m-0">
+            Registering as a <strong class="text-primary text-capitalize"><%= params[:role] || "User" %></strong>
+          </p>
+        </div>
+
+        <%# Standard Devise Form initialization %>
+        <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+          <%# VITAL: Safely pass the role parameter to the controller context %>
+          <%= hidden_field_tag :role, params[:role] %>
+
+          <div class="form-inputs d-flex flex-column gap-3">
+
+            <%# Email Input Field %>
+            <div>
+              <label class="form-label small fw-medium mb-1" style="color: #0B1B33;">Email Address</label>
+              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", style: "border-radius: 12px; border: 1px solid #E2E8F0; padding: 0.8rem 1rem;", placeholder: "e.g. name@company.com" %>
+            </div>
+
+            <%# Password Input Field %>
+            <div class="mt-1">
+              <label class="form-label small fw-medium mb-1" style="color: #0B1B33;">Create Password</label>
+              <%= f.password_field :password, autocomplete: "new-password", class: "form-control", style: "border-radius: 12px; border: 1px solid #E2E8F0; padding: 0.8rem 1rem;", placeholder: "Minimum 6 characters" %>
+            </div>
+
+            <%# Password Confirmation Input Field %>
+            <div class="mt-1">
+              <label class="form-label small fw-medium mb-1" style="color: #0B1B33;">Confirm Password</label>
+              <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control", style: "border-radius: 12px; border: 1px solid #E2E8F0; padding: 0.8rem 1rem;", placeholder: "Repeat your password" %>
+            </div>
+          </div>
+
+          <%# Form Submission Button %>
+          <div class="form-actions mt-4 pt-2">
+            <%= f.button type: :submit, class: "btn w-100 py-3 text-white fw-semibold", style: "background-color: #2F6BFF; background: #2F6BFF; border-radius: 9999px; border: none; font-family: 'Outfit', sans-serif; box-shadow: 0 10px 25px rgba(47, 107, 255, 0.25); font-weight: 600;" do %>
+              Let's get started →
+            <% end %>
+          </div>
+        <% end %>
+
+        <%# Footer Navigation linking back to the Sign-In route %>
+        <div class="mt-5 pt-3 text-center border-top" style="border-top: 1px solid #E2E8F0;">
+          <p class="small text-muted m-0">
+            Already have an account?
+            <%= link_to "Log in here", new_session_path(resource_name), class: "fw-medium text-primary text-decoration-none" %>
+          </p>
+        </div>
+      </div><%# End of Card %>
+
+      <%# MINIMAL AUTH FOOTER (Symmetrically matched to the new 680px width) %>
+      <div class="pt-4 pb-4 text-center w-100" style="max-width: 680px;">
+        <%# Secure Badging %>
+        <div class="text-xs d-flex align-items-center gap-1 justify-content-center text-muted" style="font-size: 11px; color: #64748B; margin-top: -5px !important; margin-bottom: 45px !important;">
+          <i class="bi bi-shield-fill-check" style="color: #10B981;"></i> Secure, encrypted connection
+        </div>
+
+        <%# Legal Links %>
+        <div class="d-flex justify-content-center gap-3 text-xs" style="font-size: 11px; margin-bottom: 20px;">
+          <%= link_to "Privacy Policy", "#", class: "text-muted text-decoration-none hover-underline", style: "color: #64748B;" %>
+          <span class="text-muted" style="color: #CBD5E1;">•</span>
+          <%= link_to "Terms of Service", "#", class: "text-muted text-decoration-none hover-underline", style: "color: #64748B;" %>
+          <span class="text-muted" style="color: #CBD5E1;">•</span>
+          <%= link_to "Legal Notice", "#", class: "text-muted text-decoration-none hover-underline", style: "color: #64748B;" %>
+        </div>
+      </div>
+
+    </div>
+
   </div>
-
-  <div class="field">
-    <p><%= f.label :password %></p>
-    <% if @minimum_password_length %>
-      <p><em>(<%= @minimum_password_length %> characters minimum)</em></p>
-    <% end %>
-    <p><%= f.password_field :password, autocomplete: "new-password" %></p>
-  </div>
-
-  <div class="field">
-    <p><%= f.label :password_confirmation %></p>
-    <p><%= f.password_field :password_confirmation, autocomplete: "new-password" %></p>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Sign up" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>

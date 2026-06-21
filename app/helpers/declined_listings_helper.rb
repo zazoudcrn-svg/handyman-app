@@ -1,0 +1,2 @@
+module DeclinedListingsHelper
+end

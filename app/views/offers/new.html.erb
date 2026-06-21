@@ -17,6 +17,16 @@
   </div>
 
   <div class="mb-3">
+    <%= f.label :suggested_date_and_time, "Suggested Date and Time" %>
+    <%= f.datetime_field :suggested_date_and_time, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :estimated_duration_hours, "Estimated Duration (Hours)" %>
+    <%= f.number_field :estimated_duration_hours, step: 0.5, min: 0.5, class: "form-control", placeholder: "e.g. 2.5" %>
+  </div>
+
+  <div class="mb-3">
     <%= f.label :note %>
     <%= f.text_area :note, rows: 4, class: "form-control" %>
   </div>

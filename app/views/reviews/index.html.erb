@@ -1,0 +1,79 @@
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="fw-bold text-dark mb-0">My Reviews</h1>
+  <div class="text-warning fw-bold h5 mb-0">
+    <% if @received_reviews.any? %>
+      ⭐ <%= (@received_reviews.average(:rating) || 0).round(1) %> <span class="text-muted small">(Global Score)</span>
+    <% else %>
+      <span class="text-muted small">No ratings yet</span>
+    <% end %>
+  </div>
+</div>
+
+<hr class="mb-4">
+
+<ul class="nav nav-tabs mb-4" id="reviewTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active fw-bold" id="received-tab" data-bs-toggle="tab" data-bs-target="#received" type="button" role="tab" aria-controls="received" aria-selected="true">
+      Reviews About Me (<%= @received_reviews.size %>)
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link fw-bold" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent" type="button" role="tab" aria-controls="sent" aria-selected="false">
+      Reviews I Left (<%= @sent_reviews.size %>)
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content" id="reviewTabsContent">
+
+  <div class="tab-pane fade show active" id="received" role="tabpanel" aria-labelledby="received-tab">
+    <% if @received_reviews.any? %>
+      <div class="d-flex flex-column gap-3">
+        <% @received_reviews.each do |review| %>
+          <div class="p-3 border rounded bg-white shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="text-warning fw-bold">
+                <%= "⭐" * review.rating %> <span class="text-dark small">(<%= review.rating %>/5)</span>
+              </div>
+              <span class="text-muted small">From User #<%= review.user_id %></span>
+            </div>
+            <p class="mb-1 text-dark">"<%= review.content %>"</p>
+            <small class="text-muted">
+              For Job: <strong><%= review.booking.offer.listing.title %></strong>
+            </small>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-muted italic">No one has left a review for you yet.</p>
+    <% end %>
+  </div>
+
+  <div class="tab-pane fade" id="sent" role="tabpanel" aria-labelledby="sent-tab">
+    <% if @sent_reviews.any? %>
+      <div class="d-flex flex-column gap-3">
+        <% @sent_reviews.each do |review| %>
+          <div class="p-3 border rounded bg-white shadow-sm" style="opacity: 0.9;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="text-warning">
+                <%= "⭐" * review.rating %>
+              </div>
+              <span class="text-muted small"><%= review.created_at.strftime("%B %d, %Y") %></span>
+            </div>
+            <p class="mb-1 text-muted"><em>"<%= review.content %>"</em></p>
+            <small class="text-muted">
+              Left for User #<%= review.reviewee_id %> on Job: <strong><%= review.booking.offer.listing.title %></strong>
+            </small>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-muted italic">You haven't written any reviews yet.</p>
+    <% end %>
+  </div>
+
+</div>
+
+<div class="mt-4">
+  <%= link_to "Back to Dashboard", dashboard_path, class: "btn btn-outline-secondary btn-sm" %>
+</div>

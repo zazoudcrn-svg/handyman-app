@@ -1,6 +1,11 @@
 class ReviewsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_booking
+  before_action :set_booking, only: [:new, :create]
+  def index
+    @received_reviews = Review.where(reviewee_id: current_user.id)
+    @sent_reviews = Review.where(user_id: current_user.id)
+  end
+
   def new
     @review = Review.new
   end

@@ -1,26 +1,122 @@
-<h2>Log in</h2>
+<%# Main container utilizing the Premium SaaS design wrapper %>
+<div class="container-fluid p-0 cf-login-wrapper" style="font-family: 'Manrope', sans-serif; background-color: #FFFFFF;">
+  <div class="row g-0 min-vh-100">
 
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <p><%= f.label :email %></p>
-    <p><%= f.email_field :email, autofocus: true, autocomplete: "email" %></p>
-  </div>
+    <%# LEFT COLUMN: FULL VISUAL BLEND - HELLBLAU FROM TOP TO BOTTOM %>
+    <div class="col-lg-5 d-none d-lg-flex px-5" style="background-color: #F4F7FC; border-right: 1px solid #E2E8F0; flex-direction: column; justify-content: flex-start; padding-top: 100px !important; padding-bottom: 50px !important;">
+      <%# Content container sitting beautifully aligned at the 100px threshold %>
+      <div class="w-100 mx-auto" style="max-width: 85%;">
 
-  <div class="field">
-    <p><%= f.label :password %></p>
-    <p><%= f.password_field :password, autocomplete: "current-password" %></p>
-  </div>
+        <%# Welcoming Login Headline %>
+        <h1 class="text-5xl tracking-tight font-semibold mb-5" style="font-family: 'Outfit', sans-serif; color: #0B1B33; line-height: 1.15;">
+          Welcome back.<br>Log in to your account.
+        </h1>
 
-  <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <p><%= f.check_box :remember_me %></p>
-      <p><%= f.label :remember_me %></p>
+        <%# Clean, card-based value propositions to establish trust %>
+        <div class="d-flex flex-column gap-4 mt-5">
+          <div class="d-flex align-items-center gap-3 bg-white p-4" style="border-radius: 12px; border: 1px solid #E2E8F0; box-shadow: 0 2px 10px rgba(11, 27, 51, 0.04);">
+            <div class="fs-5 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; border-radius: 50%; background-color: #FFFFFF; color: #2F6BFF; border: 1px solid #E2E8F0; flex-shrink: 0;">
+              <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <div>
+              <h6 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Secure Environment</h6>
+              <p class="small text-muted m-0">Your data and credentials are fully encrypted.</p>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center gap-3 bg-white p-4" style="border-radius: 12px; border: 1px solid #E2E8F0; box-shadow: 0 2px 10px rgba(11, 27, 51, 0.04);">
+            <div class="fs-5 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; border-radius: 50%; background-color: #FFFFFF; color: #2F6BFF; border: 1px solid #E2E8F0; flex-shrink: 0;">
+              <i class="bi bi-lightning-charge-fill"></i>
+            </div>
+            <div>
+              <h6 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Fast Dispatch</h6>
+              <p class="small text-muted m-0">Access your dashboard and active projects instantly.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
-  <% end %>
 
-  <div class="actions">
-    <%= f.submit "Log in" %>
+    <%# RIGHT COLUMN: FOCUSED LOGIN CARD & BALANCED MINI FOOTER %>
+    <div class="col-lg-7 col-12 d-flex px-4" style="background-color: #FFFFFF; flex-direction: column; justify-content: flex-start; align-items: center;">
+
+      <%# MAXIMUM WIDTH SAAS CARD: Exactly 680px width to match the registration page %>
+      <div class="mx-auto" style="width: 100%; max-width: 680px; margin-top: 100px; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 4rem; box-shadow: 0 8px 30px rgba(11, 27, 51, 0.06);">
+
+        <%# Header section %>
+        <div class="mb-5">
+          <span class="text-uppercase tracking-wider fw-bold text-primary" style="font-size: 11px; letter-spacing: 2px;">Manage your Projects</span>
+          <h2 class="fw-bold tracking-tight mt-2 mb-1" style="font-family: 'Outfit', sans-serif; color: #0B1B33; letter-spacing: -0.75px;">Sign In</h2>
+          <p class="small text-muted m-0">Enter your credentials below to access your workspace.</p>
+        </div>
+
+        <%# Devise Session Form initialization %>
+        <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+
+          <div class="form-inputs d-flex flex-column gap-3">
+
+            <%# Email Input Field %>
+            <div>
+              <label class="form-label small fw-medium mb-1" style="color: #0B1B33;">Email Address</label>
+              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", style: "border-radius: 12px; border: 1px solid #E2E8F0; padding: 0.8rem 1rem;", placeholder: "name@company.com" %>
+            </div>
+
+            <%# Password Input Field with Forgot Password link inside the label wrapper %>
+            <div class="mt-1">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label small fw-medium m-0" style="color: #0B1B33;">Password</label>
+                <% if devise_mapping.recoverable? %>
+                  <%= link_to "Forgot password?", new_password_path(resource_name), class: "small text-primary text-decoration-none fw-medium" %>
+                <% end %>
+              </div>
+              <%= f.password_field :password, autocomplete: "current-password", class: "form-control", style: "border-radius: 12px; border: 1px solid #E2E8F0; padding: 0.8rem 1rem;", placeholder: "Enter your password" %>
+            </div>
+
+            <%# Optional "Remember Me" Checkbox alignment %>
+            <% if devise_mapping.rememberable? %>
+              <div class="form-check mt-2 d-flex align-items-center gap-2">
+                <%= f.check_box :remember_me, class: "form-check-input", style: "cursor: pointer; width: 16px; height: 16px; margin: 0; border-radius: 4px; border: 1px solid #CBD5E1;" %>
+                <%= f.label :remember_me, class: "form-check-label small text-muted", style: "cursor: pointer; user-select: none;" %>
+              </div>
+            <% end %>
+          </div>
+
+          <%# Form Submission Button %>
+          <div class="form-actions mt-4 pt-2">
+            <%= f.button type: :submit, class: "btn w-100 py-3 text-white fw-semibold", style: "background-color: #2F6BFF; background: #2F6BFF; border-radius: 9999px; border: none; font-family: 'Outfit', sans-serif; box-shadow: 0 10px 25px rgba(47, 107, 255, 0.25); font-weight: 600;" do %>
+              Sign in to dashboard →
+            <% end %>
+          </div>
+        <% end %>
+
+        <%# Footer Navigation linking over to the Sign-Up Route %>
+        <div class="mt-5 pt-3 text-center border-top" style="border-top: 1px solid #E2E8F0;">
+          <p class="small text-muted m-0">
+            Don't have an account yet?
+            <%# NEW: We append the bypass_cookie parameter to the registration path %>
+            <%= link_to "Sign up here", new_registration_path(resource_name, bypass_cookie: true), class: "fw-medium text-primary text-decoration-none" %>
+          </p>
+        </div>
+
+      <%# MINIMAL AUTH FOOTER %>
+      <div class="pt-4 pb-4 text-center w-100" style="max-width: 680px;">
+        <%# Secure Badging %>
+        <div class="text-xs d-flex align-items-center gap-1 justify-content-center text-muted" style="font-size: 11px; color: #64748B; margin-top: -5px !important; margin-bottom: 45px !important;">
+          <i class="bi bi-shield-fill-check" style="color: #10B981;"></i> Secure, encrypted connection
+        </div>
+
+        <%# Legal Links %>
+        <div class="d-flex justify-content-center gap-3 text-xs" style="font-size: 11px; margin-bottom: 20px;">
+          <%= link_to "Privacy Policy", "#", class: "text-muted text-decoration-none hover-underline", style: "color: #64748B;" %>
+          <span class="text-muted" style="color: #CBD5E1;">•</span>
+          <%= link_to "Terms of Service", "#", class: "text-muted text-decoration-none hover-underline", style: "color: #64748B;" %>
+          <span class="text-muted" style="color: #CBD5E1;">•</span>
+          <%= link_to "Legal Notice", "#", class: "text-muted text-decoration-none hover-underline", style: "color: #64748B;" %>
+        </div>
+      </div>
+
+    </div>
+
   </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>

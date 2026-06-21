@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: {
+    registrations: 'users/registrations'
+  }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -43,11 +45,12 @@ Rails.application.routes.draw do
    end
   end
   resources :profiles, only: [ :show, :edit, :update ]
-  resources :reviews, only: [ :new, :create ]
+  resources :reviews, only: [ :index, :new, :create ]
 
   get "onboarding/customer", to: "onboardings#customer", as: :onboarding_customer
   patch "onboarding/customer_update", to: "onboardings#customer_update", as: :update_onboarding_customer
 
-  get "onboarding/contractor", to: "onboardings#contractor", as: :onboarding_contractor
-  patch "onboarding/contractor", to: "onboardings#contractor_update"
+  get 'onboarding/contractor', to: 'onboardings#contractor', as: :onboarding_contractor
+  patch 'onboarding/contractor', to: 'onboardings#contractor_update'
+  patch '/skip_onboarding', to: 'onboardings#skip', as: :skip_onboarding
 end

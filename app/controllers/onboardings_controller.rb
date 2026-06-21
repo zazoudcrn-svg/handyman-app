@@ -62,6 +62,15 @@ class OnboardingsController < ApplicationController
     render :contractor, status: :unprocessable_entity
   end
 
+  # 5. PATCH /skip_onboarding
+  def skip
+    # Wir setzen das Flag beim eingeloggten User auf true
+    current_user.update(onboarding_skipped: true)
+
+    # Und leiten ihn direkt zum zentralen Dashboard weiter
+    redirect_to dashboard_path, notice: "You can complete your profile anytime later!"
+  end
+
   private
 
   def customer_params
