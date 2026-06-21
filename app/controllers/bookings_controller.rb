@@ -32,6 +32,13 @@ end
     @message = Message.new
   end
 
+  def destroy
+   @booking = Booking.find(params[:id])
+   @booking.destroy
+   redirect_to bookings_path, notice: "Booking deleted successfully."
+  end
+
+
   # CUSTOMER or CONTRACTOR: Propose a new date
   def propose_date
     @booking.update(
