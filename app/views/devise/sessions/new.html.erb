@@ -94,10 +94,10 @@
         <div class="mt-5 pt-3 text-center border-top" style="border-top: 1px solid #E2E8F0;">
           <p class="small text-muted m-0">
             Don't have an account yet?
-            <%= link_to "Sign up here", new_registration_path(resource_name), class: "fw-medium text-primary text-decoration-none" %>
+            <%# NEW: We append the bypass_cookie parameter to the registration path %>
+            <%= link_to "Sign up here", new_registration_path(resource_name, bypass_cookie: true), class: "fw-medium text-primary text-decoration-none" %>
           </p>
         </div>
-      </div><%# End of Card %>
 
       <%# MINIMAL AUTH FOOTER %>
       <div class="pt-4 pb-4 text-center w-100" style="max-width: 680px;">
