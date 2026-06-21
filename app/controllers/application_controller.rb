@@ -7,9 +7,6 @@ class ApplicationController < ActionController::Base
 
   before_action :authenticate_user!
 
-  # Permit custom fields during Devise authentication processes
-  before_action :configure_permitted_parameters, if: :devise_controller?
-
   protected
 
   # Overwriting the Devise redirect path after a successful sign-in
@@ -27,10 +24,5 @@ class ApplicationController < ActionController::Base
         onboarding_customer_path
       end
     end
-  end
-
-  # Allow Devise to accept the :role parameter from the registration smart-buttons flow
-  def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [ :role ])
   end
 end

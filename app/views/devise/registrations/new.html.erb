@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    <%# RIGHT COLUMN: FOCUSED REGISTRATION CARD & BALANCED MINI FOOTER (Reduced column padding to px-4) %>
+    <%# RIGHT COLUMN: FOCUSED REGISTRATION CARD & BALANCED MINI FOOTER %>
     <div class="col-lg-7 col-12 d-flex px-4" style="background-color: #FFFFFF; flex-direction: column; justify-content: flex-start; align-items: center;">
 
       <%# MAXIMUM WIDTH SAAS CARD: Expanded max-width to 680px for wide, premium proportions %>
@@ -59,7 +59,7 @@
 
         <%# Standard Devise Form initialization %>
         <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-          <%# VITAL: Safely pass the role parameter to the controller context %>
+          <%# ORIGINAL FIXED STATE: Your traditional hidden tag strategy %>
           <%= hidden_field_tag :role, params[:role] %>
 
           <div class="form-inputs d-flex flex-column gap-3">
@@ -98,9 +98,9 @@
             <%= link_to "Log in here", new_session_path(resource_name), class: "fw-medium text-primary text-decoration-none" %>
           </p>
         </div>
-      </div><%# End of Card %>
+      </div>
 
-      <%# MINIMAL AUTH FOOTER (Symmetrically matched to the new 680px width) %>
+      <%# MINIMAL AUTH FOOTER %>
       <div class="pt-4 pb-4 text-center w-100" style="max-width: 680px;">
         <%# Secure Badging %>
         <div class="text-xs d-flex align-items-center gap-1 justify-content-center text-muted" style="font-size: 11px; color: #64748B; margin-top: -5px !important; margin-bottom: 45px !important;">
