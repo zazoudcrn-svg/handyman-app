@@ -2,6 +2,9 @@ class DashboardsController < ApplicationController
   before_action :authenticate_user!
 
   def show
+    # Set a permanent cookie to remember this device has an active account
+    cookies.permanent[:has_account] = "true"
+
     # Check if the logged-in user has a contractor profile setup
     if current_user.contractor_profile.present?
       # 1. Contractor Logic
