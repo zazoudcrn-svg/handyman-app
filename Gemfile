@@ -47,6 +47,7 @@ gem "simple_form"
 
 # Cloudinary gem
 gem "cloudinary"
+gem "activestorage-cloudinary-service"
 
 # Country Select gem for Simple Form
 gem "country_select"
