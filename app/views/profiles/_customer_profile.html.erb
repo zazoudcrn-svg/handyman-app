@@ -1,0 +1,63 @@
+<div class="card p-4 mb-4">
+    <%# Header: Avatar + Name + Edit button %>
+  <div class="d-flex align-items-start gap-4">
+    <div class="flex-shrink-0">
+      <% if @user.avatar.attached? %>
+        <%= image_tag @user.avatar, class: "rounded-circle", style: "width: 90px; height: 90px; object-fit: cover;" %>
+      <% else %>
+        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 90px; height: 90px;">
+          <span class="text-white fs-3"><%= @user.first_name&.first&.upcase %></span>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="flex-grow-1">
+      <% if @is_own_profile %>
+        <h1 class="mb-0"><%= @user.first_name %> <%= @user.last_name %></h1>
+      <% else %>
+        <h1 class="mb-0"><%= @user.first_name %> <%= @user.last_name&.first %>.</h1>
+      <% end %>
+
+      <% if @user.bio.present? %>
+        <p class="mt-2 mb-0"><%= @user.bio %></p>
+      <% end %>
+    </div>
+
+    <% if @is_own_profile %>
+      <%= link_to "Edit Profile", edit_profile_path(@user), class: "btn btn-outline-secondary btn-sm flex-shrink-0" %>
+    <% end %>
+  </div>
+
+  <%# Stats row %>
+  <div class="row text-center mt-4 border-top pt-3">
+    <div class="col">
+      <div class="fw-bold fs-5"><%= @avg_rating.present? ? "#{@avg_rating} ★" : "—" %></div>
+      <div class="text-muted small">Avg Rating</div>
+    </div>
+    <div class="col">
+      <div class="fw-bold fs-5"><%= @jobs_posted %></div>
+      <div class="text-muted small">Jobs Posted</div>
+    </div>
+    <div class="col">
+      <div class="fw-bold fs-5"><%= @user.city.presence || "—" %></div>
+      <div class="text-muted small">Location</div>
+    </div>
+    <div class="col">
+      <div class="fw-bold fs-5"><%= @user.created_at.strftime("%b %Y") %></div>
+      <div class="text-muted small">Member Since</div>
+    </div>
+  </div>
+
+  <%# Private info — own profile only %>
+  <% if @is_own_profile %>
+    <div class="mt-4 border-top pt-3">
+      <p class="text-muted small mb-2">Only visible to you</p>
+      <p class="mb-1"><strong>Email:</strong> <%= @user.email %></p>
+      <% address = [@user.street, @user.city, @user.postcode, @user.country].compact.join(", ") %>
+      <% if address.present? %>
+        <p class="mb-1"><strong>Address:</strong> <%= address %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+</div>
