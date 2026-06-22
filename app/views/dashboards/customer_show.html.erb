@@ -59,61 +59,85 @@
     </ul>
 
     <% # ==================== 3. TABS CONTENT SECTION ==================== %>
-    <div class="tab-content" id="customerDashboardTabsContent">
+<div class="tab-content" id="customerDashboardTabsContent">
 
-      <% # TAB 1: OPEN REQUESTS %>
-      <div class="tab-pane fade show active" id="open-requests" role="tabpanel" aria-labelledby="open-requests-tab">
-        <% if open_requests.any? %>
-          <div class="row g-4">
-            <% open_requests.each do |listing| %>
-              <div class="col-12">
-                <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
-                  <div class="row g-0">
-                    <% if listing.photos.attached? %>
-                      <div class="col-md-4 position-relative" style="min-height: 220px;">
-                        <%= cl_image_tag listing.photos.first.key, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
-                      </div>
+  <% # TAB 1: OPEN REQUESTS %>
+  <div class="tab-pane fade show active" id="open-requests" role="tabpanel" aria-labelledby="open-requests-tab">
+    <% if open_requests.any? %>
+      <div class="row g-4">
+        <% open_requests.each do |listing| %>
+          <div class="col-12">
+            <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
+              <div class="row g-0">
+
+                <% # Optimized Image Block: Priority hierarchy (1. User Photo, 2. Seed Keyword, 3. Placeholder) %>
+                <div class="col-md-4 position-relative" style="min-height: 220px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center;">
+
+                  <% if listing.photos.attached? && listing.photos.first.present? %>
+                    <% # Priority 1: Display the first user-uploaded or seed photo %>
+                    <%= cl_image_tag listing.photos.first.key, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
+                  <% else %>
+                    <% # Priority 2: Fallback logic based on title keywords for seed data %>
+                    <%
+                      image_path = if listing.title.include?("EMERGENCY") then "listings/burst_pipe.png"
+                                   elsif listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
+                                   elsif listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
+                                   elsif listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
+                                   elsif listing.title.downcase.include?("shower") then "listings/shower_seal.png"
+                                   else nil end
+                    %>
+
+                    <% if image_path.present? %>
+                      <%= image_tag image_path, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
+                    <% else %>
+                      <% # Priority 3: Professional placeholder if no photo and no keyword match found %>
+                      <i class="bi bi-camera" style="font-size: 3rem; color: #94A3B8;"></i>
                     <% end %>
-                    <div class="<%= listing.photos.attached? ? 'col-md-8' : 'col-12' %> p-4 d-flex flex-column justify-content-between">
-                      <div>
-                        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
-                          <span class="badge px-3 py-1.5 fw-semibold" style="border-radius: 6px; background-color: #F1F5F9; color: #475569; font-size: 11px;">Waiting for Offers</span>
-                          <span class="badge border text-capitalize px-3 py-1.5" style="border-radius: 6px; background-color: #FFFFFF; color: #64748B; font-size: 11px; border-color: #E2E8F0 !important;">
-                            <%= listing.category&.name %>
-                          </span>
-                        </div>
-                        <h3 class="fw-bold tracking-tight mb-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.4rem;">
-                          <%= link_to listing.title, listing_path(listing), class: "text-decoration-none text-dark hover-blue-text" %>
-                        </h3>
-                        <% if listing.description.present? %>
-                          <p class="text-muted small mb-0 text-clamp-2" style="line-height: 1.5; color: #64748B !important;"><%= listing.description %></p>
-                        <% end %>
-                      </div>
-                      <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top" style="border-color: rgba(226, 232, 240, 0.6) !important;">
-                        <div class="d-flex align-items-center gap-2 text-muted small">
-                          <i class="bi bi-geo-alt-fill" style="color: #2F6BFF;"></i>
-                          <span class="fw-medium text-dark"><%= listing.postcode %> <%= listing.city %></span>
-                        </div>
-                        <div class="d-flex gap-2">
-                          <%= link_to "Edit", edit_listing_path(listing), class: "btn btn-sm btn-light border px-3 py-2 fw-semibold text-muted", style: "border-radius: 9999px; font-size: 13px;" %>
-                          <%= link_to "Delete", listing_path(listing), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-light border px-3 py-2 fw-semibold text-danger", style: "border-radius: 9999px; font-size: 13px;" %>
-                        </div>
-                      </div>
+                  <% end %>
+                </div>
+
+                <div class="col-md-8 p-4 d-flex flex-column justify-content-between">
+                  <div>
+                    <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                      <span class="badge px-3 py-1.5 fw-semibold" style="border-radius: 6px; background-color: #F1F5F9; color: #475569; font-size: 11px;">Waiting for Offers</span>
+                      <span class="badge border text-capitalize px-3 py-1.5" style="border-radius: 6px; background-color: #FFFFFF; color: #64748B; font-size: 11px; border-color: #E2E8F0 !important;">
+                        <%= listing.category&.name %>
+                      </span>
+                    </div>
+                    <h3 class="fw-bold tracking-tight mb-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.4rem;">
+                      <%= link_to listing.title, listing_path(listing), class: "text-decoration-none text-dark hover-blue-text" %>
+                    </h3>
+                    <% if listing.description.present? %>
+                      <p class="text-muted small mb-0 text-clamp-2" style="line-height: 1.5; color: #64748B !important;"><%= listing.description %></p>
+                    <% end %>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top" style="border-color: rgba(226, 232, 240, 0.6) !important;">
+                    <div class="d-flex align-items-center gap-2 text-muted small">
+                      <i class="bi bi-geo-alt-fill" style="color: #2F6BFF;"></i>
+                      <span class="fw-medium text-dark"><%= listing.postcode %> <%= listing.city %></span>
+                    </div>
+                    <div class="d-flex gap-2">
+                      <%= link_to "Edit", edit_listing_path(listing), class: "btn btn-sm btn-light border px-3 py-2 fw-semibold text-muted", style: "border-radius: 9999px; font-size: 13px;" %>
+                      <%= link_to "Delete", listing_path(listing), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-light border px-3 py-2 fw-semibold text-danger", style: "border-radius: 9999px; font-size: 13px;" %>
                     </div>
                   </div>
                 </div>
               </div>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="text-center py-5 bg-white rounded-4 border" style="border-color: #E2E8F0 !important;">
-            <i class="bi bi-folder-plus text-muted fs-1 mb-3 d-block"></i>
-            <h5 class="fw-bold" style="color: #0B1B33;">No open requests</h5>
-            <p class="text-muted small m-0">You have no active job posts looking for specialists right now.</p>
+            </div>
           </div>
         <% end %>
       </div>
+    <% else %>
+      <div class="text-center py-5 bg-white rounded-4 border" style="border-color: #E2E8F0 !important;">
+        <i class="bi bi-folder-plus text-muted fs-1 mb-3 d-block"></i>
+        <h5 class="fw-bold" style="color: #0B1B33;">No open requests</h5>
+      </div>
+    <% end %>
+  </div>
 
+  <% # Apply the same logic block inside TAB 2, TAB 3, and TAB 4 for consistency %>
+
+</div>
       <% # TAB 2: OFFERS RECEIVED %>
       <div class="tab-pane fade" id="offers-received" role="tabpanel" aria-labelledby="offers-received-tab">
         <% if offers_received.any? %>
