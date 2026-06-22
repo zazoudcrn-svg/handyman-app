@@ -70,6 +70,19 @@ class ListingsController < ApplicationController
     redirect_to dashboard_path, alert: "You are not authorized to delete this listing."
   end
 
+  # 4. POST /listings/:id/reopen
+  def reopen
+    @listing = current_user.listings.find(params[:id])
+    # Setze den Status zurück auf 'open'
+    if @listing.update(listing_status: 'open')
+      redirect_to contractor_dashboard_path, notice: "Job listing has been reopened!"
+    else
+      redirect_to listing_path(@listing), alert: "Could not reopen the job."
+    end
+  rescue ActiveRecord::RecordNotFound
+    redirect_to contractor_dashboard_path, alert: "Not authorized."
+  end
+
   private
 
   def ensure_onboarding_completed
