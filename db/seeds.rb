@@ -100,7 +100,7 @@ Listing.create!(
   category: plumbing_category,
   title: "EMERGENCY: Burst pipe in kitchen, Soho restaurant area!",
   description: "A major water pipe has burst behind the commercial dishwasher in our restaurant kitchen. Water is actively leaking onto the floor. We need someone with tools to shut down the mains and replace the section of the pipe immediately before the evening shift starts.",
-  street: "Dean Street 12", postcode: "W1D 3R7", city: "London", country: "United Kingdom", latitude: 51.5135, longitude: -0.1320
+  street: "Dean Street 12", postcode: "W1D 3R7", city: "London", country: "United Kingdom", latitude: 51.5135, longitude: -0.1320, urgency: "normal", availability_profile: "anytime"
 )
 
 # ==============================================================================
@@ -112,7 +112,7 @@ Listing.create!(
   category: plumbing_category,
   title: "Install new kitchen sink and mixer tap",
   description: "We recently bought a composite granite kitchen sink and a new pull-out mixer tap from IKEA. We need a professional plumber to remove the old stainless steel sink, fit the new one into the wooden worktop, and connect all the new plumbing and waste pipes underneath.",
-  street: "George Street 5", postcode: "CR0 1PE", city: "Croydon", country: "United Kingdom", latitude: 51.3742, longitude: -0.0964
+  street: "George Street 5", postcode: "CR0 1PE", city: "Croydon", country: "United Kingdom", latitude: 51.3742, longitude: -0.0964, urgency: "normal", availability_profile: "anytime"
 )
 
 # ==============================================================================
@@ -124,7 +124,7 @@ listing_offer = Listing.create!(
   category: plumbing_category,
   title: "Low water pressure and leaking bathroom boiler",
   description: "Our Combi boiler has been losing pressure rapidly over the last week. I noticed a small, constant drip coming from one of the copper pipe connections directly underneath the unit. Looking for someone to inspect the system, tighten or replace the valve, and repressurize the boiler.",
-  street: "Broadway 10", postcode: "E15 4QS", city: "London", country: "United Kingdom", latitude: 51.5416, longitude: 0.0021
+  street: "Broadway 10", postcode: "E15 4QS", city: "London", country: "United Kingdom", latitude: 51.5416, longitude: 0.0021, urgency: "normal", availability_profile: "anytime"
 )
 
 offer_pending = Offer.create!(
@@ -164,7 +164,7 @@ listing_booking_ongoing = Listing.create!(
   user: customer_5, category: plumbing_category,
   title: "Replace radiator valves in commercial office",
   description: "We have 4 manual radiator valves across our office space that are seized up and cannot be adjusted. We need them replaced with modern Thermostatic Radiator Valves (TRVs).",
-  street: "Greenwich High Rd 15", postcode: "SE10 8JA", city: "London", country: "United Kingdom", latitude: 51.4826, longitude: -0.0077
+  street: "Greenwich High Rd 15", postcode: "SE10 8JA", city: "London", country: "United Kingdom", latitude: 51.4826, longitude: -0.0077, urgency: "normal", availability_profile: "anytime"
 )
 offer_ongoing = Offer.create!(
   user: contractor, listing: listing_booking_ongoing, quote: 450,
@@ -176,7 +176,7 @@ Message.create!(offer: offer_ongoing, user: contractor, content: "Good morning D
 
 # Booking 2: Afternoon slot on the same Thursday (Density filler)
 customer_extra_1 = User.create!(email: "ce1@gmail.com", password: "password123", role: "customer", first_name: "Tom", last_name: "Baker", city: "London", latitude: 51.5110, longitude: -0.1420)
-listing_extra_1 = Listing.create!(user: customer_extra_1, category: plumbing_category, title: "Emergency drain unblocking and cleanup", street: "Piccadilly 50", city: "London", country: "United Kingdom", latitude: 51.5110, longitude: -0.1420)
+listing_extra_1 = Listing.create!(user: customer_extra_1, category: plumbing_category, title: "Emergency drain unblocking and cleanup", description: "Kitchen drain is overflowing and needs urgent hydro-jetting to clear blockage.", street: "Piccadilly 50", postcode: "W1J 0DX", city: "London", country: "United Kingdom", latitude: 51.5110, longitude: -0.1420, urgency: "normal", availability_profile: "anytime")
 offer_extra_1 = Offer.create!(
   user: contractor, listing: listing_extra_1, quote: 320,
   note: "Urgent response slot booked. Bringing industrial hydro-jetting equipment to clear out the blocked pipe system.",
@@ -186,7 +186,7 @@ Booking.create!(offer: offer_extra_1, listing: listing_extra_1, booking_status: 
 
 # Booking 3: Midday slot on Wednesday (Density filler)
 customer_extra_2 = User.create!(email: "ce2@gmail.com", password: "password123", role: "customer", first_name: "Sarah", last_name: "Connor", city: "London", latitude: 51.5120, longitude: -0.1430)
-listing_extra_2 = Listing.create!(user: customer_extra_2, category: plumbing_category, title: "Annual safety check and power flush", street: "Regent Street 20", city: "London", country: "United Kingdom", latitude: 51.5120, longitude: -0.1430)
+listing_extra_2 = Listing.create!(user: customer_extra_2, category: plumbing_category, title: "Annual safety check and power flush", description: "Full heating system inspection and power flush to remove sludge and improve efficiency.", street: "Regent Street 20",  postcode: "W1B 5AH", city: "London", country: "United Kingdom", latitude: 51.5120, longitude: -0.1430, urgency: "normal", availability_profile: "anytime")
 offer_extra_2 = Offer.create!(
   user: contractor, listing: listing_extra_2, quote: 580,
   note: "Comprehensive central heating service including full system power flush with protective chemicals to clean sludge from radiators.",
@@ -204,7 +204,7 @@ listing_completed_1 = Listing.create!(
   user: customer_5, category: plumbing_category,
   title: "Fix leaking shower enclosure and reseal tray",
   description: "Water has started seeping through the bathroom floor into the hallway downstairs whenever someone showers. Needs old silicone stripped out, area sanitized, and a fresh bead applied.",
-  street: "Brixton Rd 200", postcode: "SW9 6AP", city: "London", country: "United Kingdom", latitude: 51.4623, longitude: -0.1149
+  street: "Brixton Rd 200", postcode: "SW9 6AP", city: "London", country: "United Kingdom", latitude: 51.4623, longitude: -0.1149, urgency: "normal", availability_profile: "anytime"
 )
 offer_completed_1 = Offer.create!(
   user: contractor, listing: listing_completed_1, quote: 180,
@@ -223,7 +223,13 @@ customer_history_1 = User.create!(email: "ch1@gmail.com", password: "password123
 listing_completed_2 = Listing.create!(
   user: customer_history_1, category: plumbing_category,
   title: "Blocked toilet drainage and pipe inspection",
-  description: "Main bathroom toilet is completely blocked and backing up. Tried plunging but didn't help. Need professional drainage clearance equipment."
+  description: "Main bathroom toilet is completely blocked and backing up. Tried plunging but didn't help. Need professional drainage clearance equipment.",
+  street: "Baker Street 221B",
+  postcode: "NW1 6XE",
+  city: "London",
+  country: "United Kingdom",
+  urgency: "normal",
+  availability_profile: "anytime"
 )
 offer_completed_2 = Offer.create!(
   user: contractor, listing: listing_completed_2, quote: 120,
@@ -242,8 +248,14 @@ customer_history_2 = User.create!(email: "ch2@gmail.com", password: "password123
 listing_completed_3 = Listing.create!(
   user: customer_history_2, category: plumbing_category,
   title: "Fit new designer vertical radiator in hallway",
-  description: "Need an old standard radiator swapped out for a new anthracite vertical designer radiator. Pipes will need slight modification to fit the new layout."
-)
+  description: "Need an old standard radiator swapped out for a new anthracite vertical designer radiator. Pipes will need slight modification to fit the new layout.",
+ street: "Camden High Street 12",
+  postcode: "NW1 7JE",
+  city: "London",
+  country: "United Kingdom",
+  urgency: "normal",
+  availability_profile: "anytime"
+  )
 offer_completed_3 = Offer.create!(
   user: contractor, listing: listing_completed_3, quote: 380,
   note: "Includes mounting the new designer radiator bracket on brick wall, aligning the copper pipe work, and testing the system loop for leaks.",
@@ -267,11 +279,245 @@ listing_declined = Listing.create!(
   category: plumbing_category,
   title: "Fix leaking outdoor garden tap",
   description: "Our brass outdoor garden tap has been leaking constantly from the spindle when turned on. It's wasting water in the garden.",
-  street: "High Street 45", postcode: "WD17 2DJ", city: "Watford", country: "United Kingdom", latitude: 51.6565, longitude: -0.3942
+  street: "High Street 45", postcode: "WD17 2DJ", city: "Watford", country: "United Kingdom", latitude: 51.6565, longitude: -0.3942, urgency: "normal", availability_profile: "anytime"
 )
 
 DeclinedListing.create!(user: contractor, listing: listing_declined)
+# ==============================================================================
+# SCENARIO 7: Full Customer Journey (Pending, Declined, Proposed Date, Confirmed,
+# Completed, Customer-Cancelled, Contractor-Cancelled)
+# ==============================================================================
 
+puts "Creating Scenario 7: Full Customer Journey..."
+
+customer_7 = User.create!(
+  email: "c7@gmail.com",
+  password: "password123",
+  role: "customer",
+  first_name: "Oliver",
+  last_name: "Grant",
+  city: "London",
+  country: "United Kingdom",
+  latitude: 51.5090,
+  longitude: -0.1337
+)
+
+# 1. PENDING BOOKING
+listing_pending = Listing.create!(
+  user: customer_7,
+  category: plumbing_category,
+  title: "Kitchen tap dripping and needs replacement",
+  description: "Our kitchen mixer tap has been dripping for weeks. We bought a new tap from B&Q and need it installed.",
+  street: "Charlotte Street 21",
+  postcode: "W1T 1RJ",
+  city: "London",
+  country: "United Kingdom",
+  latitude: 51.5200,
+  longitude: -0.1350,
+  urgency: "normal",
+  availability_profile: "anytime"
+)
+
+offer_pending = Offer.create!(
+  user: contractor,
+  listing: listing_pending,
+  quote: 95,
+  note: "Includes removing the old tap, installing the new one, and checking for leaks.",
+  suggested_date_and_time: "2026-07-04 11:00:00",
+  estimated_duration_hours: 1.0
+)
+
+Booking.create!(
+  offer: offer_pending,
+  listing: listing_pending,
+  booking_status: "pending",
+  scheduled_date_and_time: "2026-07-04 11:00:00"
+)
+
+# 2. DECLINED LISTING
+listing_declined = Listing.create!(
+  user: customer_7,
+  category: plumbing_category,
+  title: "Replace old toilet flush mechanism",
+  description: "The toilet flush handle is loose and the internal mechanism is worn out. Needs replacement.",
+  street: "Trafalgar Square 3",
+  postcode: "WC2N 5DN",
+  city: "London",
+  country: "United Kingdom",
+  latitude: 51.5080,
+  longitude: -0.1281,
+  urgency: "normal",
+  availability_profile: "anytime"
+)
+
+DeclinedListing.create!(
+  user: contractor,
+  listing: listing_declined
+)
+
+# 3. PROPOSED NEW DATE
+listing_proposed = Listing.create!(
+  user: customer_7,
+  category: plumbing_category,
+  title: "Shower pressure extremely low",
+  description: "The shower pressure has dropped significantly. Might be a clogged filter or faulty pump.",
+  street: "Leicester Square 18",
+  postcode: "WC2H 7NA",
+  city: "London",
+  country: "United Kingdom",
+  latitude: 51.5100,
+  longitude: -0.1300,
+  urgency: "normal",
+  availability_profile: "anytime"
+)
+
+offer_proposed = Offer.create!(
+  user: contractor,
+  listing: listing_proposed,
+  quote: 160,
+  note: "Will inspect the pump, clean filters, and test the pressure.",
+  suggested_date_and_time: "2026-07-06 15:00:00",
+  estimated_duration_hours: 1.5
+)
+
+Booking.create!(
+  offer: offer_proposed,
+  listing: listing_proposed,
+  booking_status: "pending",
+  new_proposed_date_and_time: "2026-07-07 10:00:00",
+  proposed_by: "customer",   # or "contractor"
+  scheduled_date_and_time: "2026-07-06 15:00:00"
+)
+
+# 4. CONFIRMED BOOKING
+listing_confirmed = Listing.create!(
+  user: customer_7,
+  category: plumbing_category,
+  title: "Install new under-sink water filter system",
+  description: "We bought a 3-stage water filtration system from Amazon and need a plumber to install it.",
+  street: "Wardour Street 88",
+  postcode: "W1F 0TN",
+  city: "London",
+  country: "United Kingdom",
+  latitude: 51.5130,
+  longitude: -0.1350,
+  urgency: "normal",
+  availability_profile: "anytime"
+)
+
+offer_confirmed = Offer.create!(
+  user: contractor,
+  listing: listing_confirmed,
+  quote: 140,
+  note: "Includes drilling the countertop for the tap, connecting the filter system, and testing for leaks.",
+  suggested_date_and_time: "2026-07-03 10:00:00",
+  estimated_duration_hours: 1.5
+)
+
+Booking.create!(
+  offer: offer_confirmed,
+  listing: listing_confirmed,
+  booking_status: "confirmed",
+  scheduled_date_and_time: "2026-07-03 10:00:00"
+)
+
+# 5. COMPLETED BOOKING
+listing_completed = Listing.create!(
+  user: customer_7,
+  category: plumbing_category,
+  title: "Repair leaking bathtub waste pipe",
+  description: "Water is dripping through the ceiling below the bathroom whenever the bathtub drains.",
+  street: "Berwick Street 42",
+  postcode: "W1F 8RX",
+  city: "London",
+  country: "United Kingdom",
+  latitude: 51.5138,
+  longitude: -0.1365,
+  urgency: "normal",
+  availability_profile: "anytime"
+)
+
+offer_completed = Offer.create!(
+  user: contractor,
+  listing: listing_completed,
+  quote: 180,
+  note: "Will remove the bath panel, inspect the waste trap, replace seals, and test drainage.",
+  suggested_date_and_time: "2026-06-18 14:00:00",
+  estimated_duration_hours: 2.0
+)
+
+Booking.create!(
+  offer: offer_completed,
+  listing: listing_completed,
+  booking_status: "completed",
+  scheduled_date_and_time: "2026-06-18 14:00:00"
+)
+
+# 6. CUSTOMER-CANCELLED BOOKING
+listing_customer_cancel = Listing.create!(
+  user: customer_7,
+  category: plumbing_category,
+  title: "Fix leaking washing machine hose",
+  description: "Water is leaking from the back of the washing machine. Likely a loose or cracked hose.",
+  street: "Soho Square 7",
+  postcode: "W1D 3QB",
+  city: "London",
+  country: "United Kingdom",
+  latitude: 51.5150,
+  longitude: -0.1320,
+  urgency: "normal",
+  availability_profile: "anytime"
+)
+
+offer_customer_cancel = Offer.create!(
+  user: contractor,
+  listing: listing_customer_cancel,
+  quote: 110,
+  note: "Will inspect the hose, replace if needed, and test the machine.",
+  suggested_date_and_time: "2026-07-08 12:00:00",
+  estimated_duration_hours: 1.0
+)
+
+Booking.create!(
+  offer: offer_customer_cancel,
+  listing: listing_customer_cancel,
+  booking_status: "cancelled",
+  cancellation_note: "Customer cancelled due to emergency travel",
+  scheduled_date_and_time: "2026-07-08 12:00:00"
+)
+
+# 7. CONTRACTOR-CANCELLED BOOKING
+listing_contractor_cancel = Listing.create!(
+  user: customer_7,
+  category: plumbing_category,
+  title: "Unblock slow draining kitchen sink",
+  description: "The kitchen sink drains very slowly. Tried using drain cleaner but no improvement.",
+  street: "Soho Square 7",
+  postcode: "W1D 3QB",
+  city: "London",
+  country: "United Kingdom",
+  latitude: 51.5150,
+  longitude: -0.1320,
+  urgency: "normal",
+  availability_profile: "anytime"
+)
+
+offer_contractor_cancel = Offer.create!(
+  user: contractor,
+  listing: listing_contractor_cancel,
+  quote: 90,
+  note: "Will use a manual auger and check the U-bend for blockages.",
+  suggested_date_and_time: "2026-07-09 09:00:00",
+  estimated_duration_hours: 1.0
+)
+
+Booking.create!(
+  offer: offer_contractor_cancel,
+  listing: listing_contractor_cancel,
+  booking_status: "cancelled",
+  cancellation_note: "Contractor cancelled due to overbooked schedule",
+  scheduled_date_and_time: "2026-07-09 09:00:00"
+)
 # ==============================================================================
 # SEED TERMINATION FEEDBACK
 # ==============================================================================
