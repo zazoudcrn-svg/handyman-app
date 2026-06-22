@@ -1,0 +1,42 @@
+<% # app/views/shared/_calendar.html.erb %>
+<%# Erwartet: 'calendar_bookings' als lokale Variable %>
+
+<div class="card p-4 border-0 shadow-sm" style="border-radius: 20px; border: 1px solid #E2E8F0 !important;">
+  <%= week_calendar(number_of_weeks: 1, events: calendar_bookings, attribute: :scheduled_date_and_time) do |date, bookings| %>
+
+    <div class="text-muted small fw-bold mb-2 text-uppercase" style="font-size: 11px;"><%= date.strftime("%a %d") %></div>
+
+    <div class="d-flex flex-column gap-2" style="min-height: 140px;">
+      <% bookings.each do |booking| %>
+        <div class="p-2 rounded shadow-sm event-blue">
+          <div class="small fw-bold" style="font-size: 0.75rem;"><%= booking.listing.title %></div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+  /* Alle Stile für den Kalender sind nun in einer Datei gekapselt */
+  .simple-calendar .calendar-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .simple-calendar .calendar-heading a {
+    text-decoration: none; color: #2F6BFF; font-weight: 600; font-size: 14px;
+    padding: 6px 12px; border: 1px solid #E2E8F0; border-radius: 8px; transition: all 0.2s;
+  }
+  .simple-calendar .calendar-heading a:hover { background-color: #EFF6FF; border-color: #2F6BFF; }
+  .simple-calendar .calendar-heading h2 { font-size: 18px; font-weight: 700; color: #0B1B33; }
+
+  .simple-calendar table { table-layout: fixed; width: 100%; }
+  .simple-calendar table td { vertical-align: top; text-align: center; }
+
+  .event-blue {
+    display: flex !important; justify-content: center; align-items: center;
+    margin: 0 auto; width: 90%; background-color: #2F6BFF !important;
+    color: #FFFFFF !important; border-left: 4px solid #1D4ED8 !important;
+  }
+</style>
