@@ -1,79 +1,128 @@
-<div class="d-flex align-items-center justify-content-between mb-3">
-  <h1 class="fw-bold text-dark mb-0">My Reviews</h1>
-  <div class="text-warning fw-bold h5 mb-0">
-    <% if @received_reviews.any? %>
-      ⭐ <%= (@received_reviews.average(:rating) || 0).round(1) %> <span class="text-muted small">(Global Score)</span>
-    <% else %>
-      <span class="text-muted small">No ratings yet</span>
-    <% end %>
-  </div>
-</div>
+<div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
+  <div class="container" style="max-width: 800px;">
 
-<hr class="mb-4">
-
-<ul class="nav nav-tabs mb-4" id="reviewTabs" role="tablist">
-  <li class="nav-item" role="presentation">
-    <button class="nav-link active fw-bold" id="received-tab" data-bs-toggle="tab" data-bs-target="#received" type="button" role="tab" aria-controls="received" aria-selected="true">
-      Reviews About Me (<%= @received_reviews.size %>)
-    </button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link fw-bold" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent" type="button" role="tab" aria-controls="sent" aria-selected="false">
-      Reviews I Left (<%= @sent_reviews.size %>)
-    </button>
-  </li>
-</ul>
-
-<div class="tab-content" id="reviewTabsContent">
-
-  <div class="tab-pane fade show active" id="received" role="tabpanel" aria-labelledby="received-tab">
-    <% if @received_reviews.any? %>
-      <div class="d-flex flex-column gap-3">
-        <% @received_reviews.each do |review| %>
-          <div class="p-3 border rounded bg-white shadow-sm">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <div class="text-warning fw-bold">
-                <%= "⭐" * review.rating %> <span class="text-dark small">(<%= review.rating %>/5)</span>
-              </div>
-              <span class="text-muted small">From User #<%= review.user_id %></span>
-            </div>
-            <p class="mb-1 text-dark">"<%= review.content %>"</p>
-            <small class="text-muted">
-              For Job: <strong><%= review.booking.offer.listing.title %></strong>
-            </small>
-          </div>
+    <% # Header Section %>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold mb-0" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">My Reviews</h2>
+      <div class="bg-white px-3 py-2 rounded-pill border shadow-sm">
+        <% if @received_reviews.any? %>
+          <span class="text-warning">★</span> <strong style="color: #0B1B33;"><%= (@received_reviews.average(:rating) || 0).round(1) %></strong> <span class="text-muted small">Global Score</span>
+        <% else %>
+          <span class="text-muted small">No ratings yet</span>
         <% end %>
       </div>
-    <% else %>
-      <p class="text-muted italic">No one has left a review for you yet.</p>
-    <% end %>
-  </div>
+    </div>
 
-  <div class="tab-pane fade" id="sent" role="tabpanel" aria-labelledby="sent-tab">
-    <% if @sent_reviews.any? %>
-      <div class="d-flex flex-column gap-3">
-        <% @sent_reviews.each do |review| %>
-          <div class="p-3 border rounded bg-white shadow-sm" style="opacity: 0.9;">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <div class="text-warning">
-                <%= "⭐" * review.rating %>
+    <% # Tabs Navigation %>
+    <ul class="nav nav-tabs border-0 mb-4" id="reviewTabs" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link active fw-bold border-0 bg-transparent" id="received-tab" data-bs-toggle="tab" data-bs-target="#received" style="color: #2F6BFF; border-bottom: 3px solid #2F6BFF !important;">
+          Reviews About Me (<%= @received_reviews.size %>)
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link text-muted fw-medium border-0 bg-transparent" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent">
+          Reviews I Left (<%= @sent_reviews.size %>)
+        </button>
+      </li>
+    </ul>
+
+    <% # Tab Content %>
+    <div class="tab-content" id="reviewTabsContent">
+
+      <% # Tab 1: Received Reviews %>
+      <div class="tab-pane fade show active" id="received" role="tabpanel">
+        <% if @received_reviews.any? %>
+          <% @received_reviews.each do |review| %>
+            <div class="card p-4 mb-3 border-0 shadow-sm" style="border-radius: 16px; border: 1px solid #E2E8F0 !important;">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="text-warning small fw-bold">
+                  <%= "★" * review.rating %> <span class="text-dark ms-1">(<%= review.rating %>/5)</span>
+                </div>
+                <span class="text-muted small">By <%= review.user.first_name %> <%= review.user.last_name %></span>
               </div>
-              <span class="text-muted small"><%= review.created_at.strftime("%B %d, %Y") %></span>
+              <p class="mb-3" style="color: #334155;">"<%= review.content %>"</p>
+              <div class="small text-muted bg-light p-2 rounded">
+                Job: <strong><%= review.booking.offer.listing.title %></strong>
+              </div>
             </div>
-            <p class="mb-1 text-muted"><em>"<%= review.content %>"</em></p>
-            <small class="text-muted">
-              Left for User #<%= review.reviewee_id %> on Job: <strong><%= review.booking.offer.listing.title %></strong>
-            </small>
-          </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted italic">No one has left a review for you yet.</p>
         <% end %>
       </div>
-    <% else %>
-      <p class="text-muted italic">You haven't written any reviews yet.</p>
-    <% end %>
+
+      <% # Tab 2: Sent Reviews %>
+      <div class="tab-pane fade" id="sent" role="tabpanel">
+        <% if @sent_reviews.any? %>
+          <% @sent_reviews.each do |review| %>
+            <div class="card p-4 mb-3 border-0 shadow-sm" style="border-radius: 16px; border: 1px solid #E2E8F0 !important;">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="text-warning">
+                  <%= "★" * review.rating %>
+                </div>
+                <span class="text-muted small"><%= review.created_at.strftime("%B %d, %Y") %></span>
+              </div>
+              <p class="mb-3 text-muted" style="font-style: italic;">"<%= review.content %>"</p>
+              <div class="small text-muted bg-light p-2 rounded">
+                Job: <strong><%= review.booking.offer.listing.title %></strong>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted italic">You haven't written any reviews yet.</p>
+        <% end %>
+      </div>
+
+    </div>
+
+    <% # Navigation Back Link %>
+    <div class="mt-4">
+      <%= link_to "← Back to Dashboard", dashboard_path, class: "text-muted text-decoration-none small" %>
+    </div>
+
   </div>
-
 </div>
 
-<div class="mt-4">
-  <%= link_to "Back to Dashboard", dashboard_path, class: "btn btn-outline-secondary btn-sm" %>
-</div>
+<style>
+  /* 1. Reset standard bootstrap nav-tab border */
+  .nav-tabs .nav-link {
+    border: none !important;
+    color: #6c757d; /* grey for inactive */
+    transition: all 0.2s ease;
+  }
+
+  /* 2. Style for the ACTIVE tab */
+  .nav-tabs .nav-link.active {
+    background-color: transparent !important;
+    color: #2F6BFF !important; /* Your brand blue */
+    border-bottom: 3px solid #2F6BFF !important; /* The blue line */
+    font-weight: 700;
+  }
+
+  /* 3. Hover effect for inactive tabs */
+  .nav-tabs .nav-link:hover {
+    color: #2F6BFF !important;
+    border-bottom: 3px solid transparent;
+  }
+</style>
+
+<script>
+  document.addEventListener("turbo:load", function() {
+    const tabs = document.querySelectorAll('#reviewTabs .nav-link');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        // Remove active styles from all tabs
+        tabs.forEach(t => {
+          t.style.color = "#6c757d"; // muted color
+          t.style.borderBottom = "none";
+        });
+
+        // Add active styles to clicked tab
+        this.style.color = "#2F6BFF";
+        this.style.borderBottom = "3px solid #2F6BFF";
+      });
+    });
+  });
+</script>
