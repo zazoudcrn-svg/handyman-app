@@ -1,6 +1,155 @@
-<h1>Edit Your Job Listing</h1>
+<div class="container my-5" style="max-width: 850px; margin: 0 auto;">
 
-<%= render "form" %>
+  <%# Premium Header section - Adjusted for perfect proportion %>
+  <div class="mb-4" style="margin-bottom: 2.5rem !important;">
+    <h1 style="font-family: 'Outfit', sans-serif;
+               color: #0B1B33;
+               font-weight: 700;
+               font-size: 2.0rem;
+               letter-spacing: -0.5px;
+               margin-bottom: 0;">
+      Edit Your Job Listing
+    </h1>
+  </div>
 
-<hr>
-<%= link_to "Cancel and Back to Dashboard", dashboard_path %>
+  <div class="saas-form-wrapper">
+    <%= render "form" %>
+  </div>
+</div>
+
+<style>
+/* ==========================================================================
+   Global Styles
+   ========================================================================== */
+body {
+  background-color: #F8FAFC;
+}
+
+/* ==========================================================================
+   Form Wrapper (The "Card" Look)
+   ========================================================================== */
+.saas-form-wrapper .simple_form {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 4px 20px rgba(11, 27, 51, 0.05);
+  margin-top: 25px;
+}
+
+/* ==========================================================================
+   Sections and Headings
+   ========================================================================== */
+.saas-form-wrapper .form-step {
+  border-bottom: 1px solid #E2E8F0;
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+}
+
+.saas-form-wrapper .form-step:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.saas-form-wrapper h2 {
+  font-family: 'Outfit', sans-serif;
+  color: #0B1B33;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.5px;
+  margin-bottom: 1rem;
+}
+
+.saas-form-wrapper p {
+  color: #64748B;
+  font-size: 14px;
+  margin-bottom: 1.5rem;
+}
+
+/* ==========================================================================
+   Input Fields & Validation (The "Blue Theme")
+   ========================================================================== */
+.saas-form-wrapper input[type="text"],
+.saas-form-wrapper input[type="string"],
+.saas-form-wrapper input[type="email"],
+.saas-form-wrapper textarea,
+.saas-form-wrapper select {
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+  padding: 0.8rem 1rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.saas-form-wrapper input:focus,
+.saas-form-wrapper textarea:focus,
+.saas-form-wrapper select:focus {
+  border-color: #2F6BFF;
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.1);
+  outline: none;
+}
+
+/* Force blue validation styles & remove green icons */
+.saas-form-wrapper .form-control.is-valid,
+.saas-form-wrapper .form-control:valid,
+.saas-form-wrapper select.is-valid,
+.saas-form-wrapper select:valid {
+  border-color: #2F6BFF !important;
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.1) !important;
+  background-image: none !important;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+.saas-form-wrapper .next-btn,
+.saas-form-wrapper .submit-btn,
+.saas-form-wrapper input[type="submit"] {
+  background-color: #2F6BFF;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  border: none;
+  padding: 12px 28px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.saas-form-wrapper .next-btn:hover,
+.saas-form-wrapper .submit-btn:hover,
+.saas-form-wrapper input[type="submit"]:hover {
+  background-color: #0B1B33;
+}
+
+/* ==========================================================================
+   Radio Cards (The Blue Selection Look)
+   ========================================================================== */
+.radio-card {
+  display: block;
+  padding: 12px 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.radio-card:hover { border-color: #2F6BFF; background: #F8FAFC; }
+
+.radio-card:has(input:checked) {
+  border-color: #2F6BFF !important;
+  background-color: #EFF6FF !important;
+}
+
+.saas-form-wrapper input[type="radio"] {
+  accent-color: #2F6BFF;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.d-none { display: none !important; }
+</style>
