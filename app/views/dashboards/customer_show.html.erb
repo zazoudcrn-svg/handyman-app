@@ -28,10 +28,10 @@
       <span class="text-uppercase fw-bold" style="font-size: 10px; color: #94A3B8; letter-spacing: 0.05em; margin-right: 5px;">Filter:</span>
 
       <% tabs = [
-        { id: "open-requests", label: "Open Requests", count: open_requests.size },
-        { id: "offers-received", label: "Offers Received", count: offers_received.size },
-        { id: "booked-jobs", label: "Booked Jobs", count: booked_jobs.size },
-        { id: "past-jobs", label: "Past Jobs", count: past_jobs.size }
+        { id: "open-requests", label: "Active listings", count: open_requests.size },
+        { id: "offers-received", label: "Offers received", count: offers_received.size },
+        { id: "booked-jobs", label: "Booking confirmed", count: booked_jobs.size },
+        # { id: "past-jobs", label: "Past Jobs", count: past_jobs.size }
       ] %>
 
       <% tabs.each_with_index do |tab, index| %>
@@ -50,7 +50,7 @@
       <div class="tab-pane fade show active" id="open-requests" role="tabpanel">
         <div class="row g-4">
           <% open_requests.each do |listing| %>
-            <%= render 'shared/listing_card', listing: listing, badge_text: "Waiting for Offers", action_path: listing_path(listing), link_label: "View Details" %>
+            <%= render 'shared/listing_card', listing: listing, badge_text: "Waiting for Offers", action_path: listing_path(listing), link_label: "View Listing →" %>
           <% end %>
         </div>
       </div>
@@ -58,7 +58,7 @@
       <div class="tab-pane fade" id="offers-received" role="tabpanel">
         <div class="row g-4">
           <% offers_received.each do |listing| %>
-            <%= render 'shared/listing_card', listing: listing, badge_text: "Action Required: Offers In!", badge_style: "background-color: #EFF6FF; color: #2F6BFF;", action_path: listing_offer_path(listing, listing.offers.first), link_label: "View Offer & Chat →" %>
+            <%= render 'shared/listing_card', listing: listing, badge_text: "Action Required: Offers In!", badge_style: "background-color: #EFF6FF; color: #2F6BFF;", action_path: listing_offer_path(listing, listing.offers.first), link_label: "View Offer →" %>
           <% end %>
         </div>
       </div>
@@ -66,17 +66,17 @@
       <div class="tab-pane fade" id="booked-jobs" role="tabpanel">
         <div class="row g-4">
           <% booked_jobs.each do |listing| %>
-            <%= render 'shared/listing_card', listing: listing, badge_text: "Confirmed Booking", badge_style: "background-color: #10B981; color: #FFFFFF;", action_path: booking_path(listing.offers.find { |o| o.booking.present? }&.booking), link_label: "Open Booking & Chat →" %>
+            <%= render 'shared/listing_card', listing: listing, badge_text: "Booked", badge_style: "background-color: #10B981; color: #FFFFFF;", action_path: booking_path(listing.offers.find { |o| o.booking.present? }&.booking), link_label: "View Booking →" %>
           <% end %>
         </div>
       </div>
 
-      <div class="tab-pane fade" id="past-jobs" role="tabpanel">
+      <%# <div class="tab-pane fade" id="past-jobs" role="tabpanel">
         <div class="row g-4">
           <% past_jobs.each do |listing| %>
-            <%= render 'shared/listing_card', listing: listing, badge_text: "Completed", badge_style: "background-color: #F1F5F9; color: #64748B;", action_path: booking_path(listing.offers.find { |o| o.booking.present? }&.booking), link_label: "View History & Review" %>
-          <% end %>
-        </div>
+            <%# <%= render 'shared/listing_card', listing: listing, badge_text: "Completed", badge_style: "background-color: #F1F5F9; color: #64748B;", action_path: booking_path(listing.offers.find { |o| o.booking.present? }&.booking), link_label: "View History & Review" %>
+          <%# <% end %>
+        <%# </div>
       </div>
 
     </div>

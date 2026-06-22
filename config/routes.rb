@@ -18,7 +18,7 @@ Rails.application.routes.draw do
     member do
       post :reopen
     end
-    resources :offers, only: [:show, :new, :create] do
+    resources :offers, only: [:show, :new, :create, :edit, :update, :destroy] do
       collection do
         get :declined
       end

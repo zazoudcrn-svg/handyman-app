@@ -1,11 +1,22 @@
 <div class="container my-4">
+  <div class="mb-4">
+    <%= link_to offers_path, class: "text-decoration-none d-inline-flex align-items-center gap-2 small fw-medium", style: "color: #64748B; transition: color 0.2s;" do %>
+      <i class="bi bi-arrow-left"></i> Back to all offers
+    <% end %>
+  </div>
   <div class="row g-4">
     <div class="col-md-8">
 
+      <h2>Offer details</h2>
       <div class="card p-4">
-        <h1>Offer details</h1>
+        <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= @listing.title %></h5>
+        <hr class="mt-0 mb-3">
+        <% if current_user.customer? %>
+          <p><strong>Contractor:</strong> <%= link_to @offer.user.contractor_profile&.business_name || @offer.user.first_name, profile_path(@offer.user) %></p>
+        <% elsif current_user.contractor? %>
+          <p><strong>Customer:</strong> <%= link_to "#{@listing.user.first_name} #{@listing.user.last_name&.first}.", profile_path(@listing.user) %></p>
+        <% end %>
 
-        <p><strong>Contractor:</strong> <%= link_to @offer.user.contractor_profile.business_name, profile_path(@offer.user) %></p>
         <p><strong>Quote:</strong> €<%= @offer.quote %></p>
         <% # NEW: Suggested Date & Time %>
         <p>
@@ -26,18 +37,21 @@
             <%= button_to "Accept", accept_listing_offer_path(@listing, @offer), method: :patch, class: "btn btn-success" %>
             <%= button_to "Decline", decline_listing_offer_path(@listing, @offer), method: :patch, class: "btn btn-danger" %>
           </div>
-        <% elsif current_user.role == "contractor" && @offer.offer_status == "pending" %>
+        <% elsif current_user.contractor? && (@offer.offer_status.nil? || @offer.offer_status == "pending") %>
           <div class="d-flex gap-2 mt-3">
-            <%= button_to "Edit", "#", method: :get, class: "btn btn-secondary" %>
-            <%= button_to "Cancel Offer", listing_offer_path(@listing, @offer), method: :delete, data: { turbo_confirm: "Are you sure you want to cancel this offer? This cannot be undone." }, class: "btn btn-danger" %>
+            <%= button_to edit_listing_offer_path(@listing, @offer), method: :get, class: "btn btn-secondary btn-sm", style: "border-radius: 8px;", title: "Edit offer" do %>
+              <i class="bi bi-pencil"></i>
+            <% end %>
+            <%= button_to listing_offer_path(@listing, @offer), method: :delete, class: "btn btn-danger btn-sm", style: "border-radius: 8px;", title: "Cancel offer", data: { turbo_confirm: "Are you sure you want to cancel this offer? This cannot be undone." } do %>
+              <i class="bi bi-trash"></i>
+            <% end %>
           </div>
         <% end %>
-
-        <%= link_to "Back to all offers", offers_path %>
       </div>
     </div>
 
     <div class="col-md-4">
+      <h2>Chat</h2>
       <div class="card p-4 d-flex flex-column" style="height: 500px;">
         <div class="flex-grow-1 overflow-auto mb-3 px-1">
           <% @messages.each do |message| %>
