@@ -1,354 +1,88 @@
 <%
-  # Filter listings by digging safely through the offers association to see booking statuses
-  # This avoids making changes to your controller code or missing associations
+  # The original logic remains unchanged
   open_requests   = @listings.select { |l| l.offers.empty? }
   offers_received = @listings.select { |l| l.offers.any? && l.offers.none? { |o| o.booking.present? } }
   booked_jobs     = @listings.select { |l| l.offers.any? { |o| o.booking.present? && o.booking.booking_status != 'completed' } }
   past_jobs       = @listings.select { |l| l.offers.any? { |o| o.booking.present? && o.booking.booking_status == 'completed' } }
+
+  # We combine them into one stream so all are displayed
+  all_listings = open_requests + offers_received + booked_jobs + past_jobs
 %>
 
-<% # Main structural wrapper matching the premium SaaS design %>
 <div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
   <div class="container" style="max-width: 1200px;">
 
-    <% # ==================== 1. PREMIUM HEADER SECTION ==================== %>
+    <% # Header Section %>
     <div class="d-flex justify-content-between align-items-center mb-5 pb-4 border-bottom" style="border-color: #E2E8F0 !important;">
       <div>
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <span class="badge bg-primary-subtle text-primary px-2 py-1 rounded-pill fw-semibold" style="font-size: 11px; letter-spacing: 0.5px; background-color: #EFF6FF; color: #2F6BFF !important;">
-            <i class="bi bi-person-fill"></i> Client Account
-          </span>
-        </div>
         <h1 class="tracking-tight font-semibold m-0" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 2.5rem; letter-spacing: -1px;">
           Welcome to your Handyman Dashboard!
         </h1>
         <p class="text-muted small m-0 mt-1" style="font-size: 15px; color: #64748B !important;">
-          Manage your project requests, track incoming offers, and coordinate your bookings all in one place.
+          Manage your project requests and coordinate your bookings all in one place.
         </p>
       </div>
-
       <div>
-        <%= link_to new_listing_path, class: "btn px-4 py-2.5 text-white fw-semibold custom-primary-btn", style: "background-color: #2F6BFF; border-radius: 9999px; border: none; font-family: 'Outfit', sans-serif; font-size: 14px; box-shadow: 0 4px 12px rgba(47, 107, 255, 0.15);" do %>
+        <%= link_to new_listing_path, class: "btn px-4 py-2.5 text-white fw-semibold custom-primary-btn", style: "background-color: #2F6BFF; border-radius: 9999px; border: none; font-family: 'Outfit', sans-serif; font-size: 14px;" do %>
           Create a New Listing <i class="bi bi-plus-lg ms-1"></i>
         <% end %>
       </div>
     </div>
 
-    <% # ==================== 2. PREMIUM TABS NAVIGATION ==================== %>
-    <ul class="nav nav-tabs border-0 gap-1 mb-5" id="customerDashboardTabs" role="tablist" style="border-bottom: 1px solid #E2E8F0 !important; padding-bottom: 1px;">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link px-3 py-2.5 fw-medium border-0 position-relative active" id="open-requests-tab" data-bs-toggle="tab" data-bs-target="#open-requests" type="button" role="tab" aria-controls="open-requests" aria-selected="true" style="background: transparent; font-family: 'Outfit', sans-serif; font-size: 15px;">
-          Open Requests <span class="badge rounded-pill ms-1" style="background-color: #F1F5F9; color: #475569;"><%= open_requests.size %></span>
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link px-3 py-2.5 fw-medium border-0 position-relative" id="offers-received-tab" data-bs-toggle="tab" data-bs-target="#offers-received" type="button" role="tab" aria-controls="offers-received" aria-selected="false" style="background: transparent; font-family: 'Outfit', sans-serif; font-size: 15px;">
-          Offers Received <span class="badge rounded-pill ms-1" style="background-color: #F1F5F9; color: #475569;"><%= offers_received.size %></span>
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link px-3 py-2.5 fw-medium border-0 position-relative" id="booked-jobs-tab" data-bs-toggle="tab" data-bs-target="#booked-jobs" type="button" role="tab" aria-controls="booked-jobs" aria-selected="false" style="background: transparent; font-family: 'Outfit', sans-serif; font-size: 15px;">
-          Booked Jobs <span class="badge rounded-pill ms-1" style="background-color: #F1F5F9; color: #475569;"><%= booked_jobs.size %></span>
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link px-3 py-2.5 fw-medium border-0 position-relative" id="past-jobs-tab" data-bs-toggle="tab" data-bs-target="#past-jobs" type="button" role="tab" aria-controls="past-jobs" aria-selected="false" style="background: transparent; font-family: 'Outfit', sans-serif; font-size: 15px;">
-          Past Jobs & Reviews <span class="badge rounded-pill ms-1" style="background-color: #F1F5F9; color: #475569;"><%= past_jobs.size %></span>
-        </button>
-      </li>
-    </ul>
+    <% # Listing Stream (No tabs, just the cards) %>
+    <div class="row g-4">
+      <% all_listings.each do |listing| %>
+        <div class="col-12">
+          <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
+            <div class="row g-0">
 
-    <% # ==================== 3. TABS CONTENT SECTION ==================== %>
-<div class="tab-content" id="customerDashboardTabsContent">
-
-  <% # TAB 1: OPEN REQUESTS %>
-  <div class="tab-pane fade show active" id="open-requests" role="tabpanel" aria-labelledby="open-requests-tab">
-    <% if open_requests.any? %>
-      <div class="row g-4">
-        <% open_requests.each do |listing| %>
-          <div class="col-12">
-            <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
-              <div class="row g-0">
-
-                <% # Optimized Image Block: Priority hierarchy (1. User Photo, 2. Seed Keyword, 3. Placeholder) %>
-                <div class="col-md-4 position-relative" style="min-height: 220px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center;">
-
-                  <% if listing.photos.attached? && listing.photos.first.present? %>
-                    <% # Priority 1: Display the first user-uploaded or seed photo %>
-                    <%= cl_image_tag listing.photos.first.key, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
-                  <% else %>
-                    <% # Priority 2: Fallback logic based on title keywords for seed data %>
-                    <%
-                      image_path = if listing.title.include?("EMERGENCY") then "listings/burst_pipe.png"
+              <% # Image Block (Your original logic) %>
+              <div class="col-md-4 position-relative" style="min-height: 220px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center;">
+                <% if listing.photos.attached? && listing.photos.first.present? %>
+                  <%= cl_image_tag listing.photos.first.key, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
+                <% else %>
+                  <% image_path = if listing.title.include?("EMERGENCY") then "listings/burst_pipe.png"
                                    elsif listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
                                    elsif listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
                                    elsif listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
                                    elsif listing.title.downcase.include?("shower") then "listings/shower_seal.png"
-                                   else nil end
-                    %>
-
-                    <% if image_path.present? %>
-                      <%= image_tag image_path, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
-                    <% else %>
-                      <% # Priority 3: Professional placeholder if no photo and no keyword match found %>
-                      <i class="bi bi-camera" style="font-size: 3rem; color: #94A3B8;"></i>
-                    <% end %>
+                                   else nil end %>
+                  <% if image_path.present? %>
+                    <%= image_tag image_path, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
+                  <% else %>
+                    <i class="bi bi-camera" style="font-size: 3rem; color: #94A3B8;"></i>
                   <% end %>
-                </div>
+                <% end %>
+              </div>
 
-                <div class="col-md-8 p-4 d-flex flex-column justify-content-between">
-                  <div>
-                    <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
-                      <span class="badge px-3 py-1.5 fw-semibold" style="border-radius: 6px; background-color: #F1F5F9; color: #475569; font-size: 11px;">Waiting for Offers</span>
-                      <span class="badge border text-capitalize px-3 py-1.5" style="border-radius: 6px; background-color: #FFFFFF; color: #64748B; font-size: 11px; border-color: #E2E8F0 !important;">
-                        <%= listing.category&.name %>
-                      </span>
-                    </div>
-                    <h3 class="fw-bold tracking-tight mb-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.4rem;">
-                      <%= link_to listing.title, listing_path(listing), class: "text-decoration-none text-dark hover-blue-text" %>
-                    </h3>
-                    <% if listing.description.present? %>
-                      <p class="text-muted small mb-0 text-clamp-2" style="line-height: 1.5; color: #64748B !important;"><%= listing.description %></p>
-                    <% end %>
+              <% # Content Block %>
+              <div class="col-md-8 p-4 d-flex flex-column justify-content-between">
+                <div>
+                  <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                    <span class="badge border text-capitalize px-3 py-1.5" style="border-radius: 6px; background-color: #FFFFFF; color: #64748B; font-size: 11px; border-color: #E2E8F0 !important;">
+                      <%= listing.category&.name %>
+                    </span>
                   </div>
-                  <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top" style="border-color: rgba(226, 232, 240, 0.6) !important;">
-                    <div class="d-flex align-items-center gap-2 text-muted small">
-                      <i class="bi bi-geo-alt-fill" style="color: #2F6BFF;"></i>
-                      <span class="fw-medium text-dark"><%= listing.postcode %> <%= listing.city %></span>
-                    </div>
-                    <div class="d-flex gap-2">
-                      <%= link_to "Edit", edit_listing_path(listing), class: "btn btn-sm btn-light border px-3 py-2 fw-semibold text-muted", style: "border-radius: 9999px; font-size: 13px;" %>
-                      <%= link_to "Delete", listing_path(listing), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-light border px-3 py-2 fw-semibold text-danger", style: "border-radius: 9999px; font-size: 13px;" %>
-                    </div>
+                  <h3 class="fw-bold tracking-tight mb-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.4rem;">
+                    <%= link_to listing.title, listing_path(listing), class: "text-decoration-none text-dark hover-blue-text" %>
+                  </h3>
+                  <p class="text-muted small mb-0 text-clamp-2" style="line-height: 1.5; color: #64748B !important;"><%= listing.description %></p>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top" style="border-color: rgba(226, 232, 240, 0.6) !important;">
+                  <div class="d-flex align-items-center gap-2 text-muted small">
+                    <i class="bi bi-geo-alt-fill" style="color: #2F6BFF;"></i>
+                    <span class="fw-medium text-dark"><%= listing.postcode %> <%= listing.city %></span>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <%= link_to "Edit", edit_listing_path(listing), class: "btn btn-sm btn-light border px-3 py-2 fw-semibold text-muted", style: "border-radius: 9999px; font-size: 13px;" %>
+                    <%= link_to "Delete", listing_path(listing), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-light border px-3 py-2 fw-semibold text-danger", style: "border-radius: 9999px; font-size: 13px;" %>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        <% end %>
-      </div>
-    <% else %>
-      <div class="text-center py-5 bg-white rounded-4 border" style="border-color: #E2E8F0 !important;">
-        <i class="bi bi-folder-plus text-muted fs-1 mb-3 d-block"></i>
-        <h5 class="fw-bold" style="color: #0B1B33;">No open requests</h5>
-      </div>
-    <% end %>
-  </div>
-
-  <% # Apply the same logic block inside TAB 2, TAB 3, and TAB 4 for consistency %>
-
-</div>
-      <% # TAB 2: OFFERS RECEIVED %>
-      <div class="tab-pane fade" id="offers-received" role="tabpanel" aria-labelledby="offers-received-tab">
-        <% if offers_received.any? %>
-          <div class="row g-4">
-            <% offers_received.each do |listing| %>
-              <% target_offer = listing.offers.first %>
-              <div class="col-12">
-                <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #2F6BFF !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(47, 107, 255, 0.04);">
-                  <div class="row g-0">
-                    <% if listing.photos.attached? %>
-                      <div class="col-md-4 position-relative" style="min-height: 220px;">
-                        <%= cl_image_tag listing.photos.first.key, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
-                      </div>
-                    <% end %>
-                    <div class="<%= listing.photos.attached? ? 'col-md-8' : 'col-12' %> p-4 d-flex flex-column justify-content-between" style="background-color: #F8FAFC;">
-                      <div>
-                        <div class="mb-3">
-                          <span class="badge px-3 py-1.5 fw-semibold" style="border-radius: 6px; background-color: #EFF6FF; color: #2F6BFF; font-size: 11px;"><i class="bi bi-stars"></i> Action Required: Offers In!</span>
-                        </div>
-                        <h3 class="fw-bold tracking-tight mb-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.4rem;">
-                          <%= link_to listing.title, target_offer ? listing_offer_path(listing, target_offer) : listing_path(listing), class: "text-decoration-none text-dark hover-blue-text" %>
-                        </h3>
-                        <% if listing.description.present? %>
-                          <p class="text-muted small mb-0 text-clamp-2" style="line-height: 1.5; color: #64748B !important;"><%= listing.description %></p>
-                        <% end %>
-                      </div>
-                      <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top" style="border-color: rgba(226, 232, 240, 0.8) !important;">
-                        <div class="d-flex align-items-center gap-2 text-muted small">
-                          <i class="bi bi-geo-alt-fill" style="color: #2F6BFF;"></i>
-                          <span class="fw-medium text-dark"><%= listing.postcode %> <%= listing.city %></span>
-                        </div>
-                        <% if target_offer %>
-                          <%= link_to "View Offer & Chat →", listing_offer_path(listing, target_offer), class: "btn btn-sm px-4 py-2 text-white fw-semibold custom-primary-btn", style: "background-color: #2F6BFF; border-radius: 9999px; border: none; font-family: 'Outfit', sans-serif; font-size: 13px;" %>
-                        <% else %>
-                          <%= link_to "View Details →", listing_path(listing), class: "btn btn-sm px-4 py-2 text-white fw-semibold", style: "background-color: #0B1B33; border-radius: 9999px; border: none; font-family: 'Outfit', sans-serif; font-size: 13px;" %>
-                        <% end %>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="text-center py-5 bg-white rounded-4 border" style="border-color: #E2E8F0 !important;">
-            <i class="bi bi-bell text-muted fs-1 mb-3 d-block"></i>
-            <h5 class="fw-bold" style="color: #0B1B33;">No proposals yet</h5>
-            <p class="text-muted small m-0">Contractors haven't sent any pricing offers for your requests yet.</p>
-          </div>
-        <% end %>
-      </div>
-
-      <% # TAB 3: BOOKED JOBS %>
-      <div class="tab-pane fade" id="booked-jobs" role="tabpanel" aria-labelledby="booked-jobs-tab">
-        <% if booked_jobs.any? %>
-          <div class="row g-4">
-            <% booked_jobs.each do |listing| %>
-              <% active_offer = listing.offers.find { |o| o.booking.present? && o.booking.booking_status != 'completed' } %>
-              <% active_booking = active_offer&.booking %>
-              <div class="col-12">
-                <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
-                  <div class="row g-0">
-                    <% if listing.photos.attached? %>
-                      <div class="col-md-4 position-relative" style="min-height: 220px;">
-                        <%= cl_image_tag listing.photos.first.key, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
-                      </div>
-                    <% end %>
-                    <div class="<%= listing.photos.attached? ? 'col-md-8' : 'col-12' %> p-4 d-flex flex-column justify-content-between" style="background-color: #F0F4FF;">
-                      <div>
-                        <div class="mb-3">
-                          <span class="badge px-3 py-1.5 fw-semibold" style="border-radius: 6px; background-color: #10B981; color: #FFFFFF; font-size: 11px;"><i class="bi bi-calendar2-check-fill"></i> Confirmed Booking</span>
-                        </div>
-                        <h3 class="fw-bold tracking-tight mb-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.4rem;">
-                          <%= link_to listing.title, active_booking ? booking_path(active_booking) : listing_path(listing), class: "text-decoration-none text-dark hover-blue-text" %>
-                        </h3>
-                        <% if listing.description.present? %>
-                          <p class="text-muted small mb-0 text-clamp-2" style="line-height: 1.5; color: #475569 !important;"><%= listing.description %></p>
-                        <% end %>
-                      </div>
-                      <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top" style="border-color: rgba(16, 185, 129, 0.15) !important;">
-                        <div class="d-flex align-items-center gap-2 text-muted small">
-                          <i class="bi bi-geo-alt-fill" style="color: #10B981;"></i>
-                          <span class="fw-medium text-dark"><%= listing.postcode %> <%= listing.city %></span>
-                        </div>
-                        <% if active_booking %>
-                          <%= link_to "Open Booking & Chat →", booking_path(active_booking), class: "btn btn-sm px-4 py-2 text-white fw-semibold", style: "background-color: #10B981; border-radius: 9999px; border: none; font-family: 'Outfit', sans-serif; font-size: 13px;" %>
-                        <% end %>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="text-center py-5 bg-white rounded-4 border" style="border-color: #E2E8F0 !important;">
-            <i class="bi bi-calendar-range text-muted fs-1 mb-3 d-block"></i>
-            <h5 class="fw-bold" style="color: #0B1B33;">No active appointments</h5>
-            <p class="text-muted small m-0">You don't have any upcoming or locked-in contractor bookings right now.</p>
-          </div>
-        <% end %>
-      </div>
-
-      <% # TAB 4: PAST JOBS & REVIEWS %>
-      <div class="tab-pane fade" id="past-jobs" role="tabpanel" aria-labelledby="past-jobs-tab">
-        <% if past_jobs.any? %>
-          <div class="row g-4">
-            <% past_jobs.each do |listing| %>
-              <% completed_offer = listing.offers.find { |o| o.booking.present? && o.booking.booking_status == 'completed' } %>
-              <% completed_booking = completed_offer&.booking %>
-              <div class="col-12">
-                <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.01); opacity: 0.85;">
-                  <div class="row g-0">
-                    <% if listing.photos.attached? %>
-                      <div class="col-md-4 position-relative" style="min-height: 220px; filter: grayscale(30%);">
-                        <%= cl_image_tag listing.photos.first.key, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
-                      </div>
-                    <% end %>
-                    <div class="<%= listing.photos.attached? ? 'col-md-8' : 'col-12' %> p-4 d-flex flex-column justify-content-between">
-                      <div>
-                        <div class="mb-3">
-                          <span class="badge bg-light text-muted border px-3 py-1.5 fw-semibold" style="border-radius: 6px; font-size: 11px;">Completed</span>
-                        </div>
-                        <h3 class="fw-bold tracking-tight mb-2" style="font-family: 'Outfit', sans-serif; color: #64748B; font-size: 1.4rem;">
-                          <%= link_to listing.title, completed_booking ? booking_path(completed_booking) : listing_path(listing), class: "text-decoration-none text-muted" %>
-                        </h3>
-                        <% if listing.description.present? %>
-                          <p class="text-muted small mb-0 text-clamp-2" style="line-height: 1.5;"><%= listing.description %></p>
-                        <% end %>
-                      </div>
-                      <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top" style="border-color: #F1F5F9 !important;">
-                        <div class="d-flex align-items-center gap-2 text-muted small">
-                          <i class="bi bi-geo-alt" style="color: #64748B;"></i>
-                          <span class="fw-medium text-muted"><%= listing.city %></span>
-                        </div>
-                        <% if completed_booking %>
-                          <%= link_to "View History & Review", booking_path(completed_booking), class: "btn btn-sm btn-light border px-4 py-2 fw-semibold text-muted", style: "border-radius: 9999px; font-size: 13px;" %>
-                        <% end %>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="text-center py-5 bg-white rounded-4 border" style="border-color: #E2E8F0 !important;">
-            <i class="bi bi-clock-history text-muted fs-1 mb-3 d-block"></i>
-            <h5 class="fw-bold" style="color: #0B1B33;">History empty</h5>
-            <p class="text-muted small m-0">No completed jobs or older project histories found.</p>
-          </div>
-        <% end %>
-      </div>
-
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
-
-<% # CUSTOM CSS FOR MODERN EFFECTS & HOVER STATES %>
-<style>
-  #customerDashboardTabs .nav-link {
-    color: #64748B;
-    transition: color 0.2s ease;
-  }
-  #customerDashboardTabs .nav-link:hover {
-    color: #0B1B33;
-  }
-  #customerDashboardTabs .nav-link.active {
-    color: #2F6BFF !important;
-    font-weight: 600 !important;
-  }
-  #customerDashboardTabs .nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background-color: #2F6BFF;
-    transform: scaleX(0);
-    transition: transform 0.2s ease;
-  }
-  #customerDashboardTabs .nav-link.active::after {
-    transform: scaleX(1);
-  }
-  .object-cover {
-    object-fit: cover;
-  }
-  .text-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .custom-dashboard-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .custom-dashboard-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(11, 27, 51, 0.05) !important;
-  }
-  .hover-blue-text {
-    transition: color 0.2s ease;
-  }
-  .hover-blue-text:hover {
-    color: #2F6BFF !important;
-  }
-  .custom-primary-btn {
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
-  .custom-primary-btn:hover {
-    background-color: #0B1B33 !important;
-  }
-</style>
