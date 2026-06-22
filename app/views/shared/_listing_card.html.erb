@@ -1,0 +1,58 @@
+<%# Standard styles for the badge %>
+<% badge_style ||= 'background-color: #F1F5F9; color: #475569;' %>
+
+<div class="col-12">
+  <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
+    <div class="row g-0">
+
+      <%# Optimized Image Block: 1. User Photo, 2. Seed Keyword, 3. Placeholder %>
+      <div class="col-md-4 position-relative" style="min-height: 220px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center;">
+
+        <% if listing.photos.attached? && listing.photos.first.present? %>
+          <%= cl_image_tag listing.photos.first.key, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
+        <% else %>
+          <%
+            # Fallback logic for seed data based on title keywords
+            image_path = if listing.title.include?("EMERGENCY") then "listings/burst_pipe.png"
+                         elsif listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
+                         elsif listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
+                         elsif listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
+                         elsif listing.title.downcase.include?("shower") then "listings/shower_seal.png"
+                         else nil end
+          %>
+
+          <% if image_path.present? %>
+            <%= image_tag image_path, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
+          <% else %>
+            <i class="bi bi-camera" style="font-size: 3rem; color: #94A3B8;"></i>
+          <% end %>
+        <% end %>
+      </div>
+
+      <%# Text and details area %>
+      <div class="col-md-8 p-4 d-flex flex-column justify-content-between">
+        <div>
+          <div class="mb-3">
+            <span class="badge px-3 py-1.5 fw-semibold" style="border-radius: 6px; <%= badge_style %>">
+              <%= badge_text %>
+            </span>
+          </div>
+          <h3 class="fw-bold tracking-tight mb-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.4rem;">
+            <%= link_to listing.title, action_path, class: "text-decoration-none text-dark hover-blue-text" %>
+          </h3>
+          <% if listing.description.present? %>
+            <p class="text-muted small mb-0 text-clamp-2" style="line-height: 1.5; color: #64748B !important;"><%= listing.description %></p>
+          <% end %>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top" style="border-color: rgba(226, 232, 240, 0.6) !important;">
+          <div class="text-muted small">
+            <i class="bi bi-geo-alt-fill" style="color: #2F6BFF;"></i> <%= listing.postcode %> <%= listing.city %>
+          </div>
+          <%= link_to link_label, action_path, class: "btn btn-sm px-4 py-2 text-white fw-semibold", style: "background-color: #2F6BFF; border-radius: 9999px; font-size: 13px;" %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
