@@ -1,13 +1,12 @@
 <%# Horizontal milestones milestone indicator tracker %>
 <div id="step-indicator" class="mb-4">
-  <span class="step-label" id="label-1" style="color: blue;">1. What</span> &rarr;
-  <span class="step-label" id="label-2" style="color: gray;">2. Category</span> &rarr;
-  <span class="step-label" id="label-3" style="color: gray;">3. Photos</span> &rarr;
-  <span class="step-label" id="label-4" style="color: gray;">4. Details</span> &rarr;
-  <span class="step-label" id="label-5" style="color: gray;">5. Availability</span> &rarr;
-  <span class="step-label" id="label-6" style="color: gray;">6. Location</span>
+  <span class="step-label active" id="label-1">1. What</span> &rarr;
+  <span class="step-label" id="label-2">2. Category</span> &rarr;
+  <span class="step-label" id="label-3">3. Photos</span> &rarr;
+  <span class="step-label" id="label-4">4. Details</span> &rarr;
+  <span class="step-label" id="label-5">5. Availability</span> &rarr;
+  <span class="step-label" id="label-6">6. Location</span>
 </div>
-
 <%= simple_form_for(@listing, html: {
   data: { turbo: false },
   # Senior interceptor: Validates the final step active fields during submission to block bad database payloads
@@ -301,20 +300,24 @@
     }
 
     function updateFormSteps() {
+      // 1. Hide/Show the correct step
       steps.forEach((step, index) => {
         step.style.display = index === currentStep ? "block" : "none";
       });
 
+      // 2. Update the indicator labels using classes
       steps.forEach((_, index) => {
         const label = document.getElementById(`label-${index + 1}`);
         if (label) {
+          // Remove all status classes first
+          label.classList.remove("active", "done");
+
           if (index === currentStep) {
-            label.style.color = "blue";
-            label.style.fontWeight = "bold";
+            // This is the step the user is currently on
+            label.classList.add("active");
           } else if (index < currentStep) {
-            label.style.color = "green";
-          } else {
-            label.style.color = "gray";
+            // These steps are already finished
+            label.classList.add("done");
           }
         }
       });
