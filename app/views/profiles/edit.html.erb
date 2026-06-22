@@ -2,18 +2,31 @@
   <div class="card p-4">
     <h1>Edit Profile</h1>
 
-    <%= simple_form_for @user, url: profile_path(@user), method: :patch do |f| %>
+    <%= simple_form_for @user, url: profile_path(@user), method: :patch, html: { multipart: true } do |f| %>
 
       <h2 class="mt-4">Personal Information</h2>
       <%= f.input :first_name %>
       <%= f.input :last_name %>
       <%= f.input :email %>
+      <%= f.input :bio, as: :text, label: "Bio", input_html: { rows: 4, placeholder: "Tell people a bit about yourself..." } %>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Profile Photo</label>
+        <% if @user.avatar.attached? %>
+          <div class="mb-2">
+            <%= image_tag @user.avatar, class: "rounded-circle", style: "width: 60px; height: 60px; object-fit: cover;" %>
+          </div>
+        <% end %>
+        <%= f.input :avatar, as: :file, label: false %>
+      </div>
+
+      <h2 class="mt-4">Address</h2>
       <%= f.input :street %>
       <%= f.input :city %>
       <%= f.input :postcode %>
       <%= f.input :country %>
 
-      <% if @user.role == "contractor" && @contractor_profile %>
+      <% if @user.contractor? && @contractor_profile %>
         <h2 class="mt-4">Business Information</h2>
         <%= f.simple_fields_for :contractor_profile, @contractor_profile do |cf| %>
           <%= cf.input :business_name %>
@@ -32,6 +45,6 @@
       <%= f.submit "Save Changes", class: "btn btn-primary mt-3" %>
     <% end %>
 
-    <%= link_to "Cancel", profile_path(@user), class: "btn btn-secondary mt-3" %>
+    <%= link_to "Cancel", profile_path(@user), class: "btn btn-secondary mt-3 ms-2" %>
   </div>
 </div>
