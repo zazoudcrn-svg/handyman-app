@@ -1,0 +1,22 @@
+<div class="card p-4">
+  <h4 class="mb-3">Reviews received (<%= @reviews.count %>)</h4>
+
+  <% if @reviews.any? %>
+    <% @reviews.each do |review| %>
+      <div class="border-bottom pb-3 mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fw-semibold"><%= review.user.first_name %> <%= review.user.last_name&.first %>.</span>
+          <span class="text-muted small"><%= review.created_at.strftime("%b %d, %Y") %></span>
+        </div>
+        <div class="mb-1">
+          <%= "★" * (review.rating || 0) %><%= "☆" * (5 - (review.rating || 0)) %>
+        </div>
+        <% if review.content.present? %>
+          <p class="mb-0"><%= review.content %></p>
+        <% end %>
+      </div>
+    <% end %>
+  <% else %>
+    <p class="text-muted mb-0">No reviews yet.</p>
+  <% end %>
+</div>

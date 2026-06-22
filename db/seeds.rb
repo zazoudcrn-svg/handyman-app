@@ -518,7 +518,6 @@ Booking.create!(
   cancellation_note: "Contractor cancelled due to overbooked schedule",
   scheduled_date_and_time: "2026-07-09 09:00:00"
 )
-
 # ==============================================================================
 # SEED TERMINATION FEEDBACK
 # ==============================================================================

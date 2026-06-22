@@ -8,7 +8,7 @@
         <path d="M4 14C4 9 8 4 12 4C16 4 20 9 20 14C20 19 16 20 12 20C8 20 4 19 4 14Z" fill="#2F6BFF"/>
         <path d="M8 12C10 10 14 10 16 12" stroke="white" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      Handyman App
+      Handyman
     <% end %>
 
     <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,29 +17,35 @@
 
     <div class="collapse navbar-collapse" id="navbarNav">
 
-      <% if current_page?(root_path) %>
+      <%# 1. Logic for guests (Landing Page) %>
+      <% if !user_signed_in? %>
         <ul class="navbar-nav mx-auto gap-1">
-          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#solution" style="color: var(--cf-text-secondary); font-size: 14px;">Product</a></li>
-          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#how-it-works" style="color: var(--cf-text-secondary); font-size: 14px;">How it works</a></li>
-          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#features" style="color: var(--cf-text-secondary); font-size: 14px;">Features</a></li>
-          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#trust" style="color: var(--cf-text-secondary); font-size: 14px;">Trust</a></li>
-          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#vision" style="color: var(--cf-text-secondary); font-size: 14px;">Vision</a></li>
+          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#solution">Product</a></li>
+          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#how-it-works">How it works</a></li>
+          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#features">Features</a></li>
         </ul>
+
+      <%# 2. Logic for authenticated users (Role-based menus) %>
       <% else %>
         <ul class="navbar-nav mx-auto gap-1">
-          <% if user_signed_in? %>
-            <% if current_user.role == 'contractor' %>
-              <li class="nav-item"><%= link_to "Find Jobs (Dashboard)", dashboard_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(dashboard_path)}", style: "font-size: 14px;" %></li>
-              <li class="nav-item"><%= link_to "My Sent Offers", offers_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(offers_path)}", style: "font-size: 14px;" %></li>
-              <li class="nav-item"><%= link_to "My Bookings (Jobs)", bookings_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(bookings_path)}", style: "font-size: 14px;" %></li>
-            <% else %>
-              <li class="nav-item"><%= link_to "My Requests (Dashboard)", dashboard_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(dashboard_path)}", style: "font-size: 14px;" %></li>
-              <li class="nav-item"><%= link_to "Received Offers", offers_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(offers_path)}", style: "font-size: 14px;" %></li>
-              <li class="nav-item"><%= link_to "My Bookings", bookings_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(bookings_path)}", style: "font-size: 14px;" %></li>
-            <% end %>
+
+          <% if current_user.role == 'contractor' %>
+            <%# Contractor Navigation Menu %>
+            <li class="nav-item"><%= link_to "Available Jobs", dashboard_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(dashboard_path)}" %></li>
+            <li class="nav-item"><%= link_to "Offers Sent", offers_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(offers_path)}" %></li>
+            <li class="nav-item"><%= link_to "My Bookings", bookings_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(bookings_path)}" %></li>
+
+          <% else %>
+            <%# Customer Navigation Menu %>
+            <li class="nav-item"><%= link_to "My Listings", dashboard_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(dashboard_path)}" %></li>
+            <li class="nav-item"><%= link_to "Offers Received", offers_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(offers_path)}" %></li>
+            <li class="nav-item"><%= link_to "My Bookings", bookings_path, class: "nav-link text-sm px-3 fw-medium #{'active fw-bold' if current_page?(bookings_path)}" %></li>
           <% end %>
+
         </ul>
       <% end %>
+
+    </div>
 
       <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
         <% if user_signed_in? %>
@@ -78,6 +84,12 @@
                 <li>
                   <%= link_to "My Reviews", reviews_path, class: "dropdown-item rounded-3 py-2 text-sm #{'active fw-semibold' if current_page?(reviews_path)}", style: "font-size: 13.5px;" %>
                 </li>
+
+                <% if current_user.role == 'contractor' %>
+                  <li>
+                    <%= link_to "My Calendar", calendar_path, class: "dropdown-item rounded-3 py-2 text-sm #{'active fw-semibold' if current_page?(calendar_path)}", style: "font-size: 13.5px;" %>
+                  </li>
+                <% end %>
 
                 <li><hr class="dropdown-divider" style="border-color: var(--cf-border-light);"></li>
 

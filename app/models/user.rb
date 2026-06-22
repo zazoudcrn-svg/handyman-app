@@ -15,6 +15,7 @@ class User < ApplicationRecord
   has_many :reviews_given, class_name: "Review", foreign_key: "user_id"
   has_many :reviews_received, class_name: "Review", foreign_key: "reviewee_id"
   has_many :declined_listings, dependent: :destroy
+  has_one_attached :avatar
 
   # --- Geocoding Setup ---
   geocoded_by :full_address
