@@ -85,6 +85,12 @@
                   <%= link_to "My Reviews", reviews_path, class: "dropdown-item rounded-3 py-2 text-sm #{'active fw-semibold' if current_page?(reviews_path)}", style: "font-size: 13.5px;" %>
                 </li>
 
+                <% if current_user.role == 'contractor' %>
+                  <li>
+                    <%= link_to "My Calendar", calendar_path, class: "dropdown-item rounded-3 py-2 text-sm #{'active fw-semibold' if current_page?(calendar_path)}", style: "font-size: 13.5px;" %>
+                  </li>
+                <% end %>
+
                 <li><hr class="dropdown-divider" style="border-color: var(--cf-border-light);"></li>
 
                 <li>

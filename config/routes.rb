@@ -2,8 +2,14 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: 'users/registrations' }
 
   get "up" => "rails/health#show", as: :rails_health_check
+
+  authenticated :user do
+    root to: 'dashboards#show', as: :authenticated_root
+  end
   root to: "pages#home"
+
   get "dashboard", to: "dashboards#show", as: :dashboard
+  get "calendar", to: "dashboards#calendar", as: :calendar
 
   resources :offers, only: [:index]
 
