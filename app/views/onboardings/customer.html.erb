@@ -1,4 +1,4 @@
-<div class="container mt-5" style="max-width: 600px;">
+<div class="container mt-5" style="max-width: 750px;">
   <h1 class="mb-4">Customer Onboarding</h1>
   <p class="text-muted">Please complete your profile to continue.</p>
 
@@ -20,42 +20,57 @@
     </div>
   <% end %>
 
-  <%= form_with model: @user, url: update_onboarding_customer_path, method: :patch, local: true do |f| %>
+  <%# FORM WRAPPER: Added a subtle border and shadow for a cleaner UI %>
+  <div class="p-4 shadow-sm" style="border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+    <%= form_with model: @user, url: update_onboarding_customer_path, method: :patch, local: true do |f| %>
 
-    <div class="mb-3">
-      <%= f.label :first_name, "First Name", class: "form-label" %>
-      <%= f.text_field :first_name, class: "form-control", required: true %>
-    </div>
-
-    <div class="mb-3">
-      <%= f.label :last_name, "Last Name", class: "form-label" %>
-      <%= f.text_field :last_name, class: "form-control", required: true %>
-    </div>
-
-    <div class="mb-3">
-      <%= f.label :street, "Street & House Number", class: "form-label" %>
-      <%= f.text_field :street, class: "form-control", required: true %>
-    </div>
-
-    <div class="row">
-      <div class="col-md-3 mb-3">
-        <%= f.label :postcode, "Postcode", class: "form-label" %>
-        <%= f.text_field :postcode, class: "form-control", required: true %>
+      <div class="mb-3">
+        <%= f.label :first_name, "First Name", class: "form-label" %>
+        <%= f.text_field :first_name, class: "form-control", required: true,
+            oninvalid: "this.setCustomValidity('Please fill out this field.')",
+            oninput: "this.setCustomValidity('')" %>
       </div>
-      <div class="col-md-5 mb-3">
-        <%= f.label :city, "City", class: "form-label" %>
-        <%= f.text_field :city, class: "form-control", required: true %>
-      </div>
-      <div class="col-md-4 mb-3">
-        <%= f.label :country, "Country", class: "form-label" %>
-        <%= f.text_field :country, value: "Germany", class: "form-control", required: true %>
-      </div>
-    </div>
 
-    <div class="d-flex align-items-center justify-content-between mt-4 pt-3" style="border-top: 1px solid #e2e8f0;">
-      <%= f.submit "Save profile & continue", class: "btn btn-primary", style: "background-color: #2F6BFF; border-color: #2F6BFF; border-radius: 8px; padding: 8px 25px; font-weight: 500;" %>
-      <%= link_to "Skip onboarding for now →", skip_onboarding_path, data: { turbo_method: :patch }, class: "text-muted text-decoration-none small fw-medium", style: "font-size: 13px;" %>
-    </div>
+      <div class="mb-3">
+        <%= f.label :last_name, "Last Name", class: "form-label" %>
+        <%= f.text_field :last_name, class: "form-control", required: true,
+            oninvalid: "this.setCustomValidity('Please fill out this field.')",
+            oninput: "this.setCustomValidity('')" %>
+      </div>
 
-  <% end %>
+      <div class="mb-3">
+        <%= f.label :street, "Street & House Number", class: "form-label" %>
+        <%= f.text_field :street, class: "form-control", required: true,
+            oninvalid: "this.setCustomValidity('Please fill out this field.')",
+            oninput: "this.setCustomValidity('')" %>
+      </div>
+
+      <div class="row">
+        <div class="col-md-3 mb-3">
+          <%= f.label :postcode, "Postcode", class: "form-label" %>
+          <%= f.text_field :postcode, class: "form-control", required: true,
+              oninvalid: "this.setCustomValidity('Please fill out this field.')",
+              oninput: "this.setCustomValidity('')" %>
+        </div>
+        <div class="col-md-5 mb-3">
+          <%= f.label :city, "City", class: "form-label" %>
+          <%= f.text_field :city, class: "form-control", required: true,
+              oninvalid: "this.setCustomValidity('Please fill out this field.')",
+              oninput: "this.setCustomValidity('')" %>
+        </div>
+        <div class="col-md-4 mb-3">
+          <%= f.label :country, "Country", class: "form-label" %>
+          <%= f.text_field :country, value: "Germany", class: "form-control", required: true,
+              oninvalid: "this.setCustomValidity('Please fill out this field.')",
+              oninput: "this.setCustomValidity('')" %>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-between mt-4 pt-3" style="border-top: 1px solid #e2e8f0;">
+        <%= f.submit "Save profile & continue", class: "btn btn-primary", style: "background-color: #2F6BFF; border-color: #2F6BFF; border-radius: 8px; padding: 8px 25px; font-weight: 500;" %>
+        <%= link_to "Skip onboarding for now →", skip_onboarding_path, data: { turbo_method: :patch }, class: "text-muted text-decoration-none small fw-medium", style: "font-size: 13px;" %>
+      </div>
+
+    <% end %>
+  </div>
 </div>
