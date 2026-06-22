@@ -1,7 +1,7 @@
 class ListingsController < ApplicationController
   before_action :authenticate_user!
   # Extended to ensure only the customer who owns the listing can edit/update/destroy it
-  before_action :ensure_customer, only: [ :new, :create, :edit, :update, :destroy ]
+  before_action :ensure_customer, only: [:new, :create, :edit, :update, :destroy]
   before_action :ensure_onboarding_completed, only: [:new, :create]
 
   def new
@@ -10,19 +10,29 @@ class ListingsController < ApplicationController
   end
 
   def create
-    # Instantiate the new listing with permitted parameters
+    # 1. Clean the parameters before creating the object.
+    # If the photos array contains only blank strings (or is empty),
+    # we remove the key from params to prevent ActiveStorage from creating empty attachments.
+    if params[:listing][:photos].is_a?(Array)
+      params[:listing][:photos].reject!(&:blank?)
+      params[:listing].delete(:photos) if params[:listing][:photos].empty?
+    end
+
+    # 2. Instantiate the new listing with permitted parameters
     @listing = Listing.new(listing_params)
-    # Associate the listing with the logged-in user
+
+    # 3. Associate the listing with the logged-in user
     @listing.user = current_user
 
-    # Optional: Set a default status if your model doesn't handle it yet
+    # 4. Set a default status
     @listing.listing_status = "open"
 
+    # 5. Save the listing and handle potential errors
     if @listing.save
-      # Redirect to dashboard with a success flash message
       redirect_to dashboard_path, notice: "Your job listing was successfully posted!"
     else
-      # Render the form again with error messages if validation fails
+      # Debugging helper to print validation errors to server log
+      logger.debug "DEBUG ERROR LIST: #{@listing.errors.full_messages}"
       render :new, status: :unprocessable_entity
     end
   end
@@ -77,6 +87,7 @@ class ListingsController < ApplicationController
       :postcode,
       :city,
       :street,
+      :country,
       :preferred_date_and_time,
       :availability_profile,
       :urgency,
