@@ -5,6 +5,7 @@
       <div class="card p-4">
         <h1>Offer details</h1>
 
+        <p><strong>Contractor:</strong> <%= link_to @offer.user.contractor_profile.business_name, profile_path(@offer.user) %></p>
         <p><strong>Quote:</strong> €<%= @offer.quote %></p>
         <% # NEW: Suggested Date & Time %>
         <p>
@@ -19,7 +20,6 @@
         </p>
         <p><strong>Note:</strong> <%= @offer.note %></p>
         <p><strong>Status:</strong> <%= @offer.offer_status %></p>
-        <p><strong>Contractor:</strong> <%= @offer.user.contractor_profile.business_name %></p>
 
         <% if current_user.role == "customer" && @offer.offer_status == "pending" %>
           <div class="d-flex gap-2 mt-3">
@@ -39,21 +39,37 @@
 
     <div class="col-md-4">
       <div class="card p-4 d-flex flex-column" style="height: 500px;">
-        <div class="flex-grow-1 overflow-auto mb-3">
+        <div class="flex-grow-1 overflow-auto mb-3 px-1">
           <% @messages.each do |message| %>
-            <div class="mb-3">
-              <small class="text-muted">
+            <% is_mine = message.user == current_user %>
+            <div class="d-flex flex-column <%= is_mine ? 'align-items-end' : 'align-items-start' %> mb-3">
+              <div class="px-3 py-2 rounded-3" style="max-width: 80%; background-color: <%= is_mine ? '#2F6BFF' : '#F1F5F9' %>; color: <%= is_mine ? '#FFFFFF' : '#0B1B33' %>;">
+                <p class="mb-0" style="font-size: 14px; line-height: 1.5;"><%= message.content %></p>
+              </div>
+              <small class="text-muted mt-1" style="font-size: 11px;">
                 <%= message.user.first_name %> · <%= message.created_at.strftime("%b %d, %H:%M") %>
               </small>
-              <p class="mb-0"><%= message.content %></p>
             </div>
           <% end %>
         </div>
 
-        <%= simple_form_for [@listing, @offer, @message] do |f| %>
-          <div class="d-flex gap-2">
-            <%= f.input :content, label: false, placeholder: "Type a message...", wrapper: false, input_html: { class: "form-control" } %>
-            <%= f.submit "Send", class: "btn btn-primary" %>
+        <%= simple_form_for [@listing, @offer, @message], html: { data: { controller: "message-form" } } do |f| %>
+          <div class="d-flex align-items-center gap-2 p-2 rounded-3" style="border: 1px solid #E2E8F0; background-color: #F8FAFC;">
+            <%= f.input :content,
+                label: false,
+                placeholder: "Type a message...",
+                wrapper: false,
+                input_html: {
+                  class: "form-control border-0 bg-transparent",
+                  style: "box-shadow: none; font-size: 14px; resize: none;",
+                  rows: 1,
+                  data: { message_form_target: "input", action: "input->message-form#toggleSubmit" }
+                } %>
+            <%= f.submit "↑",
+                class: "btn btn-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0",
+                style: "width: 38px; height: 38px; padding: 0; font-size: 18px;",
+                disabled: true,
+                data: { message_form_target: "submit" } %>
           </div>
         <% end %>
       </div>

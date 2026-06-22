@@ -24,12 +24,11 @@
 
         <%# CUSTOMER VIEW %>
         <% if current_user.customer? %>
-          <p><strong>Contractor:</strong> <%= @booking.offer.user.first_name %></p>
+          <p><strong>Contractor:</strong> <%= link_to @booking.offer.user.contractor_profile&.business_name || @booking.offer.user.first_name, profile_path(@booking.offer.user) %></p>
         <% end %>
 
-        <%# CONTRACTOR VIEW %>
         <% if current_user.contractor? %>
-          <p><strong>Customer:</strong> <%= @booking.listing.user.first_name %></p>
+          <p><strong>Customer:</strong> <%= link_to @booking.listing.user.first_name, profile_path(@booking.listing.user) %></p>
         <% end %>
 
         <p><strong>Scheduled Date:</strong> <strong> <%= @booking.scheduled_date_and_time.strftime("%A") %></strong> •
@@ -175,21 +174,36 @@
       <div class="card p-4 d-flex flex-column" style="height: 500px;">
         <h5 class="mb-3">Messages</h5>
 
-        <div class="flex-grow-1 overflow-auto mb-3">
+        <div class="flex-grow-1 overflow-auto mb-3 px-1">
           <% @messages.each do |message| %>
-            <div class="mb-3">
-              <small class="text-muted">
+            <% is_mine = message.user == current_user %>
+            <div class="d-flex flex-column <%= is_mine ? 'align-items-end' : 'align-items-start' %> mb-3">
+              <div class="px-3 py-2 rounded-3" style="max-width: 80%; background-color: <%= is_mine ? '#2F6BFF' : '#F1F5F9' %>; color: <%= is_mine ? '#FFFFFF' : '#0B1B33' %>;">
+                <p class="mb-0" style="font-size: 14px; line-height: 1.5;"><%= message.content %></p>
+              </div>
+              <small class="text-muted mt-1" style="font-size: 11px;">
                 <%= message.user.first_name %> · <%= message.created_at.strftime("%b %d, %H:%M") %>
               </small>
-              <p class="mb-0"><%= message.content %></p>
             </div>
           <% end %>
         </div>
-
-        <%= simple_form_for [@booking.listing, @offer, @message] do |f| %>
-          <div class="d-flex gap-2">
-            <%= f.input :content, label: false, placeholder: "Type a message...", wrapper: false, input_html: { class: "form-control" } %>
-            <%= f.submit "Send", class: "btn btn-primary" %>
+        <%= simple_form_for [@booking.listing, @offer, @message], html: { data: { controller: "message-form" } } do |f| %>
+          <div class="d-flex align-items-center gap-2 p-2 rounded-3" style="border: 1px solid #E2E8F0; background-color: #F8FAFC;">
+            <%= f.input :content,
+                label: false,
+                placeholder: "Type a message...",
+                wrapper: false,
+                input_html: {
+                  class: "form-control border-0 bg-transparent",
+                  style: "box-shadow: none; font-size: 14px; resize: none;",
+                  rows: 1,
+                  data: { message_form_target: "input", action: "input->message-form#toggleSubmit" }
+                } %>
+            <%= f.submit "↑",
+                class: "btn btn-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0",
+                style: "width: 38px; height: 38px; padding: 0; font-size: 18px;",
+                disabled: true,
+                data: { message_form_target: "submit" } %>
           </div>
         <% end %>
       </div>
