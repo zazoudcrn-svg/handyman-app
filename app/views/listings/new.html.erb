@@ -143,6 +143,23 @@
     background: #FFFFFF;
   }
 
+  .radio-card .card-content::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #E2E8F0;
+    border-radius: 50%;
+    margin-right: 12px;
+    vertical-align: middle;
+    transition: all 0.2s;
+  }
+
+  .radio-card:has(input:checked) .card-content::before {
+    border: 5px solid #2F6BFF; /* Inner circle effect */
+    border-color: #2F6BFF;
+  }
+
   .saas-form-wrapper .form-step label:has(input[type="radio"]):hover {
     background: #F8FAFC;
     border-color: #CBD5E1;

@@ -10,6 +10,7 @@ class ListingsController < ApplicationController
   end
 
   def create
+    logger.debug "DEBUG PARAMS: #{params[:listing].to_unsafe_h.inspect}"
     # 1. Clean the parameters before creating the object.
     # If the photos array contains only blank strings (or is empty),
     # we remove the key from params to prevent ActiveStorage from creating empty attachments.
