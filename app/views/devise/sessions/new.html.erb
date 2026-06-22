@@ -7,9 +7,13 @@
       <%# Content container sitting beautifully aligned at the 100px threshold %>
       <div class="w-100 mx-auto" style="max-width: 85%;">
 
-        <%# Welcoming Login Headline %>
+        <%# Dynamic Headline based on the target role from URL parameters %>
         <h1 class="text-5xl tracking-tight font-semibold mb-5" style="font-family: 'Outfit', sans-serif; color: #0B1B33; line-height: 1.15;">
-          Welcome back.<br>Log in to your account.
+          <% if params[:role] == 'contractor' %>
+            Welcome back, partner.
+          <% else %>
+            Manage your home projects in one place.
+          <% end %>
         </h1>
 
         <%# Clean, card-based value propositions to establish trust %>
@@ -19,18 +23,18 @@
               <i class="bi bi-shield-lock-fill"></i>
             </div>
             <div>
-              <h6 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Secure Environment</h6>
+              <h6 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Secure Access</h6>
               <p class="small text-muted m-0">Your data and credentials are fully encrypted.</p>
             </div>
           </div>
 
           <div class="d-flex align-items-center gap-3 bg-white p-4" style="border-radius: 12px; border: 1px solid #E2E8F0; box-shadow: 0 2px 10px rgba(11, 27, 51, 0.04);">
             <div class="fs-5 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; border-radius: 50%; background-color: #FFFFFF; color: #2F6BFF; border: 1px solid #E2E8F0; flex-shrink: 0;">
-              <i class="bi bi-lightning-charge-fill"></i>
+              <i class="bi bi-speedometer2"></i>
             </div>
             <div>
-              <h6 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Fast Dispatch</h6>
-              <p class="small text-muted m-0">Access your dashboard and active projects instantly.</p>
+              <h6 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Real-time Updates</h6>
+              <p class="small text-muted m-0">Instantly view incoming notifications and project updates.</p>
             </div>
           </div>
         </div>
@@ -41,43 +45,42 @@
     <%# RIGHT COLUMN: FOCUSED LOGIN CARD & BALANCED MINI FOOTER %>
     <div class="col-lg-7 col-12 d-flex px-4" style="background-color: #FFFFFF; flex-direction: column; justify-content: flex-start; align-items: center;">
 
-      <%# MAXIMUM WIDTH SAAS CARD: Exactly 680px width to match the registration page %>
+      <%# MAXIMUM WIDTH SAAS CARD: Expanded max-width to 680px for wide, premium proportions %>
       <div class="mx-auto" style="width: 100%; max-width: 680px; margin-top: 100px; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 4rem; box-shadow: 0 8px 30px rgba(11, 27, 51, 0.06);">
 
         <%# Header section %>
         <div class="mb-5">
-          <span class="text-uppercase tracking-wider fw-bold text-primary" style="font-size: 11px; letter-spacing: 2px;">Manage your Projects</span>
-          <h2 class="fw-bold tracking-tight mt-2 mb-1" style="font-family: 'Outfit', sans-serif; color: #0B1B33; letter-spacing: -0.75px;">Sign In</h2>
-          <p class="small text-muted m-0">Enter your credentials below to access your workspace.</p>
+          <span class="text-uppercase tracking-wider fw-bold text-primary" style="font-size: 11px; letter-spacing: 2px;">Welcome Back</span>
+          <h2 class="fw-bold tracking-tight mt-2 mb-1" style="font-family: 'Outfit', sans-serif; color: #0B1B33; letter-spacing: -0.75px;">Account Log In</h2>
+          <p class="small text-muted m-0">Enter your details to access your dashboard.</p>
         </div>
 
-        <%# Devise Session Form initialization %>
+        <%# Standard Devise Form initialization for Sessions %>
         <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-
           <div class="form-inputs d-flex flex-column gap-3">
 
             <%# Email Input Field %>
             <div>
               <label class="form-label small fw-medium mb-1" style="color: #0B1B33;">Email Address</label>
-              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", style: "border-radius: 12px; border: 1px solid #E2E8F0; padding: 0.8rem 1rem;", placeholder: "name@company.com" %>
+              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", style: "border-radius: 12px; border: 1px solid #E2E8F0; padding: 0.8rem 1rem;", placeholder: "e.g. name@company.com" %>
             </div>
 
-            <%# Password Input Field with Forgot Password link inside the label wrapper %>
+            <%# Password Input Field %>
             <div class="mt-1">
               <div class="d-flex justify-content-between align-items-center mb-1">
                 <label class="form-label small fw-medium m-0" style="color: #0B1B33;">Password</label>
-                <% if devise_mapping.recoverable? %>
+                <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
                   <%= link_to "Forgot password?", new_password_path(resource_name), class: "small text-primary text-decoration-none fw-medium" %>
                 <% end %>
               </div>
               <%= f.password_field :password, autocomplete: "current-password", class: "form-control", style: "border-radius: 12px; border: 1px solid #E2E8F0; padding: 0.8rem 1rem;", placeholder: "Enter your password" %>
             </div>
 
-            <%# Optional "Remember Me" Checkbox alignment %>
+            <%# Remember Me Checkbox %>
             <% if devise_mapping.rememberable? %>
               <div class="form-check mt-2 d-flex align-items-center gap-2">
-                <%= f.check_box :remember_me, class: "form-check-input", style: "cursor: pointer; width: 16px; height: 16px; margin: 0; border-radius: 4px; border: 1px solid #CBD5E1;" %>
-                <%= f.label :remember_me, class: "form-check-label small text-muted", style: "cursor: pointer; user-select: none;" %>
+                <%= f.check_box :remember_me, class: "form-check-input", style: "border-radius: 4px; border: 1px solid #E2E8F0; cursor: pointer;" %>
+                <%= f.label :remember_me, class: "form-check-label small text-muted style='cursor: pointer;'" %>
               </div>
             <% end %>
           </div>
@@ -85,19 +88,27 @@
           <%# Form Submission Button %>
           <div class="form-actions mt-4 pt-2">
             <%= f.button type: :submit, class: "btn w-100 py-3 text-white fw-semibold", style: "background-color: #2F6BFF; background: #2F6BFF; border-radius: 9999px; border: none; font-family: 'Outfit', sans-serif; box-shadow: 0 10px 25px rgba(47, 107, 255, 0.25); font-weight: 600;" do %>
-              Sign in to dashboard →
+              Log In to Account →
             <% end %>
           </div>
         <% end %>
 
-        <%# Footer Navigation linking over to the Sign-Up Route %>
+        <%# Visually clear sign-up section split by target roles to prevent cookie loop deadlocks %>
         <div class="mt-5 pt-3 text-center border-top" style="border-top: 1px solid #E2E8F0;">
-          <p class="small text-muted m-0">
-            Don't have an account yet?
-            <%# NEW: We append the bypass_cookie parameter to the registration path %>
-            <%= link_to "Sign up here", new_registration_path(resource_name, bypass_cookie: true), class: "fw-medium text-primary text-decoration-none" %>
-          </p>
+          <p class="small text-muted mb-3">Don't have an account yet?</p>
+
+          <div class="d-flex justify-content-center gap-3 backend-direct-links">
+            <%= link_to "Sign up as Client", new_registration_path(resource_name, role: 'customer', bypass_cookie: true),
+                class: "fw-semibold text-primary text-decoration-none small hover-underline" %>
+
+            <span class="text-muted" style="color: #CBD5E1;">|</span>
+
+            <%= link_to "Sign up as Craftsman", new_registration_path(resource_name, role: 'contractor', bypass_cookie: true),
+                class: "fw-semibold text-primary text-decoration-none small hover-underline" %>
+          </div>
         </div>
+
+      </div>
 
       <%# MINIMAL AUTH FOOTER %>
       <div class="pt-4 pb-4 text-center w-100" style="max-width: 680px;">
