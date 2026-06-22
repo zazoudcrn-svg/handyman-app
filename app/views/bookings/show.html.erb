@@ -11,13 +11,27 @@
 
         <h2 class="mb-4 text-center">Booking Details</h2>
 
-        <div class="d-flex justify-content-end mb-3">
-            <%= link_to booking_path(@booking),
-             data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this booking?" },
-             class: "btn btn-outline-danger" do %>
-              <i class="bi bi-x-circle-fill"></i>
-             <% end %>
-          </div>
+
+  <div class="d-flex justify-content-end gap-2 mb-3">
+
+    <!-- EDIT ICON -->
+    <%= link_to edit_booking_path(@booking),
+        class: "d-flex align-items-center justify-content-center rounded-circle",
+        style: "width:40px; height:40px; background:#f1f1f1;" do %>
+      <i class="bi bi-pencil text-dark"></i>
+    <% end %>
+
+    <!-- DELETE ICON -->
+    <%= link_to booking_path(@booking),
+        data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this booking?" },
+        class: "d-flex align-items-center justify-content-center rounded-circle",
+        style: "width:40px; height:40px; background:#ffe6e6;" do %>
+      <i class="bi bi-x-lg text-danger"></i>
+    <% end %>
+
+  </div>
+
+
 
 
         <h4 class="text-primary"><%= @booking.listing.title %></h4>
@@ -37,13 +51,43 @@
         <p><strong>Address:</strong>
         <%= @booking.listing.street %>, <%= @booking.listing.city %> <%= @booking.listing.postcode %>, <%= @booking.listing.country %>
 </p>
-
-        <p><strong>Description:</strong></p>
-        <p class="text-muted"><%= @booking.listing.description %></p>
+        <p><strong>Description:</strong> <%= @booking.listing.description %></p>
         <p>
           <strong>Status:</strong>
           <span class="badge bg-info text-dark"><%= @booking.booking_status %></span>
         </p>
+        <% if current_user.contractor? &&
+          @booking.booking_status == "confirmed" &&
+          @booking.accepted_by == "customer" &&
+          @booking.new_proposed_date_and_time.nil? %>
+
+
+
+        <% end %>
+
+
+        <% if current_user.customer? &&
+          @booking.booking_status == "confirmed" &&
+          @booking.accepted_by == "contractor" &&
+          @booking.new_proposed_date_and_time.nil? %>
+
+
+
+        <% end %>
+
+
+        <% unless ["cancelled", "completed", "pending"].include?(@booking.booking_status) %>
+          <% if @booking.new_proposed_date_and_time.present? %>
+          <p><strong>New Proposed Date:</strong> <%= @booking.new_proposed_date_and_time %></p>
+          <% if @booking.proposed_by != current_user.role %>
+           <%= button_to "Accept New Date",
+           accept_date_booking_path(@booking),
+           method: :patch,
+           data: { turbo: false },
+           class: "btn btn-success mb-3" %>
+          <% end %>
+          <% end %>
+          <% end %>
 
         <% if current_user.role == "customer" && @booking.booking_status != "pending" %>
         <hr>
@@ -59,25 +103,6 @@
           <hr>
           <% end %>
 
-        <% if current_user.contractor? &&
-          @booking.booking_status == "confirmed" &&
-          @booking.accepted_by == "customer" &&
-          @booking.new_proposed_date_and_time.nil? %>
-
-          <p class="text-success"><strong>The customer accepted your proposed date.</strong></p>
-
-        <% end %>
-
-
-        <% if current_user.customer? &&
-          @booking.booking_status == "confirmed" &&
-          @booking.accepted_by == "contractor" &&
-          @booking.new_proposed_date_and_time.nil? %>
-
-          <p class="text-success"><strong>The contractor accepted your proposed date.</strong></p>
-
-        <% end %>
-
         <% if @booking.booking_status == "cancelled" %>
           <div class="mt-3" style="border-left: 4px solid #d9534f; padding-left: 10px;">
             <strong style="color:#d9534f;">Booking Cancelled</strong>
@@ -89,44 +114,6 @@
         <% end %>
 
       <% unless ["cancelled", "completed"].include?(@booking.booking_status) %>
-
-          <% if @booking.new_proposed_date_and_time.present? %>
-            <p><strong>New Proposed Date:</strong> <%= @booking.new_proposed_date_and_time %></p>
-
-            <%# Only CUSTOMER sees Accept button if contractor proposed %>
-            <% if @booking.new_proposed_date_and_time.present? && @booking.proposed_by != current_user.role %>
-            <%= button_to "Accept New Date",
-              accept_date_booking_path(@booking),
-              method: :patch,
-              data: { turbo: false },
-              class: "btn btn-success mb-3" %>
-          <% end %>
-          <% end %>
-
-          <hr>
-
-          <%# PROPOSE NEW DATE (Both roles) %>
-          <h4 class="mb-3">Propose a New Date</h4>
-
-          <%= form_with model: @booking,
-                  url: propose_date_booking_path(@booking),
-                  method: :patch,
-                  data: { turbo: false },
-                  class: "row g-3" do |f| %>
-
-
-            <div class="col-md-6">
-              <%= f.label :new_proposed_date_and_time, "Select Date & Time", class: "form-label" %>
-              <%= f.text_field :new_proposed_date_and_time, class: "form-control date-picker" %>
-            </div>
-
-            <div class="col-12">
-              <%= f.submit "Propose New Date", class: "btn btn-secondary mt-2" %>
-            </div>
-
-          <% end %>
-
-          <hr class="my-4">
 
           <%# CANCEL BOOKING (Both roles) %>
           <h4 class="mb-3" style="color:#d9534f;">Cancel Booking</h4>

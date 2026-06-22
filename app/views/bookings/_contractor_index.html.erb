@@ -4,6 +4,8 @@
       <h3><%= booking.listing.title %></h3>
 
       <p><strong>Customer:</strong> <%= booking.listing.user.first_name %></p>
+      <p><strong>Category:</strong> <%= booking.listing.category.name %></p>
+      <p><strong>Postcode:</strong> <%= booking.listing.city %> <%= booking.listing.postcode %></p>
       <p><strong>Scheduled:</strong> <%= booking.scheduled_date_and_time %></p>
       <p><strong>Status:</strong> <%= booking.booking_status.humanize %></p>
 

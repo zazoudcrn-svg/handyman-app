@@ -8,9 +8,14 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
-@import "bootstrap";
-// 1. Load global tokens, variables, and baseline system rules first
-@import "styleguide";
+  @import "bootstrap";
+/* 1. Load global tokens, variables, and baseline system rules first*/
+  @import "styleguide";
 
-// 2. Load modular UI components that consume those tokens
-@import "components/multistep_form";
+/* 2. Load modular UI components that consume those tokens*/
+  @import "components/multistep_form";
+
+.rounded-circle:hover {
+  transform: scale(1.08);
+  transition: 0.15s ease-in-out;
+}
