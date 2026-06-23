@@ -170,6 +170,12 @@
   color: #ffffff !important;
   }
 
+  .step-indicator.active {
+  border-bottom: 4px solid #2F6BFF !important;
+  color: #2F6BFF !important;
+  }
+
+
 </style>
 <script>
   (function() {
@@ -231,8 +237,8 @@
 
         indicators.forEach((indicator, index) => {
           if (index === currentStep) {
-            indicator.style.borderBottom = "4px solid #38bdf8";
-            indicator.style.color = "#38bdf8";
+            indicator.style.borderBottom = "4px solid #2F6BFF";
+            indicator.style.color = "#2F6BFF";
             indicator.style.fontWeight = "bold";
           } else {
             indicator.style.borderBottom = "4px solid #ccc";
