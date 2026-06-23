@@ -6,14 +6,13 @@
   <div class="container" style="max-width: 1200px;">
 
     <div class="mb-5 pb-4 border-bottom" style="border-color: #E2E8F0 !important;">
-      <h1 class="h2" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">
+      <h1 class="h2 mb-0" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">
         <%= current_user.customer? ? "Offers Received" : "My Offers" %>
       </h1>
     </div>
 
     <div class="d-flex align-items-center flex-wrap gap-3 mb-4" role="tablist">
       <span class="text-uppercase fw-bold" style="font-size: 10px; color: #94A3B8; letter-spacing: 0.05em; margin-right: 5px;">Filter:</span>
-
       <% [
         { id: "pending",  label: "Pending",  count: pending_offers.size },
         { id: "accepted", label: "Accepted", count: accepted_offers.size },
@@ -38,40 +37,49 @@
           <% if pending_offers.any? %>
             <% pending_offers.each do |offer| %>
               <div class="col-md-4">
-                <div class="card p-4 h-100 border-0" style="border: 1px solid #E2E8F0 !important; border-radius: 16px;">
-                  <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= offer.listing.title %></h5>
+                <div class="card h-100 p-4 border-0" style="border: 1px solid #E2E8F0 !important; border-radius: 16px;">
+                  <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 15px;"><%= offer.listing.title %></h5>
 
                   <% if current_user.customer? %>
-                    <p class="mb-1"><strong>Contractor:</strong>
-                      <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user) %>
+                    <p class="mb-2 small text-muted"><strong class="text-dark">Contractor:</strong>
+                      <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user), style: "color: #2F6BFF; text-decoration: none;" %>
                     </p>
                   <% else %>
-                    <p class="mb-1"><strong>Customer:</strong>
-                      <%= link_to offer.listing.user.first_name, profile_path(offer.listing.user) %>
+                    <p class="mb-2 small text-muted"><strong class="text-dark">Customer:</strong>
+                      <%= link_to "#{offer.listing.user.first_name} #{offer.listing.user.last_name&.first}.", profile_path(offer.listing.user), style: "color: #2F6BFF; text-decoration: none;" %>
                     </p>
                   <% end %>
 
-                  <p class="mb-1"><strong>Quote:</strong> €<%= offer.quote %></p>
-                  <p class="mb-3"><strong>Suggested Date:</strong>
-                    <%= offer.suggested_date_and_time.present? ? offer.suggested_date_and_time.strftime("%b %d, %Y at %H:%M") : "Not specified" %>
+                  <p class="mb-2 small text-muted"><strong class="text-dark">Quote:</strong> €<%= offer.quote %></p>
+                  <% if offer.estimated_duration_hours.present? %>
+                    <p class="mb-2 small text-muted"><strong class="text-dark">Duration:</strong> <%= offer.estimated_duration_hours %> hrs</p>
+                  <% end %>
+                  <p class="mb-3 small text-muted"><strong class="text-dark">Date:</strong>
+                    <%= offer.suggested_date_and_time&.strftime("%b %d, %Y at %H:%M") || "Not specified" %>
                   </p>
 
-                  <div class="mt-auto d-flex justify-content-between align-items-center pt-3">
-
+                  <div class="mt-auto d-flex justify-content-between align-items-center pt-3" style="border-top: 1px solid #F1F5F9;">
                     <% if current_user.customer? %>
                       <div class="d-flex gap-2">
-                        <%= button_to accept_listing_offer_path(offer.listing, offer), method: :patch, class: "btn btn-success btn-sm", style: "border-radius: 8px;", title: "Accept", data: { bs_toggle: "tooltip" } do %>
+                        <%= button_to accept_listing_offer_path(offer.listing, offer), method: :patch, class: "btn btn-success btn-sm", style: "border-radius: 8px;" do %>
                           <i class="bi bi-check-lg"></i>
                         <% end %>
-                        <%= button_to decline_listing_offer_path(offer.listing, offer), method: :patch, class: "btn btn-danger btn-sm", style: "border-radius: 8px;", title: "Decline", data: { bs_toggle: "tooltip" } do %>
+                        <%= button_to decline_listing_offer_path(offer.listing, offer), method: :patch, class: "btn btn-danger btn-sm", style: "border-radius: 8px;" do %>
                           <i class="bi bi-x-lg"></i>
                         <% end %>
                       </div>
+                    <% elsif current_user.contractor? %>
+                      <div class="d-flex gap-2">
+                        <%= link_to edit_listing_offer_path(offer.listing, offer), class: "btn btn-secondary btn-sm", style: "border-radius: 8px;" do %>
+                          <i class="bi bi-pencil"></i>
+                        <% end %>
+                        <%= button_to listing_offer_path(offer.listing, offer), method: :delete, class: "btn btn-danger btn-sm", style: "border-radius: 8px;", data: { turbo_confirm: "Are you sure?" } do %>
+                          <i class="bi bi-trash"></i>
+                        <% end %>
+                      </div>
                     <% end %>
-
-                    <%= link_to "View Details →", listing_offer_path(offer.listing, offer), class: "btn btn-outline-primary btn-sm", style: "border-radius: 8px;" %>
+                    <%= link_to "Details →", listing_offer_path(offer.listing, offer), class: "btn btn-outline-primary btn-sm", style: "border-radius: 8px;" %>
                   </div>
-
                 </div>
               </div>
             <% end %>
@@ -87,25 +95,28 @@
           <% if accepted_offers.any? %>
             <% accepted_offers.each do |offer| %>
               <div class="col-md-4">
-                <div class="card p-4 h-100 border-0" style="border: 1px solid #E2E8F0 !important; border-radius: 16px;">
-                  <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= offer.listing.title %></h5>
+                <div class="card h-100 p-4 border-0" style="border: 1px solid #E2E8F0 !important; border-radius: 16px;">
+                  <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 15px;"><%= offer.listing.title %></h5>
 
                   <% if current_user.customer? %>
-                    <p class="mb-1"><strong>Contractor:</strong>
-                      <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user) %>
+                    <p class="mb-2 small text-muted"><strong class="text-dark">Contractor:</strong>
+                      <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user), style: "color: #2F6BFF; text-decoration: none;" %>
                     </p>
                   <% else %>
-                    <p class="mb-1"><strong>Customer:</strong>
-                      <%= link_to offer.listing.user.first_name, profile_path(offer.listing.user) %>
+                    <p class="mb-2 small text-muted"><strong class="text-dark">Customer:</strong>
+                      <%= link_to "#{offer.listing.user.first_name} #{offer.listing.user.last_name&.first}.", profile_path(offer.listing.user), style: "color: #2F6BFF; text-decoration: none;" %>
                     </p>
                   <% end %>
 
-                  <p class="mb-1"><strong>Quote:</strong> €<%= offer.quote %></p>
-                  <p class="mb-3"><strong>Suggested Date:</strong>
-                    <%= offer.suggested_date_and_time.present? ? offer.suggested_date_and_time.strftime("%b %d, %Y at %H:%M") : "Not specified" %>
+                  <p class="mb-2 small text-muted"><strong class="text-dark">Quote:</strong> €<%= offer.quote %></p>
+                  <% if offer.estimated_duration_hours.present? %>
+                    <p class="mb-2 small text-muted"><strong class="text-dark">Duration:</strong> <%= offer.estimated_duration_hours %> hrs</p>
+                  <% end %>
+                  <p class="mb-3 small text-muted"><strong class="text-dark">Date:</strong>
+                    <%= offer.suggested_date_and_time&.strftime("%b %d, %Y at %H:%M") || "Not specified" %>
                   </p>
 
-                  <div class="mt-auto">
+                  <div class="mt-auto pt-3" style="border-top: 1px solid #F1F5F9;">
                     <% if offer.booking.present? %>
                       <%= link_to "View Booking →", booking_path(offer.booking), class: "btn btn-outline-primary btn-sm w-100", style: "border-radius: 8px;" %>
                     <% else %>
@@ -127,22 +138,22 @@
           <% if declined_offers.any? %>
             <% declined_offers.each do |offer| %>
               <div class="col-md-4">
-                <div class="card p-4 h-100 border-0" style="border: 1px solid #E2E8F0 !important; border-radius: 16px;">
-                  <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= offer.listing.title %></h5>
+                <div class="card h-100 p-4 border-0" style="border: 1px solid #E2E8F0 !important; border-radius: 16px;">
+                  <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 15px;"><%= offer.listing.title %></h5>
 
                   <% if current_user.customer? %>
-                    <p class="mb-1"><strong>Contractor:</strong>
-                      <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user) %>
+                    <p class="mb-2 small text-muted"><strong class="text-dark">Contractor:</strong>
+                      <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user), style: "color: #2F6BFF; text-decoration: none;" %>
                     </p>
                   <% else %>
-                    <p class="mb-1"><strong>Customer:</strong>
-                      <%= link_to offer.listing.user.first_name, profile_path(offer.listing.user) %>
+                    <p class="mb-2 small text-muted"><strong class="text-dark">Customer:</strong>
+                      <%= link_to "#{offer.listing.user.first_name} #{offer.listing.user.last_name&.first}.", profile_path(offer.listing.user), style: "color: #2F6BFF; text-decoration: none;" %>
                     </p>
                   <% end %>
 
-                  <p class="mb-1"><strong>Quote:</strong> €<%= offer.quote %></p>
+                  <p class="mb-3 small text-muted"><strong class="text-dark">Quote:</strong> €<%= offer.quote %></p>
 
-                  <div class="mt-auto">
+                  <div class="mt-auto pt-3" style="border-top: 1px solid #F1F5F9;">
                     <%= link_to "View Details →", listing_offer_path(offer.listing, offer), class: "btn btn-outline-secondary btn-sm w-100", style: "border-radius: 8px;" %>
                   </div>
                 </div>

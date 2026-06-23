@@ -1,5 +1,8 @@
 class OffersController < ApplicationController
-  before_action :require_contractor, only: [ :new, :create ] # ADDED
+  before_action :require_contractor, only: [ :new, :create, :edit, :update ] # ADDED
+  before_action :set_listing_and_offer, only: [:show, :edit, :update]
+  before_action :authorize_offer_owner!, only: [:edit, :update]
+
   def index
     if current_user.role == "customer"
       @offers = Offer.where(listing: current_user.listings)
@@ -22,11 +25,23 @@ class OffersController < ApplicationController
     @listing = Listing.find(params[:listing_id])
     @offer = @listing.offers.new(offer_params)
     @offer.user = current_user
+    @offer.offer_status = "pending"
 
     if @offer.save
       redirect_to listing_offer_path(@listing, @offer), notice: "Offer submitted!"
     else
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
+  end
+
+  def update
+    if @offer.update(offer_params)
+      redirect_to listing_offer_path(@listing, @offer), notice: "Offer updated successfully."
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -51,6 +66,18 @@ class OffersController < ApplicationController
     redirect_to listing_offers_path(@listing), notice: "The offer has been declined" # CHANGED
   end
 
+  def destroy
+    @listing = Listing.find(params[:listing_id])
+    @offer = Offer.find(params[:id])
+
+    if @offer.user == current_user
+      @offer.destroy
+      redirect_to offers_path, notice: "Offer cancelled successfully."
+    else
+      redirect_to listing_offer_path(@listing, @offer), alert: "You are not authorized to do that."
+    end
+  end
+
   private
 
   def require_contractor # ADDED
@@ -61,5 +88,16 @@ class OffersController < ApplicationController
 
   def offer_params
     params.require(:offer).permit(:quote, :note, :estimated_duration_hours, :suggested_date_and_time)
+  end
+
+  def set_listing_and_offer
+  @listing = Listing.find(params[:listing_id])
+  @offer = Offer.find(params[:id])
+  end
+
+  def authorize_offer_owner!
+    unless @offer.user == current_user
+      redirect_to listing_offer_path(@listing, @offer), alert: "You are not authorized to do that."
+    end
   end
 end
