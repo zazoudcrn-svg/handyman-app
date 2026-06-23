@@ -58,12 +58,26 @@
 
   <%# STEP 3: OPTIONAL FILE/PHOTO UPLOADS %>
   <div class="form-step" id="step-3" style="display: none;">
-    <h2>Add photos or videos</h2>
+    <h2>Add photos</h2>
     <p>A picture saves a thousand calls.</p>
+
+    <%# Show existing photos in edit mode %>
+    <% if @listing.photos.attached? %>
+      <div class="mb-3">
+        <p class="small fw-semibold" style="color: #0B1B33;">Current photo:</p>
+        <div class="d-flex flex-wrap gap-2 mb-2">
+          <% @listing.photos.each do |photo| %>
+            <%= cl_image_tag photo.key, style: "width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #E2E8F0;" %>
+          <% end %>
+        </div>
+        <p class="text-muted small">Upload a new photo below to replace it, or leave empty to keep the current one.</p>
+      </div>
+    <% end %>
+
     <%= f.input :photos, as: :file, input_html: { multiple: true, accept: 'image/*' }, label: "Click to upload or drag and drop" %>
 
     <br>
-    <%# Premium Inline SaaS Error Message Slot %>
+    <%# Inline error message slot %>
     <div class="step-error-message text-danger small mb-3 fw-semibold" style="display: none;"></div>
 
     <button type="button" class="prev-btn">&larr; Back</button>
