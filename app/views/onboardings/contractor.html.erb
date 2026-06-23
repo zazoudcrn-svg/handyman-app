@@ -1,15 +1,127 @@
-<%# External resources for the interactive map %>
+<%# 1. External Resources %>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-<div class="py-5" style="background-color: #F8FAFC; min-height: 100vh;">
+<%# 2. Main Page Layout Wrapper %>
+<div class="py-5" style="background-color: #F8FAFC; min-height: 100vh; font-family: 'Manrope', sans-serif;">
   <div class="container" style="max-width: 800px;">
 
-    <%# Premium SaaS Header %>
-    <h1 class="mb-4" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Contractor Onboarding</h1>
-    <p class="text-muted mb-4">Please complete your business setup in 5 easy steps.</p>
+    <%# Premium Header Section %>
+    <div class="header-section mb-5">
+      <h1 style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-weight: 700; font-size: 2.2rem; letter-spacing: -0.5px;">
+        Contractor Onboarding
+      </h1>
+      <p class="text-muted" style="font-size: 16px;">
+        Please complete your business profile in 5 easy steps to get started.
+      </p>
+    </div>
 
-    <%# Render the modular onboarding form partial %>
-    <%= render 'onboarding_form_contractor' %>
+    <%# 3. Form Container wrapped with saas-form-wrapper for consistent styling %>
+    <div class="saas-form-wrapper">
+      <%= render 'onboarding_form_contractor' %>
+    </div>
+
   </div>
 </div>
+
+<%# 4. Scoped CSS for SaaS design consistency %>
+<style>
+  /* Applied to the wrapper to target the internal form elements */
+  .saas-form-wrapper .simple_form,
+  .saas-form-wrapper form {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);
+  }
+
+  /* Styling headings inside the form */
+  .saas-form-wrapper h2 {
+    font-family: 'Outfit', sans-serif;
+    color: #0B1B33;
+    font-weight: 700;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+  }
+
+  /* Consistent input field styling */
+  .saas-form-wrapper input[type="text"],
+  .saas-form-wrapper input[type="email"],
+  .saas-form-wrapper textarea,
+  .saas-form-wrapper select {
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
+    padding: 0.8rem 1rem;
+    margin-bottom: 15px;
+    width: 100%;
+  }
+
+  /* Focus effects for better accessibility and UI interaction */
+  .saas-form-wrapper input:focus,
+  .saas-form-wrapper textarea:focus {
+    border-color: #2F6BFF;
+    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.1);
+    outline: none;
+  }
+
+  /* Primary button styling to match the SaaS look and feel */
+  .saas-form-wrapper .btn-primary,
+  .saas-form-wrapper input[type="submit"] {
+    background-color: #2F6BFF;
+    color: #FFFFFF;
+    border-radius: 9999px;
+    padding: 12px 28px;
+    border: none;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+
+  /* Hover effect for buttons */
+  .saas-form-wrapper .btn-primary:hover,
+  .saas-form-wrapper input[type="submit"]:hover {
+    background-color: #0B1B33;
+  }
+
+  .saas-form-wrapper .back-btn,
+  .saas-form-wrapper button[type="button"]:not(.next-btn) {
+    display: inline-block !important; /* Forces the button to show */
+    background-color: #F1F5F9 !important; /* Light gray background */
+    color: #64748B !important;           /* Muted text color */
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 9999px !important;
+    padding: 12px 28px !important;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  /* 2. Add hover effect for better UX */
+  .saas-form-wrapper .back-btn:hover {
+    background-color: #E2E8F0 !important;
+    color: #0B1B33 !important;
+  }
+
+  /* 3. Ensure the container handles both buttons side-by-side */
+  .saas-form-wrapper .form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+  }
+
+  /* Ensure the error box matches the premium look */
+  .saas-form-wrapper .alert-danger,
+  .saas-form-wrapper .error-message {
+    background-color: #FEF2F2 !important;
+    color: #991B1B !important;
+    border: 1px solid #FECACA !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    margin-bottom: 20px !important;
+    font-weight: 500 !important;
+  }
+
+</style>

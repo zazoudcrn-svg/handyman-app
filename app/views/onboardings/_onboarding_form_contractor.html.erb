@@ -25,7 +25,11 @@
     <% end %>
     <p>
       <%= f.label :business_name, "Official Company Name" %><br>
-      <%= f.text_field :business_name %>
+      <%= f.text_field :business_name, class: "required-field" %>
+    </p>
+    <p>
+      <%= f.label :business_website, "Official Company Website" %><br>
+      <%= f.text_field :business_website %>
     </p>
   </div>
 
@@ -286,7 +290,7 @@
         const requiredFields = currentStepElement.querySelectorAll(".required-field");
         let isValid = true;
 
-        // 2. Validate them
+        // 2. Validate Text/Input fields
         requiredFields.forEach(field => {
           if (!field.value.trim()) {
             field.style.borderColor = "red";
@@ -296,8 +300,21 @@
           }
         });
 
-        // 3. Only proceed if valid
+        // 3. SPECIAL CASE: Validate Categories (Step 2 is index 1)
+        if (currentStep === 1) {
+          const checkboxes = currentStepElement.querySelectorAll('input[name="category_ids[]"]');
+          const isChecked = Array.from(checkboxes).some(cb => cb.checked);
+
+          if (!isChecked) {
+            isValid = false;
+          }
+        }
+
+        // 4. Only proceed if valid
         if (isValid) {
+          // Hide error box on success
+          document.getElementById("validation-error").style.display = "none";
+
           if (currentStep < steps.length - 1) {
             currentStep++;
             showStep();
@@ -314,6 +331,7 @@
           showStep();
         }
       });
+
 
       // --- RESET BORDER ON INPUT ---
       // This ensures the red border disappears immediately when the user types
