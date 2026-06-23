@@ -276,7 +276,7 @@ listing_completed_3 = Listing.create!(
   user: customer_history_2, category: plumbing_category,
   title: "Fit new designer vertical radiator in hallway",
   description: "Need an old standard radiator swapped out for a new anthracite vertical designer radiator. Pipes will need slight modification to fit the new layout.",
- street: "Camden High Street 12",
+  street: "Camden High Street 12",
   postcode: "NW1 7JE",
   city: "London",
   country: "United Kingdom",

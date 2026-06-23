@@ -65,11 +65,14 @@
       </p>
       <p>
         <%= user_fields.label :city, "City" %><br>
-        <%= user_fields.text_field :city, id: "wizard-city", class: "required-field" %>>
+        <%= user_fields.text_field :city, id: "wizard-city", class: "required-field" %>
       </p>
       <p>
-        <%= user_fields.label :country, "Country" %><br>
-        <%= user_fields.text_field :country, value: "Germany", id: "wizard-country", class: "required-field" %>
+        <%= user_fields.label :country, "Country", class: "form-label" %><br>
+        <%= user_fields.country_select :country,
+              { priority_countries: ["GB", "DE", "AT", "CH"], include_blank: "Please select your country" },
+              { class: "form-select required-field", id: "wizard-country" }
+        %>
       </p>
     <% end %>
     <p>
@@ -87,14 +90,14 @@
     <%= f.hidden_field :weekday_availability, id: "hidden-weekdays", class: "required-field" %>
 
     <div style="display: flex; gap: 8px; margin-bottom: 20px;">
-      <button type="button" class="day-btn" data-day="Mo" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Mo</button>
-      <button type="button" class="day-btn" data-day="Tu" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Tu</button>
-      <button type="button" class="day-btn" data-day="We" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">We</button>
-      <button type="button" class="day-btn" data-day="Th" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Th</button>
-      <button type="button" class="day-btn" data-day="Fr" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Fr</button>
-      <button type="button" class="day-btn" data-day="Sa" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Sa</button>
-      <button type="button" class="day-btn" data-day="Su" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Su</button>
-    </div>
+    <button type="button" class="day-btn" id="day-btn-mo" data-day="Mo" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Mo</button>
+    <button type="button" class="day-btn" id="day-btn-tu" data-day="Tu" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Tu</button>
+    <button type="button" class="day-btn" id="day-btn-we" data-day="We" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">We</button>
+    <button type="button" class="day-btn" id="day-btn-th" data-day="Th" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Th</button>
+    <button type="button" class="day-btn" id="day-btn-fr" data-day="Fr" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Fr</button>
+    <button type="button" class="day-btn" id="day-btn-sa" data-day="Sa" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Sa</button>
+    <button type="button" class="day-btn" id="day-btn-su" data-day="Su" style="padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; font-weight: 500;">Su</button>
+  </div>
 
     <p>
       <%= f.label :start_time, "Working Hours (Start)" %><br>
@@ -129,6 +132,41 @@
 
 <% end %>
 
+<style>
+  /* Only target the country select dropdown specifically by its ID */
+  /* This prevents the style from breaking the smaller time_select fields */
+  .saas-form-wrapper #wizard-country.form-select {
+    border-radius: 12px;       /* Consistent rounded corners */
+    border: 1px solid #E2E8F0 ; /* Premium border color */
+    padding: 0.8rem 1rem;      /* Consistent padding */
+    font-size: 14px;
+    color: #0B1B33 ;
+    background-color: #FFFFFF;
+    background-position: right 1rem center; /* Proper arrow positioning */
+  }
+
+  /* Add focus state specifically for the country dropdown */
+  .saas-form-wrapper #wizard-country.form-select:focus {
+    border-color: #2F6BFF ;
+    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.1);
+  }
+
+  /* Style for all day buttons */
+/* Styling for your day buttons using your SaaS-Blue */
+/* Default State: Light Gray */
+
+  .day-btn {
+    background-color: #f1f5f9 !important;
+    border: 1px solid #ccc !important;
+    color: #64748b !important;
+  }
+  .day-btn.active {
+    background-color: #2F6BFF !important;
+    color: #ffffff !important;
+    border: 1px solid #2F6BFF !important;
+  }
+
+</style>
 <script>
   (function() {
     function initWizard() {
@@ -147,29 +185,40 @@
       let mapCircle = null;
 
       // --- WEEKDAY SELECTION ---
-      const dayButtons = document.querySelectorAll(".day-btn");
+
       const hiddenInput = document.getElementById("hidden-weekdays");
-      let selectedDays = [];
+      const dayBtns = document.querySelectorAll(".day-btn");
 
-      dayButtons.forEach(btn => {
-        btn.addEventListener("click", (e) => {
+
+      let selectedDays = hiddenInput && hiddenInput.value
+        ? hiddenInput.value.split(", ").filter(Boolean)
+        : [];
+
+
+      dayBtns.forEach(btn => {
+        if (selectedDays.includes(btn.getAttribute("data-day"))) {
+          btn.classList.add("active");
+        }
+      });
+
+
+      dayBtns.forEach(btn => {
+        btn.addEventListener("click", function(e) {
           e.preventDefault();
-          const day = btn.getAttribute("data-day");
+          const day = this.getAttribute("data-day");
 
-          if (selectedDays.includes(day)) {
-            selectedDays = selectedDays.filter(d => d !== day);
-            btn.style.background = "white";
-            btn.style.color = "black";
-            btn.style.borderColor = "#ccc";
+          this.classList.toggle("active");
+
+          if (this.classList.contains("active")) {
+            if (!selectedDays.includes(day)) selectedDays.push(day);
           } else {
-            selectedDays.push(day);
-            btn.style.background = "#38bdf8";
-            btn.style.color = "white";
-            btn.style.borderColor = "#38bdf8";
+            selectedDays = selectedDays.filter(d => d !== day);
           }
-          hiddenInput.value = selectedDays.join(", ");
+
+          if (hiddenInput) hiddenInput.value = selectedDays.join(", ");
         });
       });
+
 
       function showStep() {
         steps.forEach((step, index) => {
@@ -233,7 +282,16 @@
       function updateMapRadius() {
         const city = document.getElementById('wizard-city').value;
         const postcode = document.getElementById('wizard-postcode').value;
-        const country = document.getElementById('wizard-country').value || "Germany";
+        // Access the country dropdown element
+        const countrySelect = document.getElementById('wizard-country');
+
+        // Get the selected country text; default to an empty string if nothing is selected
+        let country = (countrySelect && countrySelect.selectedIndex > 0)
+                      ? countrySelect.options[countrySelect.selectedIndex].text
+                      : "";
+
+        // Fallback to "Germany" if the user has not selected a country yet to ensure API search results
+        const finalCountry = country === "" ? "Germany" : country;
         const radiusInKm = parseFloat(document.getElementById('wizard-radius').value) || 50;
 
         if (!city && !postcode) return;
@@ -342,7 +400,11 @@
       showStep();
       }
 
-    initWizard();
-    document.addEventListener("turbo:load", initWizard);
+    if (document.readyState === "loading") {
+      document.addEventListener("turbo:load", initWizard);
+    } else {
+      initWizard();
+      document.addEventListener("turbo:load", initWizard);
+    }
   })();
 </script>
