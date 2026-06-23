@@ -1,10 +1,13 @@
 <div class="container mt-5">
+  <%= link_to booking_path(@booking), class: "text-decoration-none d-inline-flex align-items-center gap-2 small fw-medium", style: "color: #64748B; transition: color 0.2s;" do %>
+    <i class="bi bi-arrow-left"></i> Back to booking
+  <% end %>
   <h1>How did it go?</h1>
   <h2>Leave a review for <%= @booking.offer.user.first_name %></h2>
 
   <%= simple_form_for @review, url: reviews_path do |f| %>
     <%= f.error_notification %>
-    
+
     <%= hidden_field_tag :booking_id, @booking.id %>
 
     <%= f.input :rating, collection: [1,2,3,4,5], as: :select, label: "Rating" %>
