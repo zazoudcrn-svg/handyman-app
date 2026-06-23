@@ -17,7 +17,7 @@ class ReviewsController < ApplicationController
     end
 
     unless @booking.booking_status == "completed"
-      redirect_to new_review_path, alert: "Booking needs to be completed to submit a review."
+      redirect_to new_review_path, alert: "Booking needs to be marked as completed to submit a review."
       return
     end
 
@@ -32,7 +32,7 @@ class ReviewsController < ApplicationController
     @review.reviewee = @booking.offer.user
 
     if @review.save
-      redirect_to new_review_path, notice: "Review submitted!"
+      redirect_to booking_path(@booking), notice: "Review submitted!"
     else
       render :new, status: :unprocessable_entity
     end

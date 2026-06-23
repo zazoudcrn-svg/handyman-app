@@ -132,7 +132,7 @@ def cancel_booking
     cancelled_by: current_user.role
   )
 
-  redirect_to booking_path(@booking), notice: "Booking cancelled successfully"
+  redirect_to bookings_path, notice: "Booking cancelled successfully"
 end
 
 

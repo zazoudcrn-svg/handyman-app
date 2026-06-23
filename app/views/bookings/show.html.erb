@@ -11,7 +11,7 @@
 
         <h2 class="mb-4 text-center">Booking Details</h2>
 
-
+  <% unless ["completed", "cancelled"].include?(@booking.booking_status) %>
   <div class="d-flex justify-content-end gap-2 mb-3">
 
     <!-- EDIT ICON -->
@@ -22,20 +22,17 @@
     <% end %>
 
     <!-- DELETE ICON -->
-    <%= link_to booking_path(@booking),
-        data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this booking?" },
-        class: "d-flex align-items-center justify-content-center rounded-circle",
-        style: "width:40px; height:40px; background:#ffe6e6;" do %>
-      <i class="bi bi-x-lg text-danger"></i>
-    <% end %>
+       <%= link_to "#",
+          data: { bs_toggle: "modal", bs_target: "#cancelModal" },
+          class: "d-flex align-items-center justify-content-center rounded-circle",
+          style: "width:40px; height:40px; background:#ffe6e6;" do %>
+          <i class="bi bi-x-lg text-danger"></i>
+       <% end %>
 
   </div>
+  <% end %>
 
-
-
-
-        <h4 class="text-primary"><%= @booking.listing.title %></h4>
-
+        <h4 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= @booking.listing.title %></h4>
         <%# CUSTOMER VIEW %>
         <% if current_user.customer? %>
           <p><strong>Contractor:</strong> <%= link_to @booking.offer.user.contractor_profile&.business_name || @booking.offer.user.first_name, profile_path(@booking.offer.user) %></p>
@@ -55,25 +52,27 @@
           <strong>Status:</strong>
           <span class="badge bg-info text-dark"><%= @booking.booking_status %></span>
         </p>
+          <% if @booking.booking_status == "cancelled" %>
+            <div class="mt-3" style="border-left: 4px solid #d9534f; padding-left: 10px;">
+            <strong style="color:#d9534f;">Booking Cancelled</strong>
+         <% if @booking.cancellation_note.present? %>
+            <p class="mt-2"><strong>Reason:</strong> <%= @booking.cancellation_note %></p>
+         <% end %>
+         </div>
+         <% end %>
+
         <% if current_user.contractor? &&
           @booking.booking_status == "confirmed" &&
           @booking.accepted_by == "customer" &&
           @booking.new_proposed_date_and_time.nil? %>
 
-
-
         <% end %>
-
 
         <% if current_user.customer? &&
           @booking.booking_status == "confirmed" &&
           @booking.accepted_by == "contractor" &&
           @booking.new_proposed_date_and_time.nil? %>
-
-
-
         <% end %>
-
 
         <% unless ["cancelled", "completed", "pending"].include?(@booking.booking_status) %>
           <% if @booking.new_proposed_date_and_time.present? %>
@@ -102,58 +101,25 @@
           <hr>
           <% end %>
 
-        <% if @booking.booking_status == "cancelled" %>
-          <div class="mt-3" style="border-left: 4px solid #d9534f; padding-left: 10px;">
-            <strong style="color:#d9534f;">Booking Cancelled</strong>
-
-            <% if @booking.cancellation_note.present? %>
-              <p class="mt-2"><strong>Reason:</strong> <%= @booking.cancellation_note %></p>
-            <% end %>
-          </div>
-        <% end %>
-
-      <% unless ["cancelled", "completed"].include?(@booking.booking_status) %>
-
-          <%# CANCEL BOOKING (Both roles) %>
-          <h4 class="mb-3" style="color:#d9534f;">Cancel Booking</h4>
-
-          <%= form_with model: @booking,
-                        url: cancel_booking_booking_path(@booking),
-                        method: :patch,
-                        data: { turbo: false } do |f| %>
-
-            <div class="mb-3">
-              <%= f.label :cancellation_note, "Reason for cancellation", class: "form-label" %>
-              <%= f.text_area :cancellation_note, rows: 4, class: "form-control" %>
-            </div>
-
-            <%= f.submit "Cancel Booking",
-                        class: "btn",
-                        style: "background-color:#f8d7da; color:#a94442; border:1px solid #f5c6cb;",
-                        data: { confirm: "Are you sure you want to cancel this booking?" } %>
-
-          <% end %>
-
-          <hr class="my-4">
-
-          <%# MARK AS COMPLETED (Both roles) %>
-          <% if ["confirmed", "date_change_requested", "rescheduled"].include?(@booking.booking_status) %>
-            <%= link_to "Mark as Completed",
-                complete_booking_path(@booking),
-                data: { turbo_method: :patch },
-                class: "btn btn-success" %>
-
-
-          <% end %>
-
+        <% if ["confirmed", "date_change_requested", "rescheduled"].include?(@booking.booking_status) %>
+           <%= link_to "Mark as Completed",
+           complete_booking_path(@booking),
+           data: { turbo_method: :patch },
+           class: "btn btn-success mt-3" %>
         <% end %>
 
     <%# REVIEW BUTTON %>
-        <% if @booking.booking_status == "completed" %>
+    <% if @booking.booking_status == "completed" %>
+      <% if Review.exists?(user_id: current_user.id, booking_id: @booking.id) %>
+        <p class="text-success mt-3">
+          <i class="bi bi-check-circle-fill"></i> Review submitted.
+        </p>
+      <% else %>
         <%= link_to "Leave a Review",
                     new_review_path(booking_id: @booking.id),
                     class: "btn btn-primary mt-3" %>
       <% end %>
+    <% end %>
 
       </div>
     </div>
@@ -194,6 +160,38 @@
           </div>
         <% end %>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Cancel Booking</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <%= form_with model: @booking,
+                      url: cancel_booking_booking_path(@booking),
+                      method: :patch,
+                      data: { turbo: false } do |f| %>
+
+          <div class="mb-3">
+            <%= f.label :cancellation_note, "Reason for cancellation" %>
+            <%= f.text_area :cancellation_note, class: "form-control", rows: 4 %>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <%= f.submit "Cancel Booking", class: "btn btn-danger" %>
+          </div>
+
+        <% end %>
+      </div>
+
     </div>
   </div>
 </div>

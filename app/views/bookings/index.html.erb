@@ -1,13 +1,237 @@
-<h1>My Bookings</h1>
+<% upcoming_booking = @bookings
+  .select { |b| ["pending", "confirmed", "date_change_requested"].include?(b.booking_status) }
+  .select { |b| b.scheduled_date_and_time.present? && b.scheduled_date_and_time > Time.current }
+  .sort_by(&:scheduled_date_and_time)
+  .first %>
 
-<div class="booking-tabs">
-  <%= link_to "Confirmed", bookings_path(status: :confirmed), class: "btn btn-outline-primary me-2 #{'active' if params[:status] == 'confirmed'}" %>
-  <%= link_to "Cancelled", bookings_path(status: :cancelled), class: "btn btn-outline-primary me-2 #{'active' if params[:status] == 'cancelled'}" %>
-  <%= link_to "Completed", bookings_path(status: :completed), class: "btn btn-outline-primary #{'active' if params[:status] == 'completed'}" %>
+<% def friendly_date_label(date)
+     return "Today" if date.to_date == Date.today
+     return "Tomorrow" if date.to_date == Date.tomorrow
+     return "Day after tomorrow" if date.to_date == Date.today + 2
+     date.strftime("%b %d, %Y")
+   end %>
+
+<% confirmed_bookings = @bookings.select { |b| ["pending", "confirmed", "date_change_requested"].include?(b.booking_status) } %>
+<% cancelled_bookings = @bookings.select { |b| b.booking_status == "cancelled" } %>
+<% completed_bookings = @bookings.select { |b| b.booking_status == "completed" } %>
+
+<div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
+  <div class="container" style="max-width: 1200px;">
+
+    <div class="mb-5 pb-4 border-bottom" style="border-color: #E2E8F0 !important;">
+      <h1 class="h2" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">
+        <%= current_user.customer? ? "My Bookings" : "My Bookings" %>
+      </h1>
+    </div>
+
+<% if upcoming_booking.present? %>
+  <div class="row mb-5">
+
+    <!-- LEFT: UPCOMING BOOKING -->
+    <div class="col-md-6">
+      <div class="card p-4 h-100" style="border-radius: 16px; border: 1px solid #E2E8F0;">
+        <h1 class="h2" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">
+          Upcoming Booking
+        </h1>
+
+        <p class="mb-1" style="color: #2F6BFF; font-weight: 600;">
+          <%= friendly_date_label(upcoming_booking.scheduled_date_and_time) %> •
+          <%= upcoming_booking.scheduled_date_and_time.strftime("%I:%M %p") %>
+        </p>
+
+        <h4 class="fw-bold mb-3"><%= upcoming_booking.listing.title %></h4>
+
+        <p class="mb-3" style="max-width: 600px;">
+          <%= upcoming_booking.listing.description %>
+        </p>
+
+        <% if current_user.customer? %>
+          <p class="mb-1"><strong>Address:</strong>
+            <%= upcoming_booking.listing.street %>,
+            <%= upcoming_booking.listing.city %>,
+            <%= upcoming_booking.listing.postcode %>,
+            <%= upcoming_booking.listing.country %>
+          </p>
+        <% end %>
+
+        <% if current_user.customer? %>
+          <p class="mb-1"><strong>Contractor:</strong> <%= upcoming_booking.offer.user.first_name %></p>
+        <% else %>
+          <p class="mb-1"><strong>Customer:</strong> <%= upcoming_booking.listing.user.first_name %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- RIGHT: CALENDAR -->
+    <div class="col-md-6">
+      <%= render "shared/calendar", calendar_bookings: @bookings %>
+    </div>
+
+  </div>
+<% end %>
+
+
+    <!-- FILTER TABS -->
+    <div class="d-flex align-items-center flex-wrap gap-3 mb-4" role="tablist">
+      <span class="text-uppercase fw-bold" style="font-size: 10px; color: #94A3B8; letter-spacing: 0.05em; margin-right: 5px;"></span>
+
+      <% [
+        { id: "confirmed", label: "Confirmed", count: confirmed_bookings.size },
+        { id: "cancelled", label: "Cancelled", count: cancelled_bookings.size },
+        { id: "completed", label: "Completed", count: completed_bookings.size }
+      ].each_with_index do |tab, index| %>
+        <button class="nav-link btn <%= 'active' if index == 0 %> custom-filter-btn"
+                id="<%= tab[:id] %>-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#<%= tab[:id] %>"
+                type="button" role="tab">
+          <%= tab[:label] %>
+          <span class="badge rounded-pill ms-1" style="font-size: 10px;"><%= tab[:count] %></span>
+        </button>
+      <% end %>
+    </div>
+
+    <div class="tab-content">
+
+      <!-- CONFIRMED TAB -->
+      <div class="tab-pane fade show active" id="confirmed" role="tabpanel">
+        <div class="row g-4">
+          <% if confirmed_bookings.any? %>
+            <% confirmed_bookings.each do |booking| %>
+              <div class="col-md-4">
+                <div class="card p-4 h-100 border-0" style="border: 1px solid #E2E8F0 !important; border-radius: 16px;">
+
+                  <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">
+                    <%= booking.listing.title %>
+                  </h5>
+
+                  <% if current_user.customer? %>
+                    <p class="mb-1"><strong>Contractor:</strong>
+                      <%= link_to booking.offer.user.first_name, profile_path(booking.offer.user) %>
+                    </p>
+                  <% else %>
+                    <p class="mb-1"><strong>Customer:</strong>
+                      <%= link_to booking.listing.user.first_name, profile_path(booking.listing.user) %>
+                    </p>
+                  <% end %>
+                    <p class="mb-1"><strong>Postcode:</strong> <%= booking.listing.city %> <%= booking.listing.postcode %></p>
+
+                  <p class="mb-1"><strong>Scheduled:</strong>
+                    <%= booking.scheduled_date_and_time %>
+                  </p>
+
+                  <p class="mb-3"><strong>Status:</strong>
+                    <%= booking.booking_status.humanize %>
+                  </p>
+
+                  <div class="mt-auto d-flex justify-content-between align-items-center pt-3">
+                    <%= link_to "View Details →", booking_path(booking), class: "btn btn-outline-primary btn-sm", style: "border-radius: 8px;" %>
+                  </div>
+
+                </div>
+              </div>
+            <% end %>
+          <% else %>
+            <p class="text-muted">No confirmed bookings.</p>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- CANCELLED TAB -->
+      <div class="tab-pane fade" id="cancelled" role="tabpanel">
+        <div class="row g-4">
+          <% if cancelled_bookings.any? %>
+            <% cancelled_bookings.each do |booking| %>
+              <div class="col-md-4">
+                <div class="card p-4 h-100 border-0" style="border: 1px solid #E2E8F0 !important; border-radius: 16px;">
+
+                  <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= booking.listing.title %></h5>
+
+                  <% if current_user.customer? %>
+                    <p class="mb-1"><strong>Contractor:</strong> <%= booking.offer.user.first_name %></p>
+                  <% else %>
+                    <p class="mb-1"><strong>Customer:</strong> <%= booking.listing.user.first_name %></p>
+                  <% end %>
+                  <p class="mb-1"><strong>Status:</strong> Cancelled</p>
+                  <% if booking.cancellation_note.present? %>
+                    <p class="mb-1"><strong>Cancellation Note:</strong> <%= booking.cancellation_note %></p>
+                  <% end %>
+
+
+                  <div class="mt-auto d-flex justify-content-between align-items-center pt-3">
+                    <%= link_to "View Details →", booking_path(booking), class: "btn btn-outline-primary btn-sm", style: "border-radius: 8px;" %>
+                  </div>
+
+                </div>
+              </div>
+            <% end %>
+          <% else %>
+            <p class="text-muted">No cancelled bookings.</p>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- COMPLETED TAB -->
+      <div class="tab-pane fade" id="completed" role="tabpanel">
+        <div class="row g-4">
+          <% if completed_bookings.any? %>
+            <% completed_bookings.each do |booking| %>
+              <div class="col-md-4">
+                <div class="card p-4 h-100 border-0" style="border: 1px solid #E2E8F0 !important; border-radius: 16px;">
+
+                  <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= booking.listing.title %></h5>
+
+                  <% if current_user.customer? %>
+                    <p class="mb-1"><strong>Contractor:</strong> <%= booking.offer.user.first_name %></p>
+                  <% else %>
+                    <p class="mb-1"><strong>Customer:</strong> <%= booking.listing.user.first_name %></p>
+                  <% end %>
+              <p class="mb-1"><strong>Category:</strong> <%= booking.listing.category.name %></p>
+              <p class="mb-1"><strong>Scheduled:</strong>
+                    <%= booking.scheduled_date_and_time %>
+                  </p>
+                  <p class="mb-1"><strong>Status:</strong> Completed</p>
+
+
+                  <div class="mt-auto d-flex justify-content-between align-items-center pt-3">
+                    <%= link_to "View Details →", booking_path(booking), class: "btn btn-outline-primary btn-sm", style: "border-radius: 8px;" %>
+                  </div>
+
+                </div>
+              </div>
+            <% end %>
+          <% else %>
+            <p class="text-muted">No completed bookings.</p>
+          <% end %>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
-<% if current_user.customer? %>
-  <%= render "customer_index", bookings: @bookings %>
-<% else %>
-  <%= render "contractor_index", bookings: @bookings %>
-<% end %>
+<style>
+  .custom-filter-btn {
+    border-radius: 9999px !important;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    padding: 6px 16px !important;
+    background-color: #F8FAFC !important;
+    color: #64748B !important;
+    border: 1px solid #E2E8F0 !important;
+    transition: all 0.2s ease;
+  }
+  .custom-filter-btn.active {
+    background-color: #2F6BFF !important;
+    color: #FFFFFF !important;
+    border-color: #2F6BFF !important;
+  }
+  .custom-filter-btn .badge {
+    background-color: #F1F5F9;
+    color: #475569;
+  }
+  .custom-filter-btn.active .badge {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+  }
+</style>
