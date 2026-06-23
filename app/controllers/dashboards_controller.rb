@@ -51,7 +51,29 @@ class DashboardsController < ApplicationController
       render :contractor_show
 
     else
-      @listings = current_user.listings
+      # Get IDs of listings that have an active booking (not completed or cancelled)
+      active_booking_listing_ids = current_user.listings
+        .joins(offers: :booking)
+        .where.not(bookings: { booking_status: ["completed", "cancelled"] })
+        .pluck(:id)
+
+      # Base query: exclude listings with active bookings
+      @listings = current_user.listings.where.not(id: active_booking_listing_ids)
+
+      # Category filter
+      if params[:category_ids].present?
+        @listings = @listings.where(category_id: params[:category_ids])
+      end
+
+      # Sorting
+      if params[:sort_by] == "oldest"
+        @listings = @listings.order(created_at: :asc)
+      elsif params[:sort_by] == "category"
+        @listings = @listings.order(:category_id)
+      else
+        @listings = @listings.order(created_at: :desc)
+      end
+
       render :customer_show
     end
   end
