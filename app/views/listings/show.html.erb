@@ -24,20 +24,23 @@
       <div class="col-lg-8">
         <div class="card border-0 overflow-hidden" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 20px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
 
-          <div class="position-relative" style="height: 320px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center; border-radius: 20px 20px 0 0;">
+          <div class="position-relative" style="border-radius: 20px 20px 0 0; overflow: hidden;">
+
+          <%# Main photo %>
+          <div id="main-photo" style="height: 320px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center;">
             <% if @listing.photos.attached? && @listing.photos.first.present? %>
-              <%= cl_image_tag @listing.photos.first.key, class: "w-100 h-100 object-cover" %>
+              <%= cl_image_tag @listing.photos.first.key, class: "w-100 h-100 object-cover", id: "main-photo-img" %>
             <% else %>
               <%
                 image_path = if is_emergency then "listings/burst_pipe.png"
-                             elsif @listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
-                             elsif @listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
-                             elsif @listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
-                             elsif @listing.title.downcase.include?("shower") then "listings/shower_seal.png"
-                             else nil end
+                            elsif @listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
+                            elsif @listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
+                            elsif @listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
+                            elsif @listing.title.downcase.include?("shower") then "listings/shower_seal.png"
+                            else nil end
               %>
               <% if image_path.present? %>
-                <%= image_tag image_path, class: "w-100 h-100 object-cover" %>
+                <%= image_tag image_path, class: "w-100 h-100 object-cover", id: "main-photo-img" %>
               <% else %>
                 <div class="text-center" style="color: #64748B;">
                   <i class="bi bi-camera" style="font-size: 3rem; display: block; margin-bottom: 0.5rem;"></i>
@@ -45,14 +48,31 @@
                 </div>
               <% end %>
             <% end %>
-            <% if is_emergency %>
-              <div class="position-absolute top-3 start-3">
-                <span class="badge text-uppercase tracking-wider fw-bold text-white px-3 py-2 shadow-sm" style="background-color: #EF4444; font-size: 11px; border-radius: 6px;">
-                  <i class="bi bi-exclamation-triangle-fill me-1"></i> Emergency
-                </span>
-              </div>
-            <% end %>
           </div>
+
+          <%# Thumbnails — only shown if more than 1 photo %>
+          <% if @listing.photos.count > 1 %>
+            <div class="d-flex gap-2 p-2" style="background: #F8FAFC; border-top: 1px solid #E2E8F0;">
+              <% @listing.photos.each_with_index do |photo, index| %>
+                <img src="<%= cl_image_path(photo.key) %>"
+                    onclick="document.getElementById('main-photo-img').src = this.src"
+                    style="width: 64px; height: 64px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid <%= index == 0 ? '#2F6BFF' : '#E2E8F0' %>;"
+                    onmouseover="this.style.borderColor='#2F6BFF'"
+                    onmouseout="this.style.borderColor='#E2E8F0'">
+              <% end %>
+            </div>
+          <% end %>
+
+          <%# Emergency badge %>
+          <% if is_emergency %>
+            <div class="position-absolute top-3 start-3">
+              <span class="badge text-uppercase tracking-wider fw-bold text-white px-3 py-2 shadow-sm" style="background-color: #EF4444; font-size: 11px; border-radius: 6px;">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i> Emergency
+              </span>
+            </div>
+          <% end %>
+
+        </div>
 
           <div class="p-4 p-md-5">
             <div class="d-flex flex-wrap gap-2 align-items-center mb-3">

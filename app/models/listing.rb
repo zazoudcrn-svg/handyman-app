@@ -8,6 +8,7 @@ class Listing < ApplicationRecord
   has_many :offers
   has_one :booking
   has_many_attached :photos # Left out of validation to remain optional
+  validate :max_five_photos
   has_many :declined_listings, dependent: :destroy
 
   # --- Geocoding Setup ---
@@ -33,5 +34,13 @@ class Listing < ApplicationRecord
   # --- Instance Methods ---
   def full_address
     [street, postcode, city, country].compact.join(', ')
+  end
+
+  private
+
+  def max_five_photos
+    if photos.count > 5
+      errors.add(:photos, "You can only upload a maximum of 3 photos")
+    end
   end
 end
