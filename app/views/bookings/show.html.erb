@@ -33,6 +33,23 @@
   <% end %>
 
         <h4 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= @booking.listing.title %></h4>
+
+<% if @booking.listing.photos.attached? %>
+  <div class="booking-photos">
+    <% @booking.listing.photos.each do |photo| %>
+      <%= image_tag photo, class: "img-fluid rounded mb-3", style: "max-width: 300px;" %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="d-flex flex-column align-items-center mt-3">
+    <i class="bi bi-camera" style="font-size: 4rem; color: #94A3B8;"></i>
+    <p class="text-muted mt-2">No photos were uploaded for this job.</p>
+  </div>
+<% end %>
+
+
+
+
         <%# CUSTOMER VIEW %>
         <% if current_user.customer? %>
           <p><strong>Contractor:</strong> <%= link_to @booking.offer.user.contractor_profile&.business_name || @booking.offer.user.first_name, profile_path(@booking.offer.user) %></p>
@@ -87,7 +104,8 @@
           <% end %>
           <% end %>
 
-        <% if current_user.role == "customer" && @booking.booking_status != "pending" %>
+        <% if (current_user.role == "contractor" && @offer.user_id == current_user.id) ||
+      (current_user.role == "customer" && @booking.booking_status != "pending") %>
         <hr>
 
           <h4>Offer Details</h4>
@@ -101,12 +119,22 @@
           <hr>
           <% end %>
 
-        <% if ["confirmed", "date_change_requested", "rescheduled"].include?(@booking.booking_status) %>
-           <%= link_to "Mark as Completed",
-           complete_booking_path(@booking),
-           data: { turbo_method: :patch },
-           class: "btn btn-success mt-3" %>
-        <% end %>
+<% unless ["completed", "cancelled", "pending"].include?(@booking.booking_status) %>
+        <div class="text-center mt-3">
+  <%= link_to "Mark as Completed",
+              complete_booking_path(@booking),
+              data: { turbo_method: :patch },
+              class: "btn fw-semibold",
+              style: "background-color: #10B981;
+                      color: #FFFFFF;
+                      border-radius: 8px;
+                      font-size: 15px;
+                      padding: 15px 38px;
+                      display: inline-block;" %>
+</div>
+<% end %>
+
+
 
     <%# REVIEW BUTTON %>
     <% if @booking.booking_status == "completed" %>
