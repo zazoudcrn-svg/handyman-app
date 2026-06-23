@@ -388,7 +388,9 @@
             showStep();
           }
         } else {
-          document.getElementById("validation-error").style.display = "block";
+         const errorBox = document.getElementById("validation-error");
+        errorBox.style.display = "block";
+        setTimeout(() => { errorBox.style.display = "none"; }, 3000);
         }
       });
 
