@@ -83,7 +83,9 @@ customer_5 = User.create!(
   role: "customer",
   first_name: "David",
   last_name: "Brown",
-  city: "Brixton",
+  street: "Coldharbour Lane 45", # Hinzugefügt!
+  postcode: "SW9 8RR",          # Hinzugefügt!
+  city: "London",               # Jetzt einheitlich London
   country: "United Kingdom",
   latitude: 51.4623,
   longitude: -0.1149
@@ -93,7 +95,12 @@ customer_5 = User.create!(
 # SCENARIO 1: EMERGENCY JOB (Tab 1 - Appears on very top via SQL order)
 # ==============================================================================
 puts "Creating Scenario 1: Emergency Job..."
-customer_1 = User.create!(email: "c1@gmail.com", password: "password123", role: "customer", first_name: "Harry", last_name: "Smith", city: "London", latitude: 51.5135, longitude: -0.1320)
+customer_1 = User.create!(
+  email: "c1@gmail.com", password: "password123", role: "customer",
+  first_name: "Harry", last_name: "Smith", street: "Dean Street 12",
+  postcode: "W1D 3R7", city: "London", country: "United Kingdom",
+  latitude: 51.5135, longitude: -0.1320
+)
 
 Listing.create!(
   user: customer_1,
@@ -175,7 +182,12 @@ Booking.create!(offer: offer_ongoing, listing: listing_booking_ongoing, booking_
 Message.create!(offer: offer_ongoing, user: contractor, content: "Good morning David, I'm scheduled to replace your radiator valves on June 25th at 09:00. Where is the best place to park my van near the office?")
 
 # Booking 2: Afternoon slot on the same Thursday (Density filler)
-customer_extra_1 = User.create!(email: "ce1@gmail.com", password: "password123", role: "customer", first_name: "Tom", last_name: "Baker", city: "London", latitude: 51.5110, longitude: -0.1420)
+customer_extra_1 = User.create!(
+  email: "ce1@gmail.com", password: "password123", role: "customer",
+  first_name: "Tom", last_name: "Baker", street: "Piccadilly 50",
+  postcode: "W1J 0DX", city: "London", country: "United Kingdom",
+  latitude: 51.5110, longitude: -0.1420
+)
 listing_extra_1 = Listing.create!(user: customer_extra_1, category: plumbing_category, title: "Emergency drain unblocking and cleanup", description: "Kitchen drain is overflowing and needs urgent hydro-jetting to clear blockage.", street: "Piccadilly 50", postcode: "W1J 0DX", city: "London", country: "United Kingdom", latitude: 51.5110, longitude: -0.1420, urgency: "normal", availability_profile: "anytime")
 offer_extra_1 = Offer.create!(
   user: contractor, listing: listing_extra_1, quote: 320,
@@ -185,7 +197,12 @@ offer_extra_1 = Offer.create!(
 Booking.create!(offer: offer_extra_1, listing: listing_extra_1, booking_status: "confirmed", scheduled_date_and_time: "2026-06-25 14:30:00")
 
 # Booking 3: Midday slot on Wednesday (Density filler)
-customer_extra_2 = User.create!(email: "ce2@gmail.com", password: "password123", role: "customer", first_name: "Sarah", last_name: "Connor", city: "London", latitude: 51.5120, longitude: -0.1430)
+customer_extra_2 = User.create!(
+  email: "ce2@gmail.com", password: "password123", role: "customer",
+  first_name: "Sarah", last_name: "Connor", street: "Regent Street 20",
+  postcode: "W1B 5AH", city: "London", country: "United Kingdom",
+  latitude: 51.5120, longitude: -0.1430
+)
 listing_extra_2 = Listing.create!(user: customer_extra_2, category: plumbing_category, title: "Annual safety check and power flush", description: "Full heating system inspection and power flush to remove sludge and improve efficiency.", street: "Regent Street 20",  postcode: "W1B 5AH", city: "London", country: "United Kingdom", latitude: 51.5120, longitude: -0.1430, urgency: "normal", availability_profile: "anytime")
 offer_extra_2 = Offer.create!(
   user: contractor, listing: listing_extra_2, quote: 580,
@@ -219,7 +236,12 @@ Review.create!(booking: booking_completed_1, user: customer_5, reviewee: contrac
 Review.create!(booking: booking_completed_1, user: contractor, reviewee: customer_5, rating: 5, content: "David was very welcoming, clearly explained the issue, and paid immediately. Great customer!")
 
 # Historical Job 2: Two-Way Review
-customer_history_1 = User.create!(email: "ch1@gmail.com", password: "password123", role: "customer", first_name: "Michael", last_name: "Caine", city: "Chelsea", latitude: 51.4875, longitude: -0.1682)
+customer_history_1 = User.create!(
+  email: "ch1@gmail.com", password: "password123", role: "customer",
+  first_name: "Michael", last_name: "Caine", street: "Baker Street 221B",
+  postcode: "NW1 6XE", city: "London", country: "United Kingdom",
+  latitude: 51.4875, longitude: -0.1682
+)
 listing_completed_2 = Listing.create!(
   user: customer_history_1, category: plumbing_category,
   title: "Blocked toilet drainage and pipe inspection",
@@ -244,12 +266,17 @@ Review.create!(booking: booking_completed_2, user: customer_history_1, reviewee:
 Review.create!(booking: booking_completed_2, user: contractor, reviewee: customer_history_1, rating: 5, content: "Access to the bathroom was cleared before I arrived. Smooth communication, highly recommended property owner.")
 
 # Historical Job 3: Two-Way Review
-customer_history_2 = User.create!(email: "ch2@gmail.com", password: "password123", role: "customer", first_name: "Emma", last_name: "Watson", city: "Camden", latitude: 51.5364, longitude: -0.1412)
+customer_history_2 = User.create!(
+  email: "ch2@gmail.com", password: "password123", role: "customer",
+  first_name: "Emma", last_name: "Watson", street: "Camden High Street 12",
+  postcode: "NW1 7JE", city: "London", country: "United Kingdom",
+  latitude: 51.5364, longitude: -0.1412
+)
 listing_completed_3 = Listing.create!(
   user: customer_history_2, category: plumbing_category,
   title: "Fit new designer vertical radiator in hallway",
   description: "Need an old standard radiator swapped out for a new anthracite vertical designer radiator. Pipes will need slight modification to fit the new layout.",
- street: "Camden High Street 12",
+  street: "Camden High Street 12",
   postcode: "NW1 7JE",
   city: "London",
   country: "United Kingdom",
@@ -296,6 +323,8 @@ customer_7 = User.create!(
   role: "customer",
   first_name: "Oliver",
   last_name: "Grant",
+  street: "Charlotte Street 21", # Hinzugefügt
+  postcode: "W1T 1RJ",          # Hinzugefügt
   city: "London",
   country: "United Kingdom",
   latitude: 51.5090,
