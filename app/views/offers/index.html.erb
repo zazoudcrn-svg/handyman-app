@@ -32,56 +32,12 @@
     <div class="tab-content">
 
       <%# PENDING %>
+      <%# CHANGED: col-md-4 grid replaced with the shared offer_card partial (col-12 stacked layout) %>
       <div class="tab-pane fade show active" id="pending" role="tabpanel">
         <div class="row g-4">
           <% if pending_offers.any? %>
             <% pending_offers.each do |offer| %>
-              <div class="col-md-4">
-                <div class="card h-100 p-4 border-0" style="border: 1px solid #E2E8F0 !important; border-radius: 16px;">
-                  <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 15px;"><%= offer.listing.title %></h5>
-
-                  <% if current_user.customer? %>
-                    <p class="mb-2 small text-muted"><strong class="text-dark">Contractor:</strong>
-                      <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user), style: "color: #2F6BFF; text-decoration: none;" %>
-                    </p>
-                  <% else %>
-                    <p class="mb-2 small text-muted"><strong class="text-dark">Customer:</strong>
-                      <%= link_to "#{offer.listing.user.first_name} #{offer.listing.user.last_name&.first}.", profile_path(offer.listing.user), style: "color: #2F6BFF; text-decoration: none;" %>
-                    </p>
-                  <% end %>
-
-                  <p class="mb-2 small text-muted"><strong class="text-dark">Quote:</strong> €<%= offer.quote %></p>
-                  <% if offer.estimated_duration_hours.present? %>
-                    <p class="mb-2 small text-muted"><strong class="text-dark">Duration:</strong> <%= offer.estimated_duration_hours %> hrs</p>
-                  <% end %>
-                  <p class="mb-3 small text-muted"><strong class="text-dark">Date:</strong>
-                    <%= offer.suggested_date_and_time&.strftime("%b %d, %Y at %H:%M") || "Not specified" %>
-                  </p>
-
-                  <div class="mt-auto d-flex justify-content-between align-items-center pt-3" style="border-top: 1px solid #F1F5F9;">
-                    <% if current_user.customer? %>
-                      <div class="d-flex gap-2">
-                        <%= button_to accept_listing_offer_path(offer.listing, offer), method: :patch, class: "btn btn-success btn-sm", style: "border-radius: 8px;" do %>
-                          <i class="bi bi-check-lg"></i>
-                        <% end %>
-                        <%= button_to decline_listing_offer_path(offer.listing, offer), method: :patch, class: "btn btn-danger btn-sm", style: "border-radius: 8px;" do %>
-                          <i class="bi bi-x-lg"></i>
-                        <% end %>
-                      </div>
-                    <% elsif current_user.contractor? %>
-                      <div class="d-flex gap-2">
-                        <%= link_to edit_listing_offer_path(offer.listing, offer), class: "btn btn-secondary btn-sm", style: "border-radius: 8px;" do %>
-                          <i class="bi bi-pencil"></i>
-                        <% end %>
-                        <%= button_to listing_offer_path(offer.listing, offer), method: :delete, class: "btn btn-danger btn-sm", style: "border-radius: 8px;", data: { turbo_confirm: "Are you sure?" } do %>
-                          <i class="bi bi-trash"></i>
-                        <% end %>
-                      </div>
-                    <% end %>
-                    <%= link_to "Details →", listing_offer_path(offer.listing, offer), class: "btn btn-outline-primary btn-sm", style: "border-radius: 8px;" %>
-                  </div>
-                </div>
-              </div>
+              <%= render "shared/offer_card", offer: offer %>
             <% end %>
           <% else %>
             <p class="text-muted">No pending offers.</p>
@@ -90,41 +46,12 @@
       </div>
 
       <%# ACCEPTED %>
+      <%# CHANGED: col-md-4 grid replaced with the shared offer_card partial (col-12 stacked layout) %>
       <div class="tab-pane fade" id="accepted" role="tabpanel">
         <div class="row g-4">
           <% if accepted_offers.any? %>
             <% accepted_offers.each do |offer| %>
-              <div class="col-md-4">
-                <div class="card h-100 p-4 border-0" style="border: 1px solid #E2E8F0 !important; border-radius: 16px;">
-                  <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 15px;"><%= offer.listing.title %></h5>
-
-                  <% if current_user.customer? %>
-                    <p class="mb-2 small text-muted"><strong class="text-dark">Contractor:</strong>
-                      <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user), style: "color: #2F6BFF; text-decoration: none;" %>
-                    </p>
-                  <% else %>
-                    <p class="mb-2 small text-muted"><strong class="text-dark">Customer:</strong>
-                      <%= link_to "#{offer.listing.user.first_name} #{offer.listing.user.last_name&.first}.", profile_path(offer.listing.user), style: "color: #2F6BFF; text-decoration: none;" %>
-                    </p>
-                  <% end %>
-
-                  <p class="mb-2 small text-muted"><strong class="text-dark">Quote:</strong> €<%= offer.quote %></p>
-                  <% if offer.estimated_duration_hours.present? %>
-                    <p class="mb-2 small text-muted"><strong class="text-dark">Duration:</strong> <%= offer.estimated_duration_hours %> hrs</p>
-                  <% end %>
-                  <p class="mb-3 small text-muted"><strong class="text-dark">Date:</strong>
-                    <%= offer.suggested_date_and_time&.strftime("%b %d, %Y at %H:%M") || "Not specified" %>
-                  </p>
-
-                  <div class="mt-auto pt-3" style="border-top: 1px solid #F1F5F9;">
-                    <% if offer.booking.present? %>
-                      <%= link_to "View Booking →", booking_path(offer.booking), class: "btn btn-outline-primary btn-sm w-100", style: "border-radius: 8px;" %>
-                    <% else %>
-                      <p class="text-muted small mb-0">Booking not yet created.</p>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
+              <%= render "shared/offer_card", offer: offer %>
             <% end %>
           <% else %>
             <p class="text-muted">No accepted offers.</p>
@@ -133,31 +60,12 @@
       </div>
 
       <%# DECLINED %>
+      <%# CHANGED: col-md-4 grid replaced with the shared offer_card partial (col-12 stacked layout) %>
       <div class="tab-pane fade" id="declined" role="tabpanel">
         <div class="row g-4">
           <% if declined_offers.any? %>
             <% declined_offers.each do |offer| %>
-              <div class="col-md-4">
-                <div class="card h-100 p-4 border-0" style="border: 1px solid #E2E8F0 !important; border-radius: 16px;">
-                  <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 15px;"><%= offer.listing.title %></h5>
-
-                  <% if current_user.customer? %>
-                    <p class="mb-2 small text-muted"><strong class="text-dark">Contractor:</strong>
-                      <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user), style: "color: #2F6BFF; text-decoration: none;" %>
-                    </p>
-                  <% else %>
-                    <p class="mb-2 small text-muted"><strong class="text-dark">Customer:</strong>
-                      <%= link_to "#{offer.listing.user.first_name} #{offer.listing.user.last_name&.first}.", profile_path(offer.listing.user), style: "color: #2F6BFF; text-decoration: none;" %>
-                    </p>
-                  <% end %>
-
-                  <p class="mb-3 small text-muted"><strong class="text-dark">Quote:</strong> €<%= offer.quote %></p>
-
-                  <div class="mt-auto pt-3" style="border-top: 1px solid #F1F5F9;">
-                    <%= link_to "View Details →", listing_offer_path(offer.listing, offer), class: "btn btn-outline-secondary btn-sm w-100", style: "border-radius: 8px;" %>
-                  </div>
-                </div>
-              </div>
+              <%= render "shared/offer_card", offer: offer %>
             <% end %>
           <% else %>
             <p class="text-muted">No declined offers.</p>
