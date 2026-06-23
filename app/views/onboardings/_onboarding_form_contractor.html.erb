@@ -113,10 +113,13 @@
 
   <%# ERROR MESSAGE CONTAINER - Styled as a subtle notification box %>
   <div id="validation-error"
-      class="text-danger mb-4 p-3 shadow-sm"
-      style="display: none; background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 10px; margin: 0 auto; max-width: 500px;">
-    <span class="fw-bold">⚠️ Please fill out all required fields in this step to continue.</span>
-  </div>
+     style="display: none; margin-top: 16px; padding: 14px 18px; background-color: #FFFBEB; border-left: 4px solid #F59E0B; border-radius: 10px; align-items: center; gap: 10px;">
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="10" cy="10" r="10" fill="#F59E0B"/>
+    <text x="10" y="15" text-anchor="middle" fill="white" font-size="13" font-weight="bold" font-family="sans-serif">!</text>
+  </svg>
+  <span style="color: #92400E; font-size: 14px; font-weight: 500;">Please fill out all required fields to continue.</span>
+</div>
 
   <%# Dynamic Steering Navigation Layout %>
   <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
@@ -175,11 +178,21 @@
   color: #2F6BFF !important;
   }
 
+  #submit-btn {
+  background-color: #2F6BFF !important;
+  border-color: #2F6BFF !important;
+  color: #ffffff !important;
+  }
 
 </style>
 <script>
   (function() {
+    let wizardInitialized = false;  // ← NEU
+
     function initWizard() {
+      if (wizardInitialized) return;  // ← NEU
+      wizardInitialized = true;       // ← NEU
+
       let currentStep = 0;
       const steps = document.querySelectorAll(".wizard-step");
       const indicators = document.querySelectorAll(".step-indicator");
@@ -344,13 +357,7 @@
       }
 
      // --- PREVENT ACCIDENT-SUBMITS & HANDLE NAVIGATION ---
-      nextBtn.replaceWith(nextBtn.cloneNode(true));
-      prevBtn.replaceWith(prevBtn.cloneNode(true));
-
-      const newNextBtn = document.getElementById("next-btn");
-      const newPrevBtn = document.getElementById("prev-btn");
-
-      newNextBtn.addEventListener("click", (e) => {
+        nextBtn.addEventListener("click", (e) => {
         e.preventDefault();
 
         // 1. Identify required fields in the current step
@@ -394,7 +401,7 @@
         }
       });
 
-      newPrevBtn.addEventListener("click", (e) => {
+      prevBtn.addEventListener("click", (e) => {
         e.preventDefault();
         if (currentStep > 0) {
           currentStep--;
@@ -412,11 +419,8 @@
       showStep();
       }
 
-    if (document.readyState === "loading") {
-      document.addEventListener("turbo:load", initWizard);
-    } else {
-      initWizard();
-      document.addEventListener("turbo:load", initWizard);
-    }
+
+    document.addEventListener("turbo:load", initWizard);
+    initWizard();
   })();
 </script>
