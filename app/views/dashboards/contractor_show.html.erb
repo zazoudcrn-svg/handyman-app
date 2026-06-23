@@ -14,120 +14,182 @@
     </div>
 
     <% # 2. MODERN FILTER NAVIGATION (Contractor Version) %>
-    <div class="d-flex align-items-center flex-wrap gap-3 mb-4" id="dashboardTabs" role="tablist">
-      <span class="text-uppercase fw-bold" style="font-size: 10px; color: #94A3B8; letter-spacing: 0.05em; margin-right: 5px;">Filter:</span>
+    <%# FILTER FORM %>
+    <%= form_with url: dashboard_path, method: :get, local: true do |f| %>
+      <div class="d-flex align-items-center flex-wrap gap-3 mb-4">
+        <span class="text-uppercase fw-bold" style="font-size: 10px; color: #94A3B8; letter-spacing: 0.05em;">Filter by:</span>
 
-      <% tabs = [
-        { id: "available", label: "New listings", count: @available_listings.size },
-        { id: "offered", label: "Awaiting response", count: @offered_listings.size },
-        { id: "bookings", label: "Booking confirmed", count: @ongoing_bookings.size },
-        # { id: "completed", label: "Completed", count: @completed_bookings.size },
-        # { id: "archived", label: "Archived", count: @archived_listings.size }
-      ] %>
+        <%# CATEGORY — only shown if contractor has more than 1 specialty %>
+        <% if current_user.categories.count > 1 %>
+          <div class="dropdown">
+            <button class="btn custom-filter-btn <%= params[:category_ids].present? ? 'active' : '' %>"
+                    type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+              Category
+              <% if params[:category_ids].present? %>
+                <span class="badge rounded-pill ms-1" style="font-size: 10px;"><%= params[:category_ids].size %></span>
+              <% end %>
+              <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+            </button>
+            <div class="dropdown-menu p-3 shadow-sm" style="min-width: 200px; border-radius: 12px; border: 1px solid #E2E8F0;">
+              <% current_user.categories.each do |category| %>
+                <div class="form-check mb-2">
+                  <%= check_box_tag "category_ids[]",
+                      category.id,
+                      Array(params[:category_ids]).map(&:to_s).include?(category.id.to_s),
+                      class: "form-check-input",
+                      id: "category_#{category.id}" %>
+                  <%= label_tag "category_#{category.id}", category.name, class: "form-check-label", style: "font-size: 13px;" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
 
-      <% tabs.each_with_index do |tab, index| %>
-        <button class="nav-link btn <%= 'active' if (index == 0 && !is_calendar_active) || (tab[:id] == 'calendar-view' && is_calendar_active) %> custom-filter-btn"
-                id="<%= tab[:id] %>-tab" data-bs-toggle="tab" data-bs-target="#<%= tab[:id] %>"
-                type="button" role="tab">
-          <%= tab[:label] %>
-          <% if tab[:count] %>
-            <span class="badge rounded-pill ms-1" style="font-size: 10px;"><%= tab[:count] %></span>
-          <% end %>
-        </button>
+        <%# DISTANCE %>
+        <div class="dropdown">
+          <button class="btn custom-filter-btn <%= params[:max_distance].present? ? 'active' : '' %>"
+                  type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+            Distance
+            <% if params[:max_distance].present? %>
+              <span class="badge rounded-pill ms-1" style="font-size: 10px;"><%= params[:max_distance] %>km</span>
+            <% end %>
+            <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+          </button>
+          <div class="dropdown-menu p-3 shadow-sm" style="min-width: 240px; border-radius: 12px; border: 1px solid #E2E8F0;">
+            <p class="mb-2 fw-semibold" style="font-size: 12px; color: #0B1B33;">
+              Max distance: <span id="distance-label"><%= params[:max_distance] || current_user.contractor_profile.travel_radius %></span> km
+            </p>
+            <%= range_field_tag :max_distance,
+                params[:max_distance] || current_user.contractor_profile.travel_radius,
+                min: 1,
+                max: current_user.contractor_profile.travel_radius,
+                class: "form-range",
+                id: "distance-slider",
+                oninput: "document.getElementById('distance-label').innerText = this.value" %>
+            <div class="d-flex justify-content-between" style="font-size: 11px; color: #94A3B8;">
+              <span>1 km</span>
+              <span><%= current_user.contractor_profile.travel_radius %> km</span>
+            </div>
+          </div>
+        </div>
+
+        <%# URGENCY %>
+        <div class="dropdown">
+          <button class="btn custom-filter-btn <%= params[:urgency].present? ? 'active' : '' %>"
+                  type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+            Urgency
+            <% if params[:urgency].present? %>
+              <span class="badge rounded-pill ms-1" style="font-size: 10px;"><%= params[:urgency].size %></span>
+            <% end %>
+            <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+          </button>
+          <div class="dropdown-menu p-3 shadow-sm" style="min-width: 200px; border-radius: 12px; border: 1px solid #E2E8F0;">
+            <% [["Emergency", "emergency"], ["This week", "this_week"], ["Flexible", "flexible"]].each do |label, value| %>
+              <div class="form-check mb-2">
+                <%= check_box_tag "urgency[]",
+                    value,
+                    Array(params[:urgency]).include?(value),
+                    class: "form-check-input",
+                    id: "urgency_#{value}" %>
+                <%= label_tag "urgency_#{value}", label, class: "form-check-label", style: "font-size: 13px;" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <%# AVAILABILITY %>
+        <div class="dropdown">
+          <button class="btn custom-filter-btn <%= params[:availability_profile].present? ? 'active' : '' %>"
+                  type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+            Availability
+            <% if params[:availability_profile].present? %>
+              <span class="badge rounded-pill ms-1" style="font-size: 10px;"><%= params[:availability_profile].size %></span>
+            <% end %>
+            <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+          </button>
+          <div class="dropdown-menu p-3 shadow-sm" style="min-width: 240px; border-radius: 12px; border: 1px solid #E2E8F0;">
+            <% [
+              ["After hours & weekends", "after_hours_and_weekend"],
+              ["Completely flexible",    "completely_flexible"],
+              ["Workdays daytime only",  "workdays_daytime"],
+              ["Other",                  "other"]
+            ].each do |label, value| %>
+              <div class="form-check mb-2">
+                <%= check_box_tag "availability_profile[]",
+                    value,
+                    Array(params[:availability_profile]).include?(value),
+                    class: "form-check-input",
+                    id: "availability_#{value}" %>
+                <%= label_tag "availability_#{value}", label, class: "form-check-label", style: "font-size: 13px;" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <%# SORT %>
+        <div class="dropdown">
+          <button class="btn custom-filter-btn <%= params[:sort_by].present? ? 'active' : '' %>"
+                  type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+            Sort by
+            <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+          </button>
+          <div class="dropdown-menu p-3 shadow-sm" style="min-width: 180px; border-radius: 12px; border: 1px solid #E2E8F0;">
+            <div class="form-check mb-2">
+              <%= radio_button_tag :sort_by, "default", params[:sort_by].blank?, class: "form-check-input", id: "sort_default" %>
+              <%= label_tag "sort_default", "Urgency first", class: "form-check-label", style: "font-size: 13px;" %>
+            </div>
+            <div class="form-check mb-2">
+              <%= radio_button_tag :sort_by, "date", params[:sort_by] == "date", class: "form-check-input", id: "sort_date" %>
+              <%= label_tag "sort_date", "Most recent", class: "form-check-label", style: "font-size: 13px;" %>
+            </div>
+            <div class="form-check">
+              <%= radio_button_tag :sort_by, "distance", params[:sort_by] == "distance", class: "form-check-input", id: "sort_distance" %>
+              <%= label_tag "sort_distance", "Closest first", class: "form-check-label", style: "font-size: 13px;" %>
+            </div>
+          </div>
+        </div>
+
+        <%# APPLY + CLEAR %>
+        <%= f.submit "Apply",
+            class: "btn btn-primary btn-sm px-4",
+            style: "border-radius: 9999px; font-size: 13px;" %>
+        <%= link_to "Clear", dashboard_path,
+            class: "btn btn-link btn-sm",
+            style: "font-size: 13px; color: #94A3B8; text-decoration: none;" %>
+        <span class="text-muted" style="font-size: 12px;">
+          <%= @available_listings.size %> listing<%= @available_listings.size == 1 ? "" : "s" %> found
+        </span>
+      </div>
+    <% end %>
+
+    <%# LISTINGS GRID %>
+    <div class="row g-4">
+      <% if @available_listings.empty? %>
+        <div class="col-12">
+          <p class="text-muted text-center py-5" style="font-size: 14px;">No listings match your current filters.</p>
+        </div>
+      <% else %>
+        <% @available_listings.each do |listing| %>
+          <%= render 'shared/listing_card',
+              listing: listing,
+              badge_text: listing.urgency == "emergency" ? "Emergency" : "New Job",
+              badge_style: listing.urgency == "emergency" ? "background-color: #EF4444; color: #FFFFFF;" : "background-color: #F1F5F9; color: #475569;",
+              action_path: listing_path(listing, from: 'available'),
+              link_label: "View Listing →" %>
+        <% end %>
       <% end %>
     </div>
 
-    <% # 3. TABS CONTENT SECTION %>
-    <div class="tab-content" id="dashboardTabsContent">
-
-      <div class="tab-pane fade <%= 'show active' unless is_calendar_active %>" id="available" role="tabpanel">
-        <div class="row g-4">
-          <% @available_listings.each do |listing| %>
-            <%= render 'shared/listing_card',
-                listing: listing,
-                badge_text: listing.title.include?("EMERGENCY") ? "Emergency" : "New Job",
-                badge_style: listing.title.include?("EMERGENCY") ? "background-color: #EF4444; color: #FFFFFF;" : "background-color: #F1F5F9; color: #475569;",
-                action_path: listing_path(listing, from: 'available'),
-                link_label: "View Listing →" %>
-          <% end %>
-        </div>
-      </div>
-
-      <div class="tab-pane fade" id="offered" role="tabpanel">
-        <div class="row g-4">
-          <% @offered_listings.each do |listing| %>
-            <% offer = listing.offers.find_by(user: current_user) %>
-            <%= render 'shared/listing_card',
-                listing: listing,
-                badge_text: "Offer Sent",
-                action_path: listing_offer_path(listing, offer),
-                link_label: "View Offer →" %>
-          <% end %>
-        </div>
-      </div>
-
-      <div class="tab-pane fade" id="bookings" role="tabpanel">
-        <div class="row g-4">
-          <% @ongoing_bookings.each do |listing| %>
-            <% booking = listing.offers.find_by(user: current_user)&.booking %>
-            <%= render 'shared/listing_card',
-                listing: listing,
-                badge_text: "Booked",
-                badge_style: "background-color: #2F6BFF; color: #FFFFFF;",
-                action_path: booking_path(booking),
-                link_label: "View Booking →" %>
-          <% end %>
-        </div>
-      </div>
-
-      <%# <div class="tab-pane fade" id="completed" role="tabpanel">
-        <div class="row g-4">
-          <% @completed_bookings.each do |listing| %>
-            <%# <%= render 'shared/listing_card',
-                listing: listing,
-                badge_text: "Job Completed",
-                badge_style: "background-color: #F1F5F9; color: #64748B;",
-                action_path: listing_path(listing, from: 'completed'),
-                link_label: "View Archive" %>
-          <%# <% end %>
-        <%# </div>
-      </div> %>
-
-      <%# <div class="tab-pane fade" id="archived" role="tabpanel">
-        <div class="row g-4">
-          <% @archived_listings.each do |listing| %>
-            <%# <%= render 'shared/listing_card',
-                listing: listing,
-                badge_text: "Declined",
-                badge_style: "background-color: #64748B; color: #FFFFFF;",
-                action_path: listing_path(listing, from: 'declined'),
-                link_label: "View Case" %>
-          <%# <% end %>
-        <%# </div>
-      </div>
-    </div>
   </div>
 </div>
 
-<% # CUSTOM STYLING %>
 <style>
   .custom-filter-btn {
-    border-radius: 9999px !important; font-family: 'Outfit', sans-serif; font-size: 13px; padding: 6px 16px !important;
+    border-radius: 9999px !important; font-family: 'Outfit', sans-serif; font-size: 13px; padding: 4px 12px !important;
     background-color: #F8FAFC !important; color: #64748B !important; border: 1px solid #E2E8F0 !important; transition: all 0.2s ease;
+    box-shadow: none !important; outline: none !important;
   }
-  .custom-filter-btn.active { background-color: #2F6BFF !important; color: #FFFFFF !important; border-color: #2F6BFF !important; }
-  .custom-filter-btn .badge { background-color: #F1F5F9; color: #475569; }
-  .custom-filter-btn.active .badge { background-color: rgba(255, 255, 255, 0.25); color: #FFFFFF; }
+  .custom-filter-btn:focus { box-shadow: none !important; outline: none !important; }
+  .custom-filter-btn.active { background-color: #F8FAFC !important; color: #2F6BFF !important; border-color: #2F6BFF !important; }
+  .custom-filter-btn .badge { background-color: #EFF6FF; color: #2F6BFF; }
 </style>
-
-<script>
-  document.addEventListener("turbo:load", function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('start_date') || urlParams.has('prev_date') || urlParams.has('date')) {
-      document.querySelectorAll('#dashboardTabs .nav-link').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('#dashboardTabsContent .tab-pane').forEach(pane => pane.classList.remove('show', 'active'));
-      document.getElementById('calendar-tab').classList.add('active');
-      document.getElementById('calendar-view').classList.add('show', 'active');
-    }
-  });
-</script>
