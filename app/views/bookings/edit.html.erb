@@ -22,7 +22,7 @@
     <%= form_with model: @booking, url: booking_path(@booking), method: :patch, class: "row g-3" do |f| %>
 
       <!-- ADDRESS -->
-      <h4 class="mt-4">Address</h4>
+      <h5 class="mt-4">Address</h5>
 
       <%= f.fields_for :listing do |lf| %>
         <%= lf.hidden_field :id %>
@@ -65,9 +65,15 @@
       <!-- ⭐ SAVE BUTTON -->
       <div class="col-12 mt-4">
         <%= f.hidden_field :form_type, value: "save_changes" %>
-        <%= f.submit "Save Changes", class: "btn btn-primary" %>
-        <%= link_to "Cancel", booking_path(@booking), class: "btn btn-outline-secondary ms-2" %>
-      </div>
+        <%= f.submit "Save Changes",
+              class: "btn fw-semibold",
+              style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 8px; font-size: 13px; padding: 12px 32px;" %>
+
+        <%= link_to "Cancel", booking_path(@booking),
+      class: "btn fw-semibold ms-2 cancel-btn",
+      style: "border: 1px solid #CBD5E1; color: #475569; border-radius: 8px; font-size: 13px; padding: 12px 32px;" %>
+     </div>
+
 
     <% end %>
 
@@ -89,10 +95,22 @@
 
       <div class="col-12">
         <%= f.hidden_field :form_type, value: "propose_date" %>
-        <%= f.submit "Propose New Date", class: "btn btn-secondary mt-2" %>
+        <%= f.submit "Propose New Date",
+              class: "btn fw-semibold mt-2",
+              style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 8px; font-size: 13px; padding: 15px 38px; display: inline-block;" %>
       </div>
 
     <% end %>
 
   </div>
 </div>
+
+<style>
+  .cancel-btn:hover {
+  background-color: #E2E8F0; /* darker grey */
+  color: #1E293B !important; /* darker text */
+  border-color: #CBD5E1;
+  transition: all 0.2s ease;
+}
+
+  </style>
