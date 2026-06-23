@@ -20,7 +20,7 @@
       <%# 1. Logic for guests (Landing Page) %>
       <% if !user_signed_in? %>
         <ul class="navbar-nav mx-auto gap-1">
-          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#solution">Product</a></li>
+          <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#solution">Solution</a></li>
           <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#how-it-works">How it works</a></li>
           <li class="nav-item"><a class="nav-link text-sm px-3 fw-medium" href="#features">Features</a></li>
         </ul>
@@ -101,7 +101,7 @@
           </ul>
         <% else %>
           <%= link_to "For Customers", new_user_registration_path(role: 'customer'), class: "text-decoration-none text-sm fw-medium px-2", style: "color: var(--cf-text-primary); font-size: 14px;" %>
-          <%= link_to "For Craftsmen", new_user_registration_path(role: 'contractor'), class: "btn-cf-primary text-decoration-none text-sm py-2 d-inline-flex align-items-center justify-content-center", style: "font-size: 14px; height: 40px; padding: 0 20px;" %>
+          <%= link_to "For Contractors", new_user_registration_path(role: 'contractor'), class: "btn-cf-primary text-decoration-none text-sm py-2 d-inline-flex align-items-center justify-content-center", style: "font-size: 14px; height: 40px; padding: 0 20px;" %>
         <% end %>
       </div>
 

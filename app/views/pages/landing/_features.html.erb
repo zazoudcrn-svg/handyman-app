@@ -1,42 +1,40 @@
 <%# app/views/pages/landing/_features.html.erb %>
 <%
   features = [
-    { icon: "sparkles", title: "AI-generated quote drafts", desc: "Quotes ready for review in seconds, based on your past invoices." },
-    { icon: "target", title: "Smart project matching", desc: "Jobs land with the craftsman best suited to win them." },
-    { icon: "map-pin", title: "Radius-based matching", desc: "Only see leads within the distance you're willing to travel." },
-    { icon: "alert-circle", title: "Emergency requests", desc: "Real-time alerts for water leaks, heating failures, electrical hazards." },
-    { icon: "calendar", title: "Calendar sync", desc: "Google, Apple and Outlook — keep one source of truth." },
-    { icon: "calculator", title: "Material estimation", desc: "AI suggests materials and pricing from supplier invoices." },
-    { icon: "message-square", title: "Live chat", desc: "Customers and craftsmen stay aligned without phone tag." },
-    { icon: "bar-chart-3", title: "Project timeline tracking", desc: "Milestones, photos, status updates — auto-logged." },
-    { icon: "bell", title: "Push notifications", desc: "Never miss a new request, message or milestone." },
-    { icon: "brain", title: "AI request analysis", desc: "Every brief is parsed for missing info before it reaches you." }
+    { icon: "layers", title: "Browse by category", desc: "Plumbing, electrical, painting and more — find the right specialty fast." },
+    { icon: "inbox", title: "Multiple offers per job", desc: "Compare quotes from several contractors before deciding." },
+    { icon: "check-circle-2", title: "Accept or decline", desc: "One click to accept an offer — it automatically creates your booking." },
+    { icon: "message-square", title: "Offer-scoped messaging", desc: "Every offer has its own conversation, so context never gets lost." },
+    { icon: "calendar-check", title: "Booking & rescheduling", desc: "Propose, accept, or counter a new date — right on the booking." },
+    { icon: "star", title: "Ratings & reviews", desc: "Reviews are tied to completed bookings, so they're always genuine." },
+    { icon: "user-check", title: "Contractor profiles", desc: "See specialties and track record before you accept an offer." },
+    { icon: "shield-check", title: "Secure accounts", desc: "Role-based sign-up for customers and contractors, powered by Devise." }
   ]
 %>
 
-<section id="features" class="py-20" style="background-color: var(--cf-brand-soft-blue); padding: 80px 0;">
+<section id="features" class="py-20 bg-white" style="padding: 80px 0;">
   <div class="container" style="max-w: 1280px;">
     <div class="text-center max-w-2xl mx-auto mb-5" style="max-width: 42rem; margin-bottom: 3.5rem;">
-      <p class="text-xs font-medium tracking-widest uppercase" style="color: var(--cf-brand-primary); font-size: 0.75rem;">Smart features</p>
+      <p class="text-xs font-medium tracking-widest uppercase" style="color: var(--cf-brand-primary); font-size: 0.75rem;">Features</p>
       <h2 class="mt-3 fw-semibold tracking-tight" style="color: var(--cf-text-primary); font-size: calc(1.375rem + 1.5vw); font-family: var(--cf-font-heading);">
-        Every feature designed to remove friction.
+        Everything you need to get a job done right.
       </h2>
       <p class="mt-3 text-base md:text-lg" style="color: var(--cf-text-secondary);">
-        Built with craftsmen, for craftsmen. And the customers who hire them.
+        Built for the full lifecycle — from the first listing to the final review.
       </p>
     </div>
 
     <div class="row g-4">
       <% features.each do |f| %>
-        <div class="col-12 col-md-6 col-lg-4">
+        <div class="col-12 col-md-6 col-lg-3">
           <div class="cf-card interactive p-4 h-100 d-flex flex-column">
             <div class="d-flex align-items-center justify-content-center rounded-3" style="width: 44px; height: 44px; background-color: var(--cf-brand-soft-blue);">
               <i data-lucide="<%= f[:icon] %>" style="color: var(--cf-brand-primary); width: 20px; height: 20px; stroke-width: 1.8;"></i>
             </div>
-            <h3 class="fw-semibold text-lg mt-4 mb-2 tracking-tight" style="font-size: 1.125rem; color: var(--cf-text-primary); font-family: var(--cf-font-heading);">
+            <h3 class="fw-semibold text-lg mt-4 mb-2 tracking-tight" style="font-size: 1rem; color: var(--cf-text-primary); font-family: var(--cf-font-heading);">
               <%= f[:title] %>
             </h3>
-            <p class="text-sm leading-relaxed mb-0" style="color: var(--cf-text-secondary); font-size: 0.875rem;">
+            <p class="text-sm leading-relaxed mb-0" style="color: var(--cf-text-secondary); font-size: 0.8125rem;">
               <%= f[:desc] %>
             </p>
           </div>

@@ -1,33 +1,18 @@
 <%# app/views/pages/home.html.erb %>
 
 <main class="min-h-screen bg-white overflow-x-hidden">
-  <%# 1. The epic intro section showcasing the floating dashboard mockups %>
+  <%# 1. Hero — value proposition + listing/offers mockup %>
   <%= render "pages/landing/hero" %>
 
-  <%# 2. Explaining the pain points and frustrations on both marketplace sides %>
-  <%= render "pages/landing/problem_section" %>
-
-  <%# 3. Presenting the core value proposition with the interactive AI Assistant chat mockup %>
+  <%# 2. Problem -> Solution. Anchor target for nav "Solution" link (#solution) %>
   <%= render "pages/landing/solution_section" %>
 
-  <%# 4. Interactive tabbed timeline explaining customer & craftsman steps %>
+  <%# 3. Tabbed customer/contractor journey. Anchor target for nav "How it works" link (#how-it-works) %>
   <%= render "pages/landing/how_it_works" %>
 
-  <%# 5. Split-screen multi-step registration flow layout overview %>
-  <%= render "pages/landing/onboarding_preview" %>
-
-  <%# 6. Customer order request wizard screens display matrix %>
-  <%= render "pages/landing/request_preview" %>
-
-  <%# 7. A grid displaying all the main SaaS product features designed to optimize workflow %>
+  <%# 4. Feature grid — only what's actually built/in-scope. Anchor target for nav "Features" link (#features) %>
   <%= render "pages/landing/features" %>
 
-  <%# 8. Establishing trust and credibility through social proof, ratings, and testimonials %>
-  <%= render "pages/landing/trust_safety" %>
-
-  <%# 9. Future product features and infrastructure roadmap updates %>
-  <%= render "pages/landing/future_vision" %>
-
-  <%# 10. The final premium conversion section to capture users right before the footer %>
+  <%# 5. Final conversion section before the footer %>
   <%= render "pages/landing/final_cta" %>
 </main>

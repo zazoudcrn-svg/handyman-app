@@ -1,26 +1,25 @@
 <%# app/views/pages/landing/_how_it_works.html.erb %>
 <%
   customer_steps = [
-    { icon: "file-text", title: "Create your request", desc: "Describe what you need in a few words." },
-    { icon: "camera", title: "Upload photos & videos", desc: "Show the problem — pictures save a thousand calls." },
-    { icon: "sparkles", title: "AI asks smart questions", desc: "We fill the gaps so the brief is complete." },
-    { icon: "users", title: "Get matched", desc: "Trusted craftsmen in your area, qualified by radius and skill." },
-    { icon: "mail", title: "Receive offers", desc: "AI-prepared quotes land in your inbox — clear and comparable." },
-    { icon: "bar-chart-3", title: "Track progress", desc: "Live timeline, chat, milestones — all in one place." }
+    { icon: "file-text", title: "Post your job", desc: "Title, category, description, and when you need it done." },
+    { icon: "inbox", title: "Receive offers", desc: "Local contractors who match your category submit quotes." },
+    { icon: "users", title: "Compare & accept", desc: "Check ratings and quotes, then accept the one you like." },
+    { icon: "message-square", title: "Message directly", desc: "Chat with your contractor on the offer thread." },
+    { icon: "calendar-check", title: "Track the booking", desc: "Confirm or propose a new date and time together." },
+    { icon: "star", title: "Leave a review", desc: "Once the job is marked done, rate your contractor." }
   ]
 
-  craftsman_steps = [
-    { icon: "user-plus", title: "Create profile", desc: "Business, logo and quick intro." },
-    { icon: "wrench", title: "Select services", desc: "Pick the work you do best." },
-    { icon: "map-pin", title: "Set travel radius", desc: "Define how far you're willing to travel." },
-    { icon: "file-up", title: "Upload past invoices", desc: "AI learns your pricing and services." },
-    { icon: "calendar-sync", title: "Sync calendar", desc: "Google, Apple, Outlook — no double bookings." },
-    { icon: "sparkles", title: "Receive AI-prepared offers", desc: "Quote drafts ready for review." },
-    { icon: "check-circle-2", title: "Approve & send", desc: "One tap. Customer notified instantly." }
+  contractor_steps = [
+    { icon: "user-plus", title: "Create your profile", desc: "Business details, your specialties, and travel radius." },
+    { icon: "search", title: "Browse open listings", desc: "See jobs that match your categories." },
+    { icon: "send", title: "Submit an offer", desc: "Quote and an optional note — no cold calling." },
+    { icon: "message-square", title: "Message the customer", desc: "Discuss details before or after they accept." },
+    { icon: "calendar-check", title: "Manage the booking", desc: "Confirm, reschedule, or counter-propose a time." },
+    { icon: "check-circle-2", title: "Mark the job done", desc: "Close it out and collect your review." }
   ]
 %>
 
-<section id="how-it-works" class="py-20 bg-white" style="padding: 80px 0;">
+<section id="how-it-works" class="py-20" style="background-color: var(--cf-brand-soft-blue); padding: 80px 0;">
   <div class="container" style="max-w: 1280px;">
     <div class="text-center max-w-2xl mx-auto mb-5" style="max-width: 42rem; margin-bottom: 3rem;">
       <p class="text-xs font-medium tracking-widest uppercase" style="color: var(--cf-brand-primary); font-size: 0.75rem;">How it works</p>
@@ -28,20 +27,20 @@
         From request to result — in a few clicks.
       </h2>
       <p class="mt-3 text-base md:text-lg" style="color: var(--cf-text-secondary);">
-        Built to feel effortless on both sides. Pick a flow and follow the timeline.
+        Pick a side and follow the journey.
       </p>
     </div>
 
     <div class="d-flex justify-content-center mb-5">
-      <ul class="nav nav-pills p-1 rounded-pill" id="howItWorksTabs" role="tablist" style="background-color: var(--cf-bg-secondary); border: 1px solid var(--cf-border-light);">
+      <ul class="nav nav-pills p-1 rounded-pill" id="howItWorksTabs" role="tablist" style="background-color: #FFFFFF; border: 1px solid var(--cf-border-light);">
         <li class="nav-item" role="presentation">
           <button class="nav-link active rounded-pill px-4 py-2 text-sm fw-medium transition-all" id="how-customer-tab" data-bs-toggle="pill" data-bs-target="#how-customer" type="button" role="tab" aria-controls="how-customer" aria-selected="true">
             For Customers
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link rounded-pill px-4 py-2 text-sm fw-medium transition-all" id="how-craftsman-tab" data-bs-toggle="pill" data-bs-target="#how-craftsman" type="button" role="tab" aria-controls="how-craftsman" aria-selected="false">
-            For Craftsmen
+          <button class="nav-link rounded-pill px-4 py-2 text-sm fw-medium transition-all" id="how-contractor-tab" data-bs-toggle="pill" data-bs-target="#how-contractor" type="button" role="tab" aria-controls="how-contractor" aria-selected="false">
+            For Contractors
           </button>
         </li>
       </ul>
@@ -69,9 +68,9 @@
         </div>
       </div>
 
-      <div class="tab-pane fade" id="how-craftsman" role="tabpanel" aria-labelledby="how-craftsman-tab">
+      <div class="tab-pane fade" id="how-contractor" role="tabpanel" aria-labelledby="how-contractor-tab">
         <div class="row g-4 justify-content-center">
-          <% craftsman_steps.each_with_index do |step, idx| %>
+          <% contractor_steps.each_with_index do |step, idx| %>
             <div class="col-12 col-md-6 col-lg-4">
               <div class="cf-card p-4 h-100 d-flex flex-column justify-content-between">
                 <div>
@@ -94,5 +93,5 @@
 </section>
 <style>
   #howItWorksTabs .nav-link { color: var(--cf-text-secondary) !important; background: transparent !important; }
-  #howItWorksTabs .nav-link.active { color: var(--cf-text-primary) !important; background-color: #FFFFFF !important; box-shadow: 0 2px 10px rgba(11,27,51,0.04) !important; }
+  #howItWorksTabs .nav-link.active { color: var(--cf-text-primary) !important; background-color: var(--cf-brand-soft-blue) !important; box-shadow: 0 2px 10px rgba(11,27,51,0.04) !important; }
 </style>
