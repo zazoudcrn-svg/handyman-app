@@ -1,18 +1,20 @@
 <%# app/views/pages/home.html.erb %>
-
-<main class="min-h-screen bg-white overflow-x-hidden">
-  <%# 1. Hero — value proposition + listing/offers mockup %>
+<main class="min-h-screen overflow-x-hidden" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC;">
   <%= render "pages/landing/hero" %>
-
-  <%# 2. Problem -> Solution. Anchor target for nav "Solution" link (#solution) %>
   <%= render "pages/landing/solution_section" %>
-
-  <%# 3. Tabbed customer/contractor journey. Anchor target for nav "How it works" link (#how-it-works) %>
   <%= render "pages/landing/how_it_works" %>
-
-  <%# 4. Feature grid — only what's actually built/in-scope. Anchor target for nav "Features" link (#features) %>
   <%= render "pages/landing/features" %>
-
-  <%# 5. Final conversion section before the footer %>
   <%= render "pages/landing/final_cta" %>
 </main>
+
+<%# Inline scrolling intercepts targeting anchor jump calculations safely %>
+<style>
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Intercepts viewport jumps to account perfectly for the sticky navbar architecture height */
+  section[id] {
+    scroll-margin-top: 74px;
+  }
+</style>

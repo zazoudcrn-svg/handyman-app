@@ -1,133 +1,76 @@
 <%# app/views/pages/landing/_solution_section.html.erb %>
-<section id="solution" class="bg-white" style="padding: 80px 0;">
-  <div class="container" style="max-w: 1280px;">
+<section id="solution" class="d-flex align-items-center bg-white" style="min-height: calc(100vh - 74px); border-bottom: 1px solid #E2E8F0; padding: 60px 0;">
+  <div class="container" style="max-width: 1280px; width: 100%;">
 
-    <%# --- Problem framing --- %>
-    <div class="text-center max-w-2xl mx-auto mb-5" style="max-width: 42rem; margin-bottom: 4rem;">
-      <p class="text-xs font-medium tracking-widest uppercase" style="color: var(--cf-brand-primary); font-size: 0.75rem;">The problem</p>
-      <h2 class="mt-3 fw-semibold tracking-tight" style="color: var(--cf-text-primary); font-size: calc(1.375rem + 1.5vw); font-family: var(--cf-font-heading);">
-        Everyone's frustrated. Nobody's winning.
-      </h2>
-      <p class="mt-3 text-base md:text-lg" style="color: var(--cf-text-secondary);">
-        Finding the right contractor feels like luck. Running a small repair business means drowning in calls and paperwork. We built Handyman to fix both sides.
-      </p>
-    </div>
-
-    <div class="row g-4 mb-5" style="margin-bottom: 5rem;">
-      <div class="col-12 col-lg-6">
-        <div class="p-4 p-md-5 rounded-4 border h-100" style="background: linear-gradient(to bottom right, #FFFFFF, #FAFBFD); border-color: var(--cf-border-light) !important;">
-          <div class="d-flex align-items-center gap-2 mb-4">
-            <span class="px-2.5 py-1 rounded-pill text-xs fw-semibold" style="background-color: #FEF3C7; color: #92400E; font-size: 11px;">Customers</span>
-            <span class="text-muted" style="font-size: 12px;">Homeowners, renters, businesses</span>
-          </div>
-          <h3 class="fw-bold tracking-tight mb-4 h4" style="color: var(--cf-text-primary); font-family: var(--cf-font-heading);">"I just want someone to call me back."</h3>
-          <div class="d-flex flex-column gap-2.5">
-            <% [
-              { icon: "message-circle-x", text: "Nobody answered my request." },
-              { icon: "mail", text: "I had to explain the job over and over." },
-              { icon: "file-x-2", text: "I never got a clear quote." },
-              { icon: "phone", text: "Endless phone tag with no answers." }
-            ].each do |p| %>
-              <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-white border" style="border-color: var(--cf-border-light) !important;">
-                <div class="rounded d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; background-color: #FEF3C7;">
-                  <i data-lucide="<%= p[:icon] %>" style="color: #92400E; width: 16px;"></i>
-                </div>
-                <span class="text-sm fw-medium" style="color: var(--cf-text-primary); font-size: 14px;"><%= p[:text] %></span>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-lg-6">
-        <div class="p-4 p-md-5 rounded-4 border h-100" style="background: linear-gradient(to bottom right, #FFFFFF, var(--cf-brand-soft-blue)); border-color: var(--cf-border-light) !important;">
-          <div class="d-flex align-items-center gap-2 mb-4">
-            <span class="px-2.5 py-1 rounded-pill text-xs fw-semibold" style="background-color: var(--cf-brand-accent); color: var(--cf-brand-primary); font-size: 11px;">Contractors</span>
-            <span class="text-muted" style="font-size: 12px;">Independent · Teams</span>
-          </div>
-          <h3 class="fw-bold tracking-tight mb-4 h4" style="color: var(--cf-text-primary); font-family: var(--cf-font-heading);">"I want to do the job, not chase leads."</h3>
-          <div class="d-flex flex-column gap-2.5">
-            <% [
-              { icon: "file-warning", text: "Most requests are vague or incomplete." },
-              { icon: "inbox", text: "Leads outside my area waste my time." },
-              { icon: "calendar-x", text: "Juggling messages and bookings is chaos." },
-              { icon: "star-off", text: "No way to show off a track record." }
-            ].each do |p| %>
-              <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-white border" style="border-color: var(--cf-border-light) !important;">
-                <div class="rounded d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; background-color: var(--cf-brand-accent);">
-                  <i data-lucide="<%= p[:icon] %>" style="color: var(--cf-brand-primary); width: 16px;"></i>
-                </div>
-                <span class="text-sm fw-medium" style="color: var(--cf-text-primary); font-size: 14px;"><%= p[:text] %></span>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <%# --- Solution --- %>
     <div class="row align-items-center g-5">
-      <div class="col-12 col-lg-6">
-        <p class="text-xs font-medium tracking-widest uppercase" style="color: var(--cf-brand-primary); font-size: 0.75rem;">The solution</p>
-        <h2 class="mt-3 fw-semibold tracking-tight" style="color: var(--cf-text-primary); font-size: calc(1.375rem + 1.5vw); font-family: var(--cf-font-heading); line-height: 1.1;">
-          One marketplace. The full job, start to finish.
+      <div class="col-12 col-lg-5">
+        <span class="badge bg-primary-subtle text-primary px-3 py-1.5 rounded-pill mb-3 fw-semibold" style="background-color: #EFF6FF; color: #2F6BFF; font-size: 11px;">
+          Marketplace Engine
+        </span>
+        <h2 class="fw-bold tracking-tight mb-4" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 2.25rem; letter-spacing: -0.5px; line-height: 1.2;">
+          Direct communication.<br>Zero intermediaries.
         </h2>
-        <p class="mt-4 text-base md:text-lg" style="color: var(--cf-text-secondary);">
-          Post a job once. Contractors who match your category submit real offers. Accept the one you like, message directly, and track the booking through to a finished job and a review.
+        <p class="text-muted mb-4" style="font-size: 15px; line-height: 1.7; color: #64748B !important;">
+          Handyman connects customers and contractors inside a clear, structure-driven framework. By defining listing parameters explicitly up front, we eliminate ambiguous timelines and hidden fees.
         </p>
 
-        <div class="mt-4 d-flex flex-column gap-3.5 pt-2">
-          <% [
-            { icon: "file-text", title: "One clear listing", desc: "Title, description, category, and preferred date — everything a contractor needs to quote." },
-            { icon: "inbox", title: "Offers, not guesswork", desc: "Compare quotes side by side and accept the one that fits." },
-            { icon: "message-square", title: "Direct messaging", desc: "Every offer has its own chat thread — no more phone tag." }
-          ].each do |item| %>
-            <div class="d-flex align-items-start gap-3">
-              <div class="rounded-3 border d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px; background-color: #FFFFFF; border-color: var(--cf-border-light) !important;">
-                <i data-lucide="<%= item[:icon] %>" style="color: var(--cf-brand-primary); width: 18px;"></i>
-              </div>
-              <div>
-                <h4 class="fw-semibold mb-1 text-sm" style="color: var(--cf-text-primary); font-family: var(--cf-font-heading); font-size: 15px;"><%= item[:title] %></h4>
-                <p class="text-muted text-xs mb-0" style="font-size: 13px;"><%= item[:desc] %></p>
-              </div>
+        <div class="d-flex flex-column gap-4 pt-2">
+          <div class="d-flex gap-3 align-items-start">
+            <div class="rounded-3 border d-flex align-items-center justify-content-center bg-light flex-shrink-0" style="width: 40px; height: 40px; border-color: #E2E8F0 !important;">
+              <i class="bi bi-file-earmark-text text-primary" style="font-size: 18px; color: #2F6BFF !important;"></i>
             </div>
-          <% end %>
+            <div>
+              <h4 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 15px;">Structured Job Listings</h4>
+              <p class="text-muted small mb-0" style="font-size: 13px;">Customers post clear categorical parameters, matching categories directly to contractor specializations.</p>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 align-items-start">
+            <div class="rounded-3 border d-flex align-items-center justify-content-center bg-light flex-shrink-0" style="width: 40px; height: 40px; border-color: #E2E8F0 !important;">
+              <i class="bi bi-shield-check text-primary" style="font-size: 18px; color: #2F6BFF !important;"></i>
+            </div>
+            <div>
+              <h4 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 15px;">Offer-Scoped Conversations</h4>
+              <p class="text-muted small mb-0" style="font-size: 13px;">Quotes, estimated duration, and scheduling are processed entirely inside isolated offer threads.</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="col-12 col-lg-6">
-        <div class="cf-card bg-white shadow-sm">
-          <div class="d-flex align-items-center justify-content-between px-4 py-3 border-b" style="border-bottom: 1px solid var(--cf-border-light);">
-            <div class="d-flex align-items-center gap-2">
-              <i data-lucide="file-text" style="color: var(--cf-brand-primary); width:16px;"></i>
-              <span class="text-xs fw-semibold" style="color: var(--cf-text-primary); font-size: 12px;">Offer received</span>
-            </div>
-            <span class="badge text-xs px-2 py-1 rounded-pill" style="background-color: var(--cf-brand-accent); color: var(--cf-brand-primary);">New</span>
-          </div>
+      <div class="col-12 col-lg-7">
+        <div class="card p-4 border-0" style="background-color: #F8FAFC; border: 1px solid #E2E8F0 !important; border-radius: 20px;">
+          <span class="text-uppercase tracking-wider font-monospace text-muted d-block mb-3" style="font-size: 9px; font-weight: 700;">Active Offer Details</span>
 
-          <div class="p-4 d-flex flex-column gap-3" style="background-color: #FFFFFF;">
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center fw-semibold text-xs" style="width: 32px; height: 32px; background-color: var(--cf-brand-accent); color: var(--cf-brand-primary);">MT</div>
-                <div>
-                  <p class="mb-0 fw-semibold" style="font-size: 13px; color: var(--cf-text-primary);">Mark T.</p>
-                  <p class="mb-0 text-muted" style="font-size: 11px;">Plumbing · 4.9 ★</p>
+          <div class="card border-0 p-4 mb-3 bg-white" style="border-radius: 14px; border: 1px solid #E2E8F0 !important;">
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="p-3 rounded-3 bg-light">
+                  <span class="text-muted d-block small mb-1" style="font-size: 11px;">Contractor Quote</span>
+                  <strong class="h5 m-0 fw-bold" style="color: #0B1B33; font-family: 'Outfit', sans-serif;">€150.00</strong>
                 </div>
               </div>
-              <span class="fw-bold" style="font-size: 16px; color: var(--cf-text-primary);">€95</span>
+              <div class="col-6">
+                <div class="p-3 rounded-3 bg-light">
+                  <span class="text-muted d-block small mb-1" style="font-size: 11px;">Estimated Duration</span>
+                  <strong class="h5 m-0 fw-bold" style="color: #0B1B33; font-family: 'Outfit', sans-serif;">2.5 Hours</strong>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="p-3 rounded-3 bg-light">
+                  <span class="text-muted d-block small mb-1" style="font-size: 11px;">Suggested Availability Profile</span>
+                  <strong class="small m-0 fw-bold d-block" style="color: #0B1B33;"><i class="bi bi-calendar-event me-1"></i> Workdays Daytime (Mon-Fri, 8AM - 4PM)</strong>
+                </div>
+              </div>
             </div>
+          </div>
 
-            <p class="p-3 rounded-3 mb-0" style="background-color: var(--cf-brand-soft-blue); font-size: 13px; color: var(--cf-text-primary);">
-              "I can come by tomorrow morning to fix the leak. Includes parts and labor."
-            </p>
-
-            <div class="d-flex gap-2">
-              <div class="flex-grow-1 text-center px-3 py-2 rounded-pill text-white fw-medium" style="background-color: var(--cf-brand-primary); font-size: 13px;">Accept offer</div>
-              <div class="flex-grow-1 text-center px-3 py-2 rounded-pill fw-medium border" style="font-size: 13px; color: var(--cf-text-primary); border-color: var(--cf-border-light) !important;">Decline</div>
-            </div>
+          <div class="d-flex gap-2">
+            <div class="w-100 text-center btn btn-light border py-2 fw-semibold small" style="border-radius: 10px; font-size: 13px; border-color: #E2E8F0 !important;">Decline Offer</div>
+            <div class="w-100 text-center btn text-white py-2 fw-semibold small" style="background-color: #2F6BFF; border-radius: 10px; font-size: 13px;">Accept Offer & Confirm Booking</div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </section>
