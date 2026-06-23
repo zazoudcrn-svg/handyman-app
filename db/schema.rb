@@ -44,7 +44,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_063336) do
 
   create_table "bookings", force: :cascade do |t|
     t.string "accepted_by"
-    t.string "booking_status", default: "pending"
+    t.string "booking_status"
     t.text "cancellation_note"
     t.string "cancelled_by"
     t.datetime "created_at", null: false
