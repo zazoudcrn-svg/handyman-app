@@ -41,24 +41,28 @@
 
         <h4 class="fw-bold mb-3"><%= upcoming_booking.listing.title %></h4>
 
-        <p class="mb-3" style="max-width: 600px;">
-          <%= upcoming_booking.listing.description %>
-        </p>
-
-        <% if current_user.customer? %>
-          <p class="mb-1"><strong>Address:</strong>
-            <%= upcoming_booking.listing.street %>,
-            <%= upcoming_booking.listing.city %>,
-            <%= upcoming_booking.listing.postcode %>,
-            <%= upcoming_booking.listing.country %>
+        <!-- ADDRESS WITH ICON -->
+          <p class="mb-1">
+          <i class="bi bi-geo-alt-fill text-danger"></i>
+          <%= upcoming_booking.listing.street %>,
+          <%= upcoming_booking.listing.city %>,
+          <%= upcoming_booking.listing.postcode %>,
+          <%= upcoming_booking.listing.country %>
           </p>
-        <% end %>
 
-        <% if current_user.customer? %>
-          <p class="mb-1"><strong>Contractor:</strong> <%= upcoming_booking.offer.user.first_name %></p>
-        <% else %>
-          <p class="mb-1"><strong>Customer:</strong> <%= upcoming_booking.listing.user.first_name %></p>
-        <% end %>
+        <!-- ROLE ICON + NAME -->
+<p class="mb-1">
+  <i class="bi bi-person-circle text-primary"></i>
+  <% if current_user.customer? %>
+    <%= upcoming_booking.offer.user.first_name %> <!-- Contractor -->
+  <% else %>
+    <%= upcoming_booking.listing.user.first_name %> <!-- Customer -->
+  <% end %>
+</p>
+    <div class="mt-auto d-flex justify-content-between align-items-center pt-3">
+      <%= link_to "View Booking →", booking_path(upcoming_booking), class: "btn btn-outline-primary btn-sm", style: "border-radius: 8px;" %>
+    </div>
+
       </div>
     </div>
 

@@ -1,33 +1,20 @@
 <%# app/views/pages/home.html.erb %>
-
-<main class="min-h-screen bg-white overflow-x-hidden">
-  <%# 1. The epic intro section showcasing the floating dashboard mockups %>
+<main class="min-h-screen overflow-x-hidden" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC;">
   <%= render "pages/landing/hero" %>
-
-  <%# 2. Explaining the pain points and frustrations on both marketplace sides %>
-  <%= render "pages/landing/problem_section" %>
-
-  <%# 3. Presenting the core value proposition with the interactive AI Assistant chat mockup %>
   <%= render "pages/landing/solution_section" %>
-
-  <%# 4. Interactive tabbed timeline explaining customer & craftsman steps %>
   <%= render "pages/landing/how_it_works" %>
-
-  <%# 5. Split-screen multi-step registration flow layout overview %>
-  <%= render "pages/landing/onboarding_preview" %>
-
-  <%# 6. Customer order request wizard screens display matrix %>
-  <%= render "pages/landing/request_preview" %>
-
-  <%# 7. A grid displaying all the main SaaS product features designed to optimize workflow %>
   <%= render "pages/landing/features" %>
-
-  <%# 8. Establishing trust and credibility through social proof, ratings, and testimonials %>
-  <%= render "pages/landing/trust_safety" %>
-
-  <%# 9. Future product features and infrastructure roadmap updates %>
-  <%= render "pages/landing/future_vision" %>
-
-  <%# 10. The final premium conversion section to capture users right before the footer %>
   <%= render "pages/landing/final_cta" %>
 </main>
+
+<%# Inline scrolling intercepts targeting anchor jump calculations safely %>
+<style>
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Intercepts viewport jumps to account perfectly for the sticky navbar architecture height */
+  section[id] {
+    scroll-margin-top: 74px;
+  }
+</style>

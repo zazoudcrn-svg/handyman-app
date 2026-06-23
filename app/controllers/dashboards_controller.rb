@@ -2,51 +2,78 @@ class DashboardsController < ApplicationController
   before_action :authenticate_user!
 
   def show
-    # Set a permanent cookie to remember this device has an active account
     cookies.permanent[:has_account] = "true"
 
-    # Check if the logged-in user has a contractor profile setup
     if current_user.contractor_profile.present?
-      # 1. Contractor Logic
       profile = current_user.contractor_profile
-
-      # Step 1: Get all category IDs the contractor specializes in
       contractor_category_ids = current_user.categories.pluck(:id)
 
-      # Step 2: Filter listings by radius AND matching categories
+      # Use max_distance param if provided, otherwise fall back to their travel radius
+      radius = params[:max_distance].present? ? params[:max_distance].to_i : profile.travel_radius
+
+      # Base query
       if current_user.latitude.present? && current_user.longitude.present?
-        matching_listings = Listing.near([current_user.latitude, current_user.longitude], profile.travel_radius, units: :km)
-                                   .where(category_id: contractor_category_ids)
+        matching_listings = Listing.near([current_user.latitude, current_user.longitude], radius, units: :km)
+                                  .where(category_id: contractor_category_ids)
       else
-        # Fallback: If onboarding was skipped, show all listings matching the contractor's categories
         matching_listings = Listing.where(category_id: contractor_category_ids)
       end
 
-      # Tab 1: Active Listings (Available jobs)
-      @available_listings = matching_listings.where.not(id: current_user.declined_listings.select(:listing_id))
-                                              .where.not(id: current_user.offers.select(:listing_id))
-                                              .order(Arel.sql("CASE WHEN title LIKE '%EMERGENCY%' THEN 0 ELSE 1 END"))
+      # Exclude declined and already-offered listings
+      @available_listings = matching_listings
+        .where.not(id: current_user.declined_listings.select(:listing_id))
+        .where.not(id: current_user.offers.select(:listing_id))
 
-      # Tab 2: Pending Offers
-      @offered_listings = matching_listings.where(id: current_user.offers.select(:listing_id))
-                                            .left_outer_joins(offers: :booking)
-                                            .where(bookings: { id: nil })
+      # Category filter
+      if params[:category_ids].present?
+        @available_listings = @available_listings.where(category_id: params[:category_ids])
+      end
 
-      # Tab 3: Ongoing Bookings
-      @ongoing_bookings = matching_listings.joins(offers: :booking)
-                                           .where(offers: { user_id: current_user.id }, bookings: { booking_status: "confirmed" })
+      # Urgency filter
+      if params[:urgency].present?
+        @available_listings = @available_listings.where(urgency: params[:urgency])
+      end
 
-      # Tab 4: Completed Bookings
-      @completed_bookings = matching_listings.joins(offers: :booking)
-                                             .where(offers: { user_id: current_user.id }, bookings: { booking_status: "completed" })
+      # Availability filter
+      if params[:availability_profile].present?
+        @available_listings = @available_listings.where(availability_profile: params[:availability_profile])
+      end
 
-      # Tab 5: Declined Listings
-      @archived_listings = matching_listings.where(id: current_user.declined_listings.select(:listing_id))
+      # Sorting
+      if params[:sort_by] == "date"
+        @available_listings = @available_listings.reorder(created_at: :desc)
+      elsif params[:sort_by] == "distance"
+        # .near already orders by distance — do nothing
+      else
+        @available_listings = @available_listings.reorder(Arel.sql("CASE WHEN title LIKE '%EMERGENCY%' THEN 0 ELSE 1 END"))
+      end
 
       render :contractor_show
+
     else
-      # 2. Customer Logic
-      @listings = current_user.listings
+      # Get IDs of listings that have an active booking (not completed or cancelled)
+      active_booking_listing_ids = current_user.listings
+        .joins(offers: :booking)
+        .where.not(bookings: { booking_status: ["completed", "cancelled"] })
+        .pluck(:id)
+
+      # Base query: exclude listings with active bookings
+      @listings = current_user.listings.where.not(id: active_booking_listing_ids)
+
+      # Category filter
+      if params[:category_ids].present?
+        @listings = @listings.where(category_id: params[:category_ids])
+      end
+
+      # Sorting
+      if params[:sort_by] == "oldest"
+        @listings = @listings.order(created_at: :asc)
+      elsif params[:sort_by] == "category"
+        @listings = @listings.order(:category_id)
+      else
+        @listings = @listings.order(created_at: :desc)
+      end
+
       render :customer_show
     end
   end
