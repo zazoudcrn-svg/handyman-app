@@ -1,0 +1,133 @@
+<%# Offer card partial — mirrors the listing card structure (picture left, content right). %>
+<%# Expects local: offer %>
+
+<%
+  # ADDED: badge text + color per offer_status, mirroring listing card's badge_style pattern
+  badge_text, badge_style = case offer.offer_status
+                             when "accepted"
+                               ["Accepted", "background-color: #DCFCE7; color: #166534;"]
+                             when "declined"
+                               ["Declined", "background-color: #FEE2E2; color: #991B1B;"]
+                             else
+                               ["Pending", "background-color: #F1F5F9; color: #475569;"]
+                             end
+%>
+
+<div class="col-12">
+  <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
+    <div class="row g-0">
+
+      <%# Optimized Image Block: 1. Listing Photo, 2. Seed Keyword, 3. Placeholder — same logic as listing card, keyed off offer.listing %>
+      <div class="col-md-4 position-relative" style="min-height: 220px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center;">
+
+        <% if offer.listing.photos.attached? && offer.listing.photos.first.present? %>
+          <%= cl_image_tag offer.listing.photos.first.key, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
+        <% else %>
+          <%
+            # Fallback logic for seed data based on title keywords
+            image_path = if offer.listing.title.include?("EMERGENCY") then "listings/burst_pipe.png"
+                         elsif offer.listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
+                         elsif offer.listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
+                         elsif offer.listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
+                         elsif offer.listing.title.downcase.include?("shower") then "listings/shower_seal.png"
+                         else nil end
+          %>
+
+          <% if image_path.present? %>
+            <%= image_tag image_path, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
+          <% else %>
+            <i class="bi bi-camera" style="font-size: 3rem; color: #94A3B8;"></i>
+          <% end %>
+        <% end %>
+      </div>
+
+      <%# Text and details area — full offer content on the right side %>
+      <div class="col-md-8 p-4 d-flex flex-column justify-content-between">
+        <div>
+          <div class="mb-3">
+            <span class="badge px-3 py-1.5 fw-semibold" style="border-radius: 6px; <%= badge_style %>">
+              <%= badge_text %>
+            </span>
+          </div>
+
+          <%# CHANGED: title is the listing's title, not an offer-specific field %>
+          <h3 class="fw-bold tracking-tight mb-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.4rem;">
+            <%= offer.listing.title %>
+          </h3>
+
+          <%# ADDED: Contractor / Customer line — role-aware, same pattern as offers/index %>
+          <p class="mb-2 small" style="color: #64748B !important;">
+            <% if current_user.customer? %>
+              <strong style="color: #0B1B33;">Contractor:</strong>
+              <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user), style: "color: #2F6BFF; text-decoration: none;" %>
+            <% else %>
+              <strong style="color: #0B1B33;">Customer:</strong>
+              <%= link_to "#{offer.listing.user.first_name} #{offer.listing.user.last_name&.first}.", profile_path(offer.listing.user), style: "color: #2F6BFF; text-decoration: none;" %>
+            <% end %>
+          </p>
+
+          <%# ADDED: Quote %>
+          <p class="mb-2 small" style="color: #64748B !important;">
+            <strong style="color: #0B1B33;">Quote:</strong> €<%= offer.quote %>
+          </p>
+
+          <%# ADDED: Duration — only shown if present %>
+          <% if offer.estimated_duration_hours.present? %>
+            <p class="mb-2 small" style="color: #64748B !important;">
+              <strong style="color: #0B1B33;">Duration:</strong> <%= offer.estimated_duration_hours %> hrs
+            </p>
+          <% end %>
+
+          <%# ADDED: Date %>
+          <p class="mb-0 small" style="color: #64748B !important;">
+            <strong style="color: #0B1B33;">Date:</strong>
+            <%= offer.suggested_date_and_time&.strftime("%b %d, %Y at %H:%M") || "Not specified" %>
+          </p>
+        </div>
+
+        <%# CHANGED: footer is now a justify-content-between row (action icons left, status link right) for pending,
+            matching the existing offers/index layout — for accepted/declined the link is right-aligned %>
+        <% if offer.offer_status.nil? || offer.offer_status == "pending" %>
+          <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top" style="border-color: rgba(226, 232, 240, 0.6) !important;">
+            <% if current_user.customer? %>
+              <div class="d-flex gap-2">
+                <%= button_to accept_listing_offer_path(offer.listing, offer), method: :patch, class: "btn btn-success btn-sm", style: "border-radius: 8px;" do %>
+                  <i class="bi bi-check-lg"></i>
+                <% end %>
+                <%= button_to decline_listing_offer_path(offer.listing, offer), method: :patch, class: "btn btn-danger btn-sm", style: "border-radius: 8px;" do %>
+                  <i class="bi bi-x-lg"></i>
+                <% end %>
+              </div>
+            <% elsif current_user.contractor? %>
+              <div class="d-flex gap-2">
+                <%= link_to edit_listing_offer_path(offer.listing, offer), class: "btn btn-secondary btn-sm", style: "border-radius: 8px;" do %>
+                  <i class="bi bi-pencil"></i>
+                <% end %>
+                <%= button_to listing_offer_path(offer.listing, offer), method: :delete, class: "btn btn-danger btn-sm", style: "border-radius: 8px;", data: { turbo_confirm: "Are you sure?" } do %>
+                  <i class="bi bi-trash"></i>
+                <% end %>
+              </div>
+            <% end %>
+            <%# CHANGED: label "Details →" → "View Offer", same link target as before; size + color match listing card pill button %>
+            <%= link_to "View Offer", listing_offer_path(offer.listing, offer), class: "btn fw-semibold text-white", style: "background-color: #2F6BFF; border-radius: 9999px; font-size: 13px; padding: 8px 24px;" %>
+          </div>
+        <% elsif offer.offer_status == "accepted" %>
+          <div class="pt-3 mt-3 border-top d-flex justify-content-end" style="border-color: rgba(226, 232, 240, 0.6) !important;">
+            <% if offer.booking.present? %>
+              <%# CHANGED: label "View Booking →" → "View Offer", link target untouched; size + color match listing card pill button %>
+              <%= link_to "View Offer", booking_path(offer.booking), class: "btn fw-semibold text-white", style: "background-color: #2F6BFF; border-radius: 9999px; font-size: 13px; padding: 8px 24px;" %>
+            <% else %>
+              <p class="text-muted small mb-0">Booking not yet created.</p>
+            <% end %>
+          </div>
+        <% else %>
+          <%# DECLINED — stays as is, label and link untouched; size now matches listing card pill button %>
+          <div class="pt-3 mt-3 border-top d-flex justify-content-end" style="border-color: rgba(226, 232, 240, 0.6) !important;">
+            <%= link_to "View Details →", listing_offer_path(offer.listing, offer), class: "btn btn-outline-secondary fw-semibold", style: "border-radius: 9999px; font-size: 13px; padding: 8px 24px;" %>
+          </div>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>

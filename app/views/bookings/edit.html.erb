@@ -1,49 +1,95 @@
 <div class="container mt-4">
 
-  <%= link_to "← Back to Booking", booking_path(@booking), class: "btn btn-outline-secondary mb-3" %>
+  <%= link_to "← Back to all Bookings", booking_path(@booking), class: "btn btn-outline-secondary mb-3" %>
 
   <div class="card shadow-sm p-4">
 
     <h2 class="mb-4 text-center">Edit Booking</h2>
+    <div id="status_message"></div>
 
     <!-- READ-ONLY DETAILS -->
     <div class="mb-4">
-      <p><strong>Job:</strong> <%= @booking.listing.title %></p>
+      <p><strong>Title:</strong> <%= @booking.listing.title %></p>
 
       <% if current_user.customer? %>
         <p><strong>Contractor:</strong> <%= @booking.offer.user.first_name %></p>
       <% else %>
         <p><strong>Customer:</strong> <%= @booking.listing.user.first_name %></p>
       <% end %>
-
-      <p><strong>Address:</strong>
-        <%= [
-              @booking.listing.street,
-              @booking.listing.city,
-              @booking.listing.postcode,
-              @booking.listing.country
-            ].compact.join(", ") %>
-      </p>
     </div>
 
-    <hr>
-
-    <!-- EDITABLE FORM -->
+    <!-- ⭐ ONE SINGLE FORM FOR ALL BOOKING UPDATES -->
     <%= form_with model: @booking, url: booking_path(@booking), method: :patch, class: "row g-3" do |f| %>
 
+      <!-- ADDRESS -->
+      <h4 class="mt-4">Address</h4>
+
+      <%= f.fields_for :listing do |lf| %>
+        <%= lf.hidden_field :id %>
+
+        <div class="row">
+          <div class="col-md-6">
+            <%= lf.label :street, "Street", class: "form-label" %>
+            <%= lf.text_field :street, class: "form-control" %>
+          </div>
+
+          <div class="col-md-6">
+            <%= lf.label :city, "City", class: "form-label" %>
+            <%= lf.text_field :city, class: "form-control" %>
+          </div>
+
+          <div class="col-md-6 mt-3">
+            <%= lf.label :postcode, "Postcode", class: "form-label" %>
+            <%= lf.text_field :postcode, class: "form-control" %>
+          </div>
+
+          <div class="col-md-6 mt-3">
+            <%= lf.label :country, "Country", class: "form-label" %>
+            <%= lf.text_field :country, class: "form-control" %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- SCHEDULED DATE (READ ONLY) -->
+      <div class="col-md-6 mt-4">
+        <strong><%= f.label :scheduled_date_and_time, "Scheduled Date & Time", class: "form-label" %></strong>
+
+        <input type="text"
+               class="form-control"
+               value="<%= @booking.scheduled_date_and_time.strftime('%A, %d %B %Y at %I:%M %p') %>"
+               disabled>
+
+        <small class="text-muted">This date cannot be edited. Use “Propose New Date”.</small>
+      </div>
+
+      <!-- ⭐ SAVE BUTTON -->
+      <div class="col-12 mt-4">
+        <%= f.hidden_field :form_type, value: "save_changes" %>
+        <%= f.submit "Save Changes", class: "btn btn-primary" %>
+        <%= link_to "Cancel", booking_path(@booking), class: "btn btn-outline-secondary ms-2" %>
+      </div>
+
+    <% end %>
+
+    <hr class="my-4">
+
+    <!-- ⭐ PROPOSE NEW DATE FORM -->
+    <h4 class="mb-3">Propose a New Date</h4>
+
+    <%= form_with model: @booking,
+          url: propose_date_booking_path(@booking),
+          method: :patch,
+          data: { turbo: false },
+          class: "row g-3" do |f| %>
+
       <div class="col-md-6">
-        <%= f.label :scheduled_date_and_time, "Scheduled Date & Time", class: "form-label" %>
-        <%= f.datetime_local_field :scheduled_date_and_time, class: "form-control" %>
+        <%= f.label :new_proposed_date_and_time, "Select Date & Time", class: "form-label" %>
+        <%= f.text_field :new_proposed_date_and_time, class: "form-control date-picker" %>
       </div>
 
       <div class="col-12">
-        <%= f.label :notes, "Additional Notes", class: "form-label" %>
-        <%= f.text_area :notes, rows: 4, class: "form-control" %>
-      </div>
-
-      <div class="col-12 mt-3">
-        <%= f.submit "Save Changes", class: "btn btn-primary" %>
-        <%= link_to "Cancel", booking_path(@booking), class: "btn btn-outline-secondary ms-2" %>
+        <%= f.hidden_field :form_type, value: "propose_date" %>
+        <%= f.submit "Propose New Date", class: "btn btn-secondary mt-2" %>
       </div>
 
     <% end %>

@@ -41,6 +41,7 @@ class ListingsController < ApplicationController
   # GET /listings/:id
   def show
     @listing = Listing.find(params[:id])
+    @offers = @listing.offers.includes(:user).order(created_at: :desc)
   end
 
   # 1. GET /listings/:id/edit

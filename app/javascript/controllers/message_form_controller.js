@@ -10,4 +10,13 @@ export default class extends Controller {
   toggleSubmit() {
     this.submitTarget.disabled = this.inputTarget.value.trim() === ""
   }
+
+  handleKeydown(event) {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault()
+    if (this.inputTarget.value.trim() !== "") {
+      this.element.requestSubmit()
+    }
+  }
+}
 }

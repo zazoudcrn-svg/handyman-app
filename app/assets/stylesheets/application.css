@@ -13,5 +13,10 @@
 
 @import "styleguide";
 
-// 2. Load modular UI components that consume those tokens
-@import "components/multistep_form";
+/* 2. Load modular UI components that consume those tokens*/
+  @import "components/multistep_form";
+
+.rounded-circle:hover {
+  transform: scale(1.08);
+  transition: 0.15s ease-in-out;
+}

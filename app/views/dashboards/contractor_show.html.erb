@@ -1,3 +1,5 @@
+<% is_calendar_active = params[:start_date].present? || params[:prev_date].present? || params[:date].present? %>
+
 <div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
   <div class="container" style="max-width: 1200px;">
 
@@ -7,28 +9,28 @@
         <span class="badge bg-primary-subtle text-primary px-2 py-1 rounded-pill fw-semibold" style="font-size: 11px; background-color: #EFF6FF; color: #2F6BFF !important;">
           <i class="bi bi-patch-check-fill"></i> Active Contractor
         </span>
-        <h1 class="h2 mt-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= current_user.contractor_profile&.business_name || "Workspace" %></h1>
+        <h1 class="h2 mt-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Find your next Job</h1>
       </div>
     </div>
 
-    <% # 2. MODERN FILTER NAVIGATION %>
+    <% # 2. MODERN FILTER NAVIGATION (Contractor Version) %>
     <div class="d-flex align-items-center flex-wrap gap-3 mb-4" id="dashboardTabs" role="tablist">
       <span class="text-uppercase fw-bold" style="font-size: 10px; color: #94A3B8; letter-spacing: 0.05em; margin-right: 5px;">Filter:</span>
 
       <% tabs = [
-        { id: "active", label: "Active", count: @available_listings.size },
-        { id: "pending", label: "Pending", count: @offered_listings.size },
-        { id: "booked", label: "Booked", count: @ongoing_bookings.size },
-        { id: "completed", label: "Completed", count: @completed_bookings.size },
-        { id: "declined", label: "Declined", count: @archived_listings.size }
+        { id: "available", label: "New listings", count: @available_listings.size },
+        { id: "offered", label: "Awaiting response", count: @offered_listings.size },
+        { id: "bookings", label: "Booking confirmed", count: @ongoing_bookings.size },
+        # { id: "completed", label: "Completed", count: @completed_bookings.size },
+        # { id: "archived", label: "Archived", count: @archived_listings.size }
       ] %>
 
       <% tabs.each_with_index do |tab, index| %>
-        <button class="nav-link btn <%= 'active' if index == 0 %> custom-filter-btn"
+        <button class="nav-link btn <%= 'active' if (index == 0 && !is_calendar_active) || (tab[:id] == 'calendar-view' && is_calendar_active) %> custom-filter-btn"
                 id="<%= tab[:id] %>-tab" data-bs-toggle="tab" data-bs-target="#<%= tab[:id] %>"
                 type="button" role="tab">
           <%= tab[:label] %>
-          <% if tab[:count] && tab[:count] > 0 %>
+          <% if tab[:count] %>
             <span class="badge rounded-pill ms-1" style="font-size: 10px;"><%= tab[:count] %></span>
           <% end %>
         </button>
@@ -38,50 +40,76 @@
     <% # 3. TABS CONTENT SECTION %>
     <div class="tab-content" id="dashboardTabsContent">
 
-      <div class="tab-pane fade show active" id="active" role="tabpanel">
+      <div class="tab-pane fade <%= 'show active' unless is_calendar_active %>" id="available" role="tabpanel">
         <div class="row g-4">
           <% @available_listings.each do |listing| %>
-            <%= render 'shared/listing_card', listing: listing, badge_text: "New Job", action_path: listing_path(listing, from: 'available'), link_label: "View Details →" %>
+            <%= render 'shared/listing_card',
+                listing: listing,
+                badge_text: listing.title.include?("EMERGENCY") ? "Emergency" : "New Job",
+                badge_style: listing.title.include?("EMERGENCY") ? "background-color: #EF4444; color: #FFFFFF;" : "background-color: #F1F5F9; color: #475569;",
+                action_path: listing_path(listing, from: 'available'),
+                link_label: "View Listing →" %>
           <% end %>
         </div>
       </div>
 
-      <div class="tab-pane fade" id="pending" role="tabpanel">
+      <div class="tab-pane fade" id="offered" role="tabpanel">
         <div class="row g-4">
           <% @offered_listings.each do |listing| %>
-            <%= render 'shared/listing_card', listing: listing, badge_text: "Offer Sent", action_path: listing_path(listing, from: 'offered'), link_label: "Review Offer →" %>
+            <% offer = listing.offers.find_by(user: current_user) %>
+            <%= render 'shared/listing_card',
+                listing: listing,
+                badge_text: "Offer Sent",
+                action_path: listing_offer_path(listing, offer),
+                link_label: "View Offer →" %>
           <% end %>
         </div>
       </div>
 
-      <div class="tab-pane fade" id="booked" role="tabpanel">
+      <div class="tab-pane fade" id="bookings" role="tabpanel">
         <div class="row g-4">
           <% @ongoing_bookings.each do |listing| %>
-            <%= render 'shared/listing_card', listing: listing, badge_text: "Confirmed Booking", badge_style: "background-color: #2F6BFF; color: #FFFFFF;", action_path: listing_path(listing, from: 'bookings'), link_label: "View Booking →" %>
+            <% booking = listing.offers.find_by(user: current_user)&.booking %>
+            <%= render 'shared/listing_card',
+                listing: listing,
+                badge_text: "Booked",
+                badge_style: "background-color: #2F6BFF; color: #FFFFFF;",
+                action_path: booking_path(booking),
+                link_label: "View Booking →" %>
           <% end %>
         </div>
       </div>
 
-      <div class="tab-pane fade" id="completed" role="tabpanel">
+      <%# <div class="tab-pane fade" id="completed" role="tabpanel">
         <div class="row g-4">
           <% @completed_bookings.each do |listing| %>
-            <%= render 'shared/listing_card', listing: listing, badge_text: "Job Completed", badge_style: "background-color: #F1F5F9; color: #64748B;", action_path: listing_path(listing, from: 'completed'), link_label: "View Archive" %>
-          <% end %>
-        </div>
-      </div>
+            <%# <%= render 'shared/listing_card',
+                listing: listing,
+                badge_text: "Job Completed",
+                badge_style: "background-color: #F1F5F9; color: #64748B;",
+                action_path: listing_path(listing, from: 'completed'),
+                link_label: "View Archive" %>
+          <%# <% end %>
+        <%# </div>
+      </div> %>
 
-      <div class="tab-pane fade" id="declined" role="tabpanel">
+      <%# <div class="tab-pane fade" id="archived" role="tabpanel">
         <div class="row g-4">
           <% @archived_listings.each do |listing| %>
-            <%= render 'shared/listing_card', listing: listing, badge_text: "Declined", badge_style: "background-color: #64748B; color: #FFFFFF;", action_path: listing_path(listing, from: 'declined'), link_label: "View Case" %>
-          <% end %>
-        </div>
+            <%# <%= render 'shared/listing_card',
+                listing: listing,
+                badge_text: "Declined",
+                badge_style: "background-color: #64748B; color: #FFFFFF;",
+                action_path: listing_path(listing, from: 'declined'),
+                link_label: "View Case" %>
+          <%# <% end %>
+        <%# </div>
       </div>
-
     </div>
   </div>
 </div>
 
+<% # CUSTOM STYLING %>
 <style>
   .custom-filter-btn {
     border-radius: 9999px !important; font-family: 'Outfit', sans-serif; font-size: 13px; padding: 6px 16px !important;

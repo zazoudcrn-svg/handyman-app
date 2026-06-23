@@ -1,37 +1,56 @@
-<h1>Make an Offer for <%= @listing.title %></h1>
+<div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
+  <div class="container" style="max-width: 800px;">
 
-<%= form_with model: @offer, url: listing_offers_path(@listing), local: true do |f| %>
-  <% if @offer.errors.any? %>
-    <div class="alert alert-danger">
-      <ul>
-        <% @offer.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+    <div class="mb-4">
+      <%= link_to listing_path(@listing), class: "text-decoration-none d-inline-flex align-items-center gap-2 small fw-medium", style: "color: #64748B; transition: color 0.2s;" do %>
+        <i class="bi bi-arrow-left"></i> Back to listing
+      <% end %>
     </div>
-  <% end %>
 
-  <div class="mb-3">
-    <%= f.label :quote, "Your Quote (€)" %>
-    <%= f.number_field :quote, step: 0.01, class: "form-control" %>
+    <div class="card border-0 p-4 p-md-5" style="border-radius: 20px; border: 1px solid #E2E8F0 !important;">
+
+      <div class="mb-4 pb-4" style="border-bottom: 1px solid #E2E8F0;">
+        <span class="badge mb-2" style="background-color: #EFF6FF; color: #2F6BFF; font-size: 11px;">New Offer</span>
+        <h1 class="h3 fw-bold mb-1" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= @listing.title %></h1>
+        <p class="text-muted small mb-0"><%= @listing.city %> · <%= @listing.category&.name %></p>
+      </div>
+
+      <% if @offer.errors.any? %>
+        <div class="alert alert-danger rounded-3 mb-4">
+          <ul class="mb-0">
+            <% @offer.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= form_with model: @offer, url: listing_offers_path(@listing), local: true do |f| %>
+
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" style="color: #0B1B33; font-size: 14px;">Your Quote (€)</label>
+            <%= f.number_field :quote, step: 0.01, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; padding: 10px 14px; font-size: 14px;", placeholder: "e.g. 150.00" %>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" style="color: #0B1B33; font-size: 14px;">Estimated Duration (hours)</label>
+            <%= f.number_field :estimated_duration_hours, step: 0.5, min: 0.5, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; padding: 10px 14px; font-size: 14px;", placeholder: "e.g. 2.5" %>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold" style="color: #0B1B33; font-size: 14px;">Suggested Date & Time</label>
+          <%= f.datetime_field :suggested_date_and_time, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; padding: 10px 14px; font-size: 14px;" %>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold" style="color: #0B1B33; font-size: 14px;">Note <span class="text-muted fw-normal">(optional)</span></label>
+          <%= f.text_area :note, rows: 4, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; padding: 10px 14px; font-size: 14px; resize: none;", placeholder: "Describe your approach, experience with similar jobs, or anything the customer should know..." %>
+        </div>
+
+        <%= f.submit "Submit Offer", class: "btn w-100 py-2 fw-semibold text-white", style: "background-color: #2F6BFF; border-radius: 12px; border: none; font-size: 15px;" %>
+
+      <% end %>
+    </div>
   </div>
-
-  <div class="mb-3">
-    <%= f.label :suggested_date_and_time, "Suggested Date and Time" %>
-    <%= f.datetime_field :suggested_date_and_time, class: "form-control" %>
-  </div>
-
-  <div class="mb-3">
-    <%= f.label :estimated_duration_hours, "Estimated Duration (Hours)" %>
-    <%= f.number_field :estimated_duration_hours, step: 0.5, min: 0.5, class: "form-control", placeholder: "e.g. 2.5" %>
-  </div>
-
-  <div class="mb-3">
-    <%= f.label :note %>
-    <%= f.text_area :note, rows: 4, class: "form-control" %>
-  </div>
-
-  <%= f.submit "Submit Offer", class: "btn btn-success" %>
-<% end %>
-
-<%= link_to "Back to listing", listing_path(@listing) %>
+</div>

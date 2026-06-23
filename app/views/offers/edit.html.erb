@@ -1,0 +1,32 @@
+<div class="container my-4">
+  <div class="mb-4">
+    <%= link_to listing_offer_path(@listing, @offer), class: "text-decoration-none d-inline-flex align-items-center gap-2 small fw-medium", style: "color: #64748B; transition: color 0.2s;" do %>
+      <i class="bi bi-arrow-left"></i> Back to offer
+    <% end %>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card p-4">
+        <h5 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Edit Offer</h5>
+        <p class="text-muted small mb-4"><%= @listing.title %></p>
+
+        <%= simple_form_for [@listing, @offer] do |f| %>
+          <%= f.input :quote, label: "Quote (€)", input_html: { step: "0.01" } %>
+          <%# CHANGED: native HTML5 datetime-local picker instead of dropdown selects %>
+          <%= f.input :suggested_date_and_time,
+                      as: :string,
+                      label: "Suggested Date & Time",
+                      input_html: {
+                        type: "datetime-local",
+                        value: f.object.suggested_date_and_time&.strftime("%Y-%m-%dT%H:%M"),
+                        min: Time.current.strftime("%Y-%m-%dT%H:%M")
+                      } %>
+          <%= f.input :estimated_duration_hours, label: "Estimated Duration (hours)", input_html: { step: "0.5" } %>
+          <%= f.input :note, as: :text, label: "Note", input_html: { rows: 4 } %>
+          <%= f.submit "Save Changes", class: "btn btn-primary mt-2" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

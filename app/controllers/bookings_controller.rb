@@ -1,5 +1,5 @@
 class BookingsController < ApplicationController
-  before_action :set_booking, only: [ :show, :propose_date, :accept_date, :complete ]
+  before_action :set_booking, only: [ :show, :edit, :update, :destroy, :accept_date, :complete, :cancel_booking ]
   before_action :authenticate_user!
 
 # CUSTOMER or CONTRACTOR: See all bookings
@@ -30,7 +30,51 @@ end
     @offer = @booking.offer
     @messages = @offer.messages.order(:created_at)
     @message = Message.new
+    if params[:accepted] == "true"
+    if current_user.customer?
+      flash.now[:notice] = "The customer accepted the contractor proposed date."
+    elsif current_user.contractor?
+      flash.now[:notice] = "The contractor accepted the customer proposed date."
+    end
+    end
   end
+
+def edit
+  @booking = Booking.find(params[:id])
+  @booking.build_listing unless @booking.listing
+end
+
+def update
+  @booking = Booking.find(params[:id])
+
+  case params[:booking][:form_type]
+
+  when "propose_date"
+    # your propose date logic stays the same
+    @booking.new_proposed_date_and_time = params[:booking][:new_proposed_date_and_time]
+    @booking.booking_status = "date_change_requested"
+    @booking.proposed_by = current_user.role
+
+    if @booking.save
+      redirect_to edit_booking_path(@booking), notice: "New date proposed successfully."
+    else
+      redirect_to edit_booking_path(@booking), alert: "Something went wrong."
+    end
+
+  when "save_changes"
+    if @booking.update(booking_params)
+      render turbo_stream: turbo_stream.update(
+        "status_message",
+        "<div class='alert alert-success mt-3'>Booking updated successfully.</div>"
+      )
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+end
+
+
+
 
   def destroy
    @booking = Booking.find(params[:id])
@@ -39,15 +83,23 @@ end
   end
 
 
-  # CUSTOMER or CONTRACTOR: Propose a new date
-  def propose_date
-    @booking.update(
-    new_proposed_date_and_time: params[:booking][:new_proposed_date_and_time],
-    proposed_by: current_user.role,
-    booking_status: "date_change_requested"
-  )
-  redirect_to booking_path(@booking), notice: "New date proposed successfully"
+# CUSTOMER or CONTRACTOR: Propose a new date
+def propose_date
+  @booking = Booking.find(params[:id])
+
+  if params[:booking][:new_proposed_date_and_time].present?
+    @booking.new_proposed_date_and_time = params[:booking][:new_proposed_date_and_time]
+    @booking.booking_status = "date_change_requested"
+    @booking.proposed_by = current_user.role
   end
+
+  if @booking.save
+    redirect_to edit_booking_path(@booking), notice: "New date proposed successfully."
+  else
+    redirect_to edit_booking_path(@booking), alert: "Something went wrong."
+  end
+end
+
 
   # CUSTOMER or CONTRACTOR: Accept new date
   def accept_date
@@ -58,7 +110,7 @@ end
       proposed_by: nil,
       booking_status: "confirmed"
     )
-    redirect_to @booking, notice: "New date accepted."
+    redirect_to booking_path(@booking, accepted: true)
   end
 
   # CUSTOMER or CONTRACTOR: Mark booking as completed
@@ -80,11 +132,18 @@ def cancel_booking
     cancelled_by: current_user.role
   )
 
-  redirect_to booking_path(@booking), notice: "Booking cancelled successfully"
+  redirect_to bookings_path, notice: "Booking cancelled successfully"
 end
 
 
   private
+
+  def booking_params
+    params.require(:booking).permit(
+      :new_proposed_date_and_time,
+      listing_attributes: [ :id, :street, :city, :postcode, :country ]
+    )
+  end
 
   def set_booking
     @booking = Booking.find(params[:id])

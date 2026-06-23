@@ -2,6 +2,9 @@ class Booking < ApplicationRecord
   belongs_to :offer
   belongs_to :listing
 
+  # Allow editing listing fields through booking form
+  accepts_nested_attributes_for :listing
+
   has_one :contractor, through: :offer, source: :user
   has_one :customer, through: :listing, source: :user
 
