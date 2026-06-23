@@ -71,6 +71,9 @@
       <%= yield %>
     </main>
 
+    <% unless devise_controller? %>
+      <%= render "layouts/footer" %>
+    <% end %>
     <script>
       // Automatically fade out notifications after 4 seconds
       document.addEventListener('turbo:load', function() {

@@ -1,0 +1,32 @@
+<%# app/views/layouts/_footer.html.erb %>
+
+<footer style="border-top: 1px solid #F1F5F9; padding: 20px 0; background: white;">
+  <div class="container d-flex align-items-center justify-content-between flex-wrap" style="max-width: 1280px; gap: 8px;">
+
+    <div class="d-flex align-items-center gap-2">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M4 14C4 9 8 4 12 4C16 4 20 9 20 14C20 19 16 20 12 20C8 20 4 19 4 14Z" fill="#2F6BFF"/>
+        <path d="M8 12C10 10 14 10 16 12" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span style="font-size: 12px; font-weight: 500; color: #cbd5e1;">Handyman</span>
+      <span style="color: #e2e8f0; margin: 0 2px;">·</span>
+      <span style="font-size: 12px; color: #e2e8f0;">© <%= Time.current.year %> All rights reserved.</span>
+    </div>
+
+    <div class="d-flex align-items-center gap-4">
+      <a class="footer-link">Terms of Service</a>
+      <a class="footer-link">Privacy Policy</a>
+      <a class="footer-link">Impressum</a>
+    </div>
+
+  </div>
+</footer>
+
+<style>
+  .footer-link {
+    font-size: 12px;
+    color: #cbd5e1;
+    text-decoration: none;
+    cursor: default;
+  }
+</style>
