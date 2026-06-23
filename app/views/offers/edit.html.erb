@@ -13,7 +13,15 @@
 
         <%= simple_form_for [@listing, @offer] do |f| %>
           <%= f.input :quote, label: "Quote (€)", input_html: { step: "0.01" } %>
-          <%= f.input :suggested_date_and_time, as: :datetime, label: "Suggested Date & Time" %>
+          <%# CHANGED: native HTML5 datetime-local picker instead of dropdown selects %>
+          <%= f.input :suggested_date_and_time,
+                      as: :string,
+                      label: "Suggested Date & Time",
+                      input_html: {
+                        type: "datetime-local",
+                        value: f.object.suggested_date_and_time&.strftime("%Y-%m-%dT%H:%M"),
+                        min: Time.current.strftime("%Y-%m-%dT%H:%M")
+                      } %>
           <%= f.input :estimated_duration_hours, label: "Estimated Duration (hours)", input_html: { step: "0.5" } %>
           <%= f.input :note, as: :text, label: "Note", input_html: { rows: 4 } %>
           <%= f.submit "Save Changes", class: "btn btn-primary mt-2" %>
