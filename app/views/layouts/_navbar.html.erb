@@ -38,19 +38,20 @@
     <div class="d-flex align-items-center gap-3">
       <% if user_signed_in? %>
 
-        <%# User dropdown trigger %>
+        <%# User dropdown trigger — Pill shape %>
+        <% initial = current_user.first_name.presence&.first || current_user.email.first %>
         <div class="dropdown">
-          <div class="d-flex align-items-center gap-2 px-2 py-1 rounded-3"
-               style="border: 1px solid #E2E8F0; cursor: pointer; background: white;"
+          <div class="d-flex align-items-center gap-2 navbar-trigger"
+               style="border: 1px solid #E2E8F0; cursor: pointer; background: white;
+                      padding: 6px 12px 6px 6px; border-radius: 50px;"
                data-bs-toggle="dropdown" aria-expanded="false">
 
             <%# Avatar circle %>
-            <div style="width: 32px; height: 32px; border-radius: 50%; background: #2F6BFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; color: white; flex-shrink: 0;">
-              <% initial = current_user.first_name.presence&.first || current_user.email.first %>
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: #2F6BFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: white; flex-shrink: 0;">
               <%= initial.upcase %>
             </div>
 
-            <span style="font-size: 13px; color: #0B1B33; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <span style="font-size: 13px; font-weight: 500; color: #0B1B33; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
               <% if current_user.first_name.present? %>
                 <%= current_user.first_name %> <%= current_user.last_name %>
               <% else %>
@@ -58,7 +59,7 @@
               <% end %>
             </span>
 
-            <i class="ti ti-chevron-down" style="font-size: 14px; color: #94a3b8;" aria-hidden="true"></i>
+            <i class="ti ti-chevron-down" style="font-size: 13px; color: #94a3b8;" aria-hidden="true"></i>
           </div>
 
           <%# Dropdown menu %>
@@ -114,10 +115,10 @@
             <% end %>
 
             <%# Logout %>
-            <li style="padding: 8px 8px 8px;">
+            <li style="padding: 8px;">
               <div style="border-top: 1px solid #E2E8F0; margin-bottom: 8px;"></div>
-              <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item rounded-3 py-2 px-3 d-flex align-items-center gap-2", style: "font-size: 13.5px; color: #ef4444;" do %>
-                <i class="ti ti-logout" style="font-size: 16px;" aria-hidden="true"></i>
+              <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item rounded-3 py-2 px-3 d-flex align-items-center gap-2", style: "font-size: 13.5px; color: #64748b;" do %>
+                <i class="ti ti-logout" style="font-size: 16px; color: #94a3b8;" aria-hidden="true"></i>
                 Log Out
               <% end %>
             </li>
@@ -148,6 +149,13 @@
   }
   .inactive-link:hover {
     color: #0B1B33 !important;
+  }
+  .navbar-trigger {
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+  .navbar-trigger:hover {
+    border-color: #c7d2e8 !important;
+    box-shadow: 0 2px 8px rgba(11,27,51,0.08);
   }
   .dropdown-item:hover {
     background-color: #F8FAFF !important;
