@@ -14,7 +14,7 @@
 
     <div class="flex-grow-1">
       <h2 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">
-        <%= @contractor_profile&.business_name || @user.first_name %>
+        <%= (@contractor_profile&.business_name || @user.first_name)&.titleize %>
       </h2>
 
       <% if @user.bio.present? %>

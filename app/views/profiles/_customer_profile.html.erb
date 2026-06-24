@@ -14,9 +14,9 @@
 
     <div class="flex-grow-1">
       <% if @is_own_profile %>
-        <h2 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= @user.first_name %> <%= @user.last_name %></h2>
+        <h2 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= @user.first_name&.capitalize %> <%= @user.last_name&.capitalize %></h2>
       <% else %>
-        <h2 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= @user.first_name %> <%= @user.last_name&.first %>.</h2>
+        <h2 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= @user.first_name&.capitalize %> <%= @user.last_name&.first&.upcase %>.</h2>
       <% end %>
 
       <% if @user.bio.present? %>
