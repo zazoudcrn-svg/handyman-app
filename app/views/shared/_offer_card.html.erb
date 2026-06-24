@@ -115,7 +115,7 @@
           <div class="pt-3 mt-3 border-top d-flex justify-content-end" style="border-color: rgba(226, 232, 240, 0.6) !important;">
             <% if offer.booking.present? %>
               <%# CHANGED: label "View Booking →" → "View Offer", link target untouched; size + color match listing card pill button %>
-              <%= link_to "View Offer", booking_path(offer.booking), class: "btn fw-semibold text-white", style: "background-color: #2F6BFF; border-radius: 9999px; font-size: 13px; padding: 8px 24px;" %>
+              <%= link_to "View Booking →", booking_path(offer.booking), class: "btn fw-semibold text-white", style: "background-color: #2F6BFF; border-radius: 9999px; font-size: 13px; padding: 8px 24px;" %>
             <% else %>
               <p class="text-muted small mb-0">Booking not yet created.</p>
             <% end %>
