@@ -51,5 +51,8 @@ Rails.application.routes.draw do
     collection do
       patch :mark_all_read
     end
+    member do
+      patch :mark_read
+    end
   end
 end
