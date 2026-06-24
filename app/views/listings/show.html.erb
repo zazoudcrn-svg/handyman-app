@@ -133,8 +133,6 @@
                 <p class="mb-3 small"><i class="bi bi-geo-alt me-2" style="color: #2F6BFF;"></i><%= [@listing.postcode, @listing.city].compact.join(", ") %></p>
               <% end %>
 
-              <hr class="my-3">
-
               <%= link_to edit_listing_path(@listing), class: "btn btn-light border py-2 fw-semibold text-dark w-100", style: "border-radius: 12px;" do %>
                 <i class="bi bi-pencil-square me-1"></i> Edit Details
               <% end %>
@@ -153,12 +151,15 @@
 
               <% if @offers.any? %>
                 <% @offers.each do |offer| %>
-                  <div class="p-3 mb-3 rounded-3" style="border: 1px solid #E2E8F0; background-color: #F8FAFC;">
-                    <p class="fw-semibold mb-1" style="color: #0B1B33;">
+                  <div class="p-4 mb-3 rounded-3" style="border: 1px solid #E2E8F0; background-color: #F8FAFC;">
+                    <p class="fw-semibold mb-2" style="color: #0B1B33;">
                       <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user), style: "color: #2F6BFF; text-decoration: none;" %>
                     </p>
-                    <p class="mb-1 small"><strong>Quote:</strong> €<%= offer.quote %></p>
-                    <p class="mb-2 small"><strong>Date:</strong> <%= offer.suggested_date_and_time&.strftime("%b %d, %Y") || "Not specified" %></p>
+                    <p class="mb-2 small"><i class="bi bi-currency-euro me-2" style="color: #2F6BFF;"></i><%= offer.quote %></p>
+                    <% if offer.estimated_duration_hours.present? %>
+                      <p class="mb-2 small"><i class="bi bi-clock me-2" style="color: #2F6BFF;"></i><%= offer.estimated_duration_hours %> hrs estimated</p>
+                    <% end %>
+                    <p class="mb-3 small"><i class="bi bi-calendar3 me-2" style="color: #2F6BFF;"></i><%= offer.suggested_date_and_time&.strftime("%b %d, %Y at %H:%M") || "Not specified" %></p>
                     <%= link_to "View Offer →", listing_offer_path(@listing, offer), class: "btn btn-primary btn-sm w-100", style: "border-radius: 8px; background-color: #2F6BFF; border: none;" %>
                   </div>
                 <% end %>
