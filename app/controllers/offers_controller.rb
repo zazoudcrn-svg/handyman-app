@@ -6,8 +6,31 @@ class OffersController < ApplicationController
   def index
     if current_user.role == "customer"
       @offers = Offer.where(listing: current_user.listings)
+
+      # Listing filter
+      if params[:listing_id].present?
+        @offers = @offers.where(listing_id: params[:listing_id])
+      end
     else
       @offers = current_user.offers
+    end
+
+    # Status filter — default to pending
+    if params[:status] == "accepted"
+      @offers = @offers.where(offer_status: "accepted")
+    elsif params[:status] == "declined"
+      @offers = @offers.where(offer_status: "declined")
+    else
+      @offers = @offers.where(offer_status: [nil, "pending"])
+    end
+
+    # Sorting
+    if params[:sort_by] == "quote_asc"
+      @offers = @offers.order(quote: :asc)
+    elsif params[:sort_by] == "quote_desc"
+      @offers = @offers.order(quote: :desc)
+    else
+      @offers = @offers.order(created_at: :desc)
     end
   end
 
