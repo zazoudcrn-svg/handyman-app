@@ -1,5 +1,22 @@
 <% is_emergency = @listing.title.include?("EMERGENCY") %>
 
+<%
+  urgency_label = case @listing.urgency
+                  when "emergency" then "🔴 Emergency"
+                  when "this_week" then "🟡 This week"
+                  when "flexible" then "🟢 Flexible"
+                  else @listing.urgency&.humanize
+                  end
+
+  availability_label = case @listing.availability_profile
+                       when "after_hours_and_weekend" then "After hours & weekends"
+                       when "completely_flexible" then "Completely flexible"
+                       when "workdays_daytime" then "Workdays daytime only"
+                       when "other" then "Other"
+                       else @listing.availability_profile&.humanize
+                       end
+%>
+
 <div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
   <div class="container" style="max-width: 1100px;">
 
@@ -26,58 +43,58 @@
 
           <div class="position-relative" style="border-radius: 20px 20px 0 0; overflow: hidden;">
 
-          <%# Main photo %>
-          <div id="main-photo" style="height: 320px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center;">
-            <% if @listing.photos.attached? && @listing.photos.first.present? %>
-              <%= cl_image_tag @listing.photos.first.key, class: "w-100 h-100 object-cover", id: "main-photo-img" %>
-            <% else %>
-              <%
-                image_path = if is_emergency then "listings/burst_pipe.png"
-                            elsif @listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
-                            elsif @listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
-                            elsif @listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
-                            elsif @listing.title.downcase.include?("shower") then "listings/shower_seal.png"
-                            else nil end
-              %>
-              <% if image_path.present? %>
-                <%= image_tag image_path, class: "w-100 h-100 object-cover", id: "main-photo-img" %>
+            <%# Main photo %>
+            <div id="main-photo" style="height: 320px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center;">
+              <% if @listing.photos.attached? && @listing.photos.first.present? %>
+                <%= cl_image_tag @listing.photos.first.key, class: "w-100 h-100 object-cover", id: "main-photo-img" %>
               <% else %>
-                <div class="text-center" style="color: #64748B;">
-                  <i class="bi bi-camera" style="font-size: 3rem; display: block; margin-bottom: 0.5rem;"></i>
-                  <span class="fw-semibold" style="font-size: 1.1rem;">No photo attached</span>
-                </div>
+                <%
+                  image_path = if is_emergency then "listings/burst_pipe.png"
+                              elsif @listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
+                              elsif @listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
+                              elsif @listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
+                              elsif @listing.title.downcase.include?("shower") then "listings/shower_seal.png"
+                              else nil end
+                %>
+                <% if image_path.present? %>
+                  <%= image_tag image_path, class: "w-100 h-100 object-cover", id: "main-photo-img" %>
+                <% else %>
+                  <div class="text-center" style="color: #64748B;">
+                    <i class="bi bi-camera" style="font-size: 3rem; display: block; margin-bottom: 0.5rem;"></i>
+                    <span class="fw-semibold" style="font-size: 1.1rem;">No photo attached</span>
+                  </div>
+                <% end %>
               <% end %>
+            </div>
+
+            <%# Thumbnails — only shown if more than 1 photo %>
+            <% if @listing.photos.count > 1 %>
+              <div class="d-flex gap-2 p-2" style="background: #F8FAFC; border-top: 1px solid #E2E8F0;">
+                <% @listing.photos.each_with_index do |photo, index| %>
+                  <img src="<%= cl_image_path(photo.key) %>"
+                      onclick="document.getElementById('main-photo-img').src = this.src"
+                      style="width: 64px; height: 64px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid <%= index == 0 ? '#2F6BFF' : '#E2E8F0' %>;"
+                      onmouseover="this.style.borderColor='#2F6BFF'"
+                      onmouseout="this.style.borderColor='#E2E8F0'">
+                <% end %>
+              </div>
             <% end %>
+
+            <%# Emergency badge %>
+            <% if is_emergency %>
+              <div class="position-absolute top-3 start-3">
+                <span class="badge text-uppercase tracking-wider fw-bold text-white px-3 py-2 shadow-sm" style="background-color: #EF4444; font-size: 11px; border-radius: 6px;">
+                  <i class="bi bi-exclamation-triangle-fill me-1"></i> Emergency
+                </span>
+              </div>
+            <% end %>
+
           </div>
-
-          <%# Thumbnails — only shown if more than 1 photo %>
-          <% if @listing.photos.count > 1 %>
-            <div class="d-flex gap-2 p-2" style="background: #F8FAFC; border-top: 1px solid #E2E8F0;">
-              <% @listing.photos.each_with_index do |photo, index| %>
-                <img src="<%= cl_image_path(photo.key) %>"
-                    onclick="document.getElementById('main-photo-img').src = this.src"
-                    style="width: 64px; height: 64px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid <%= index == 0 ? '#2F6BFF' : '#E2E8F0' %>;"
-                    onmouseover="this.style.borderColor='#2F6BFF'"
-                    onmouseout="this.style.borderColor='#E2E8F0'">
-              <% end %>
-            </div>
-          <% end %>
-
-          <%# Emergency badge %>
-          <% if is_emergency %>
-            <div class="position-absolute top-3 start-3">
-              <span class="badge text-uppercase tracking-wider fw-bold text-white px-3 py-2 shadow-sm" style="background-color: #EF4444; font-size: 11px; border-radius: 6px;">
-                <i class="bi bi-exclamation-triangle-fill me-1"></i> Emergency
-              </span>
-            </div>
-          <% end %>
-
-        </div>
 
           <div class="p-4 p-md-5">
             <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
               <span class="badge border text-capitalize px-3 py-1.5" style="border-radius: 6px; background-color: #F1F5F9; color: #475569; font-size: 12px; font-weight: 600; border-color: #E2E8F0 !important;">
-                <%= @listing.category&.name || "General" %>
+                <%= @listing.category&.name&.titleize&.gsub("Ac", "AC") || "General" %>
               </span>
               <span class="text-muted small d-flex align-items-center gap-1">
                 <i class="bi bi-activity"></i> Status: <strong class="text-capitalize" style="color: #2F6BFF;"><%= @listing.listing_status %></strong>
@@ -96,47 +113,75 @@
         </div>
       </div>
 
-      <% # RIGHT COLUMN: ACTION PANEL %>
+      <% # RIGHT COLUMN %>
       <div class="col-lg-4">
-        <div class="card border-0 position-sticky" style="top: 24px; background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 20px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
-          <div class="p-4">
-          <% if current_user.customer? && @listing.user == current_user %>
-          <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Offers (<%= @offers.count %>)</h5>
 
-          <% if @offers.any? %>
-            <% @offers.each do |offer| %>
-              <div class="p-3 mb-3 rounded-3" style="border: 1px solid #E2E8F0; background-color: #F8FAFC;">
-                <p class="fw-semibold mb-1" style="color: #0B1B33;">
-                  <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user), style: "color: #2F6BFF; text-decoration: none;" %>
-                </p>
-                <p class="mb-1 small"><strong>Quote:</strong> €<%= offer.quote %></p>
-                <p class="mb-2 small"><strong>Date:</strong> <%= offer.suggested_date_and_time&.strftime("%b %d, %Y") || "Not specified" %></p>
-                <%= link_to "View Offer →", listing_offer_path(@listing, offer), class: "btn btn-primary btn-sm w-100", style: "border-radius: 8px; background-color: #2F6BFF; border: none;" %>
-              </div>
-            <% end %>
-          <% else %>
-            <p class="text-muted small mb-4">No offers received yet.</p>
-          <% end %>
+        <% if current_user.customer? && @listing.user == current_user %>
 
-          <hr class="my-3">
+          <%# CUSTOMER VIEW — Card 1: Job Details %>
+          <div class="card border-0 mb-4" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 20px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
+            <div class="p-4">
+              <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Job Details</h5>
 
-          <%= link_to edit_listing_path(@listing), class: "btn btn-light border py-2 fw-semibold text-dark w-100", style: "border-radius: 12px;" do %>
-            <i class="bi bi-pencil-square me-1"></i> Edit Details
-          <% end %>
-          <button type="button" class="btn w-100 py-2 fw-semibold mt-2"
-            data-bs-toggle="modal" data-bs-target="#deleteModal"
-          style="border-radius: 12px; background-color: #EEF3FF; color: #2F6BFF; border: 1px solid #c7d2e8;">
-            <i class="bi bi-trash me-1"></i> Delete Listing
-          </button>
-          <% else %>
-              <%# Customer info %>
+              <% if @listing.urgency.present? %>
+                <p class="mb-2 small"><i class="bi bi-hourglass-split me-2" style="color: #2F6BFF;"></i><%= urgency_label %></p>
+              <% end %>
+              <% if @listing.availability_profile.present? %>
+                <p class="mb-2 small"><i class="bi bi-calendar3 me-2" style="color: #2F6BFF;"></i><%= availability_label %></p>
+              <% end %>
+              <% if @listing.city.present? || @listing.postcode.present? %>
+                <p class="mb-3 small"><i class="bi bi-geo-alt me-2" style="color: #2F6BFF;"></i><%= [@listing.postcode, @listing.city].compact.join(", ") %></p>
+              <% end %>
+
+              <hr class="my-3">
+
+              <%= link_to edit_listing_path(@listing), class: "btn btn-light border py-2 fw-semibold text-dark w-100", style: "border-radius: 12px;" do %>
+                <i class="bi bi-pencil-square me-1"></i> Edit Details
+              <% end %>
+              <button type="button" class="btn w-100 py-2 fw-semibold mt-2"
+                data-bs-toggle="modal" data-bs-target="#deleteModal"
+                style="border-radius: 12px; background-color: #EEF3FF; color: #2F6BFF; border: 1px solid #c7d2e8;">
+                <i class="bi bi-trash me-1"></i> Delete Listing
+              </button>
+            </div>
+          </div>
+
+          <%# CUSTOMER VIEW — Card 2: Offers %>
+          <div class="card border-0 position-sticky" style="top: 24px; background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 20px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
+            <div class="p-4">
+              <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Offers (<%= @offers.count %>)</h5>
+
+              <% if @offers.any? %>
+                <% @offers.each do |offer| %>
+                  <div class="p-3 mb-3 rounded-3" style="border: 1px solid #E2E8F0; background-color: #F8FAFC;">
+                    <p class="fw-semibold mb-1" style="color: #0B1B33;">
+                      <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user), style: "color: #2F6BFF; text-decoration: none;" %>
+                    </p>
+                    <p class="mb-1 small"><strong>Quote:</strong> €<%= offer.quote %></p>
+                    <p class="mb-2 small"><strong>Date:</strong> <%= offer.suggested_date_and_time&.strftime("%b %d, %Y") || "Not specified" %></p>
+                    <%= link_to "View Offer →", listing_offer_path(@listing, offer), class: "btn btn-primary btn-sm w-100", style: "border-radius: 8px; background-color: #2F6BFF; border: none;" %>
+                  </div>
+                <% end %>
+              <% else %>
+                <p class="text-muted small">No offers received yet.</p>
+              <% end %>
+            </div>
+          </div>
+
+        <% else %>
+
+          <%# CONTRACTOR VIEW — single card %>
+          <div class="card border-0 position-sticky" style="top: 24px; background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 20px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
+            <div class="p-4">
+
+              <%# Posted by %>
               <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Posted by</h5>
               <div class="d-flex align-items-center gap-3 mb-4 pb-4" style="border-bottom: 1px solid #E2E8F0;">
                 <% if @listing.user.avatar.attached? %>
                   <%= image_tag @listing.user.avatar, class: "rounded-circle", style: "width: 48px; height: 48px; object-fit: cover;" %>
                 <% else %>
-                  <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
-                    <span class="text-white fw-bold"><%= @listing.user.first_name&.first&.upcase %></span>
+                  <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; background-color: #EFF6FF;">
+                    <span style="color: #2F6BFF; font-weight: 700;"><%= @listing.user.first_name&.first&.upcase %></span>
                   </div>
                 <% end %>
                 <div>
@@ -147,17 +192,17 @@
                 </div>
               </div>
 
-              <%# Listing details %>
+              <%# Job Details %>
               <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Job Details</h5>
-              <div class="mb-4 pb-4" style="border-bottom: 1px solid #E2E8F0;">
+              <div class="mb-4">
                 <% if @listing.urgency.present? %>
-                  <p class="mb-2 small"><strong>Urgency:</strong> <%= @listing.urgency.capitalize %></p>
-                <% end %>
-                <% if @listing.preferred_date_and_time.present? %>
-                  <p class="mb-2 small"><strong>Preferred Date:</strong> <%= @listing.preferred_date_and_time.strftime("%b %d, %Y at %H:%M") %></p>
+                  <p class="mb-2 small"><i class="bi bi-hourglass-split me-2" style="color: #2F6BFF;"></i><%= urgency_label %></p>
                 <% end %>
                 <% if @listing.availability_profile.present? %>
-                  <p class="mb-0 small"><strong>Availability:</strong> <%= @listing.availability_profile %></p>
+                  <p class="mb-2 small"><i class="bi bi-calendar3 me-2" style="color: #2F6BFF;"></i><%= availability_label %></p>
+                <% end %>
+                <% if @listing.city.present? || @listing.postcode.present? %>
+                  <p class="mb-0 small"><i class="bi bi-geo-alt me-2" style="color: #2F6BFF;"></i><%= [@listing.postcode, @listing.city].compact.join(", ") %></p>
                 <% end %>
               </div>
 
@@ -165,7 +210,7 @@
               <% user_offer = @listing.offers.find_by(user: current_user) %>
               <% if (@listing.listing_status.nil? || @listing.listing_status == 'open') && user_offer.nil? %>
                 <%= link_to new_listing_offer_path(@listing), class: "btn btn-primary w-100 py-2 fw-semibold", style: "background-color: #2F6BFF; border-radius: 12px; border: none;" do %>
-                  <i class="bi bi-stars me-1"></i> Submit Offer
+                  Submit Offer
                 <% end %>
               <% elsif user_offer.present? %>
                 <p class="text-muted small text-center mb-2">You already submitted an offer.</p>
@@ -173,15 +218,17 @@
               <% else %>
                 <p class="text-muted small text-center">This job is no longer accepting offers.</p>
               <% end %>
-            <% end %>
+
+            </div>
           </div>
-        </div>
+
+        <% end %>
       </div>
     </div>
   </div>
 </div>
 
-<% # DELETE MODAL (Customized to match your Handyman design) %>
+<%# DELETE MODAL %>
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="border-radius: 20px; border: none; padding: 1rem;">
