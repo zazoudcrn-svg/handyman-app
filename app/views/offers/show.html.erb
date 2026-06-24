@@ -1,93 +1,213 @@
-<div class="container my-4">
-  <div class="mb-4">
-    <%= link_to offers_path, class: "text-decoration-none d-inline-flex align-items-center gap-2 small fw-medium", style: "color: #64748B; transition: color 0.2s;" do %>
-      <i class="bi bi-arrow-left"></i> Back to all offers
-    <% end %>
-  </div>
-  <div class="row g-4">
-    <div class="col-md-8">
+<% is_emergency = @listing.title.include?("EMERGENCY") %>
+<%
+  # status color for the inline "Status: X" line, same pattern as the listing page's
+  # "Status: open" treatment — pending mirrors "open" (blue), accepted green, declined red
+  status_color = case @offer.offer_status
+                 when "accepted" then "#16A34A"
+                 when "declined" then "#DC2626"
+                 else "#2F6BFF"
+                 end
 
-      <h2>Offer details</h2>
-      <div class="card p-4">
-        <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= @listing.title %></h5>
-        <hr class="mt-0 mb-3">
-        <% if current_user.customer? %>
-          <p><strong>Contractor:</strong> <%= link_to @offer.user.contractor_profile&.business_name || @offer.user.first_name, profile_path(@offer.user) %></p>
-        <% elsif current_user.contractor? %>
-          <p><strong>Customer:</strong> <%= link_to "#{@listing.user.first_name} #{@listing.user.last_name&.first}.", profile_path(@listing.user) %></p>
-        <% end %>
+  # which party to show in the "Posted by"-style block, mirrored from the listing page
+  other_user        = current_user.customer? ? @offer.user : @listing.user
+  other_user_label  = current_user.customer? ? "Contractor" : "Customer"
+  other_user_name   = current_user.customer? ? (@offer.user.contractor_profile&.business_name || @offer.user.first_name) : "#{@listing.user.first_name} #{@listing.user.last_name&.first}."
+%>
 
-        <p><strong>Quote:</strong> €<%= @offer.quote %></p>
-        <% # NEW: Suggested Date & Time %>
-        <p>
-          <strong>Suggested Date & Time:</strong>
-          <%= @offer.suggested_date_and_time.present? ? @offer.suggested_date_and_time.strftime("%B %d, %Y at %H:%M") : "Not specified" %>
-        </p>
+<div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
+  <div class="container" style="max-width: 1100px;">
 
-        <% # NEW: Estimated Duration %>
-        <p>
-          <strong>Estimated Duration:</strong>
-          <%= @offer.estimated_duration_hours.present? ? "#{@offer.estimated_duration_hours} hours" : "Not specified" %>
-        </p>
-        <p><strong>Note:</strong> <%= @offer.note %></p>
-        <p><strong>Status:</strong> <%= @offer.offer_status %></p>
-
-        <% if current_user.role == "customer" && @offer.offer_status == "pending" %>
-          <div class="d-flex gap-2 mt-3">
-            <%= button_to "Accept", accept_listing_offer_path(@listing, @offer), method: :patch, class: "btn btn-success" %>
-            <%= button_to "Decline", decline_listing_offer_path(@listing, @offer), method: :patch, class: "btn btn-danger" %>
-          </div>
-        <% elsif current_user.contractor? && (@offer.offer_status.nil? || @offer.offer_status == "pending") %>
-          <div class="d-flex gap-2 mt-3">
-            <%= button_to edit_listing_offer_path(@listing, @offer), method: :get, class: "btn btn-secondary btn-sm", style: "border-radius: 8px;", title: "Edit offer" do %>
-              <i class="bi bi-pencil"></i>
-            <% end %>
-            <%= button_to listing_offer_path(@listing, @offer), method: :delete, class: "btn btn-danger btn-sm", style: "border-radius: 8px;", title: "Cancel offer", data: { turbo_confirm: "Are you sure you want to cancel this offer? This cannot be undone." } do %>
-              <i class="bi bi-trash"></i>
-            <% end %>
-          </div>
-        <% end %>
-      </div>
+    <div class="mb-4">
+      <%= link_to offers_path, class: "text-decoration-none d-inline-flex align-items-center gap-2 small fw-medium text-muted-hover", style: "color: #64748B; transition: color 0.2s;" do %>
+        <i class="bi bi-arrow-left"></i> Back to all offers
+      <% end %>
     </div>
 
-    <div class="col-md-4">
-      <h2>Chat</h2>
-      <div class="card p-4 d-flex flex-column" style="height: 500px;">
-        <div class="flex-grow-1 overflow-auto mb-3 px-1">
-          <% @messages.each do |message| %>
-            <% is_mine = message.user == current_user %>
-            <div class="d-flex flex-column <%= is_mine ? 'align-items-end' : 'align-items-start' %> mb-3">
-              <div class="px-3 py-2 rounded-3" style="max-width: 80%; background-color: <%= is_mine ? '#2F6BFF' : '#F1F5F9' %>; color: <%= is_mine ? '#FFFFFF' : '#0B1B33' %>;">
-                <p class="mb-0" style="font-size: 14px; line-height: 1.5;"><%= message.content %></p>
-              </div>
-              <small class="text-muted mt-1" style="font-size: 11px;">
-                <%= message.user.first_name %> · <%= message.created_at.strftime("%b %d, %H:%M") %>
-              </small>
+    <div class="row g-4">
+      <%# LEFT COLUMN: offer card with picture %>
+      <div class="col-lg-8">
+        <div class="card border-0 overflow-hidden" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 20px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
+
+          <div class="position-relative" style="border-radius: 20px 20px 0 0; overflow: hidden;">
+
+            <div id="main-photo" style="height: 320px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center;">
+              <% if @listing.photos.attached? && @listing.photos.first.present? %>
+                <%= cl_image_tag @listing.photos.first.key, class: "w-100 h-100 object-cover", id: "main-photo-img" %>
+              <% else %>
+                <%
+                  image_path = if is_emergency then "listings/burst_pipe.png"
+                              elsif @listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
+                              elsif @listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
+                              elsif @listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
+                              elsif @listing.title.downcase.include?("shower") then "listings/shower_seal.png"
+                              else nil end
+                %>
+                <% if image_path.present? %>
+                  <%= image_tag image_path, class: "w-100 h-100 object-cover", id: "main-photo-img" %>
+                <% else %>
+                  <div class="text-center" style="color: #64748B;">
+                    <i class="bi bi-camera" style="font-size: 3rem; display: block; margin-bottom: 0.5rem;"></i>
+                    <span class="fw-semibold" style="font-size: 1.1rem;">No photo attached</span>
+                  </div>
+                <% end %>
+              <% end %>
             </div>
-          <% end %>
-        </div>
 
-        <%= simple_form_for [@listing, @offer, @message], html: { data: { controller: "message-form" } } do |f| %>
-          <div class="d-flex align-items-center gap-2 p-2 rounded-3" style="border: 1px solid #E2E8F0; background-color: #F8FAFC;">
-            <%= f.input :content,
-                label: false,
-                placeholder: "Type a message...",
-                wrapper: false,
-                input_html: {
-                  class: "form-control border-0 bg-transparent",
-                  style: "box-shadow: none; font-size: 14px; resize: none;",
-                  rows: 1,
-                  data: { message_form_target: "input", action: "input->message-form#toggleSubmit keydown->message-form#handleKeydown" }
-                } %>
-            <%= f.submit "↑",
-                class: "btn btn-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0",
-                style: "width: 38px; height: 38px; padding: 0; font-size: 18px;",
-                disabled: true,
-                data: { message_form_target: "submit" } %>
+            <% if @listing.photos.count > 1 %>
+              <div class="d-flex gap-2 p-2" style="background: #F8FAFC; border-top: 1px solid #E2E8F0;">
+                <% @listing.photos.each_with_index do |photo, index| %>
+                  <img src="<%= cl_image_path(photo.key) %>"
+                      onclick="document.getElementById('main-photo-img').src = this.src"
+                      style="width: 64px; height: 64px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid <%= index == 0 ? '#2F6BFF' : '#E2E8F0' %>;"
+                      onmouseover="this.style.borderColor='#2F6BFF'"
+                      onmouseout="this.style.borderColor='#E2E8F0'">
+                <% end %>
+              </div>
+            <% end %>
+
+            <% if is_emergency %>
+              <div class="position-absolute top-3 start-3">
+                <span class="badge text-uppercase tracking-wider fw-bold text-white px-3 py-2 shadow-sm" style="background-color: #EF4444; font-size: 11px; border-radius: 6px;">
+                  <i class="bi bi-exclamation-triangle-fill me-1"></i> Emergency
+                </span>
+              </div>
+            <% end %>
+
           </div>
-        <% end %>
-      </div>
-    </div>
 
+          <div class="p-4 p-md-5">
+            <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+              <span class="badge border text-capitalize px-3 py-1.5" style="border-radius: 6px; background-color: #F1F5F9; color: #475569; font-size: 12px; font-weight: 600; border-color: #E2E8F0 !important;">
+                <%= @listing.category&.name || "General" %>
+              </span>
+              <span class="text-muted small d-flex align-items-center gap-1">
+                <i class="bi bi-activity"></i> Status: <strong class="text-capitalize" style="color: <%= status_color %>;"><%= @offer.offer_status || "pending" %></strong>
+              </span>
+            </div>
+
+            <h1 class="tracking-tight font-semibold mb-4" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 2.2rem; letter-spacing: -0.5px; line-height: 1.2;">
+              <%= @listing.title %>
+            </h1>
+            <hr style="border-color: #E2E8F0; opacity: 0.6;" class="my-4">
+
+            <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= other_user_label %></h5>
+            <div class="d-flex align-items-center gap-3 mb-4 pb-4" style="border-bottom: 1px solid #E2E8F0;">
+              <% if other_user.avatar.attached? %>
+                <%= image_tag other_user.avatar, class: "rounded-circle", style: "width: 48px; height: 48px; object-fit: cover;" %>
+              <% else %>
+                <%# CHANGED: avatar placeholder — was bg-secondary (grey), now uses the same blue as chat bubbles/accent color %>
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; background-color: #2F6BFF;">
+                  <span class="text-white fw-bold"><%= other_user_name.first&.upcase %></span>
+                </div>
+              <% end %>
+              <div>
+                <p class="fw-semibold mb-0" style="color: #0B1B33;">
+                  <%= link_to other_user_name, profile_path(other_user), style: "color: #2F6BFF; text-decoration: none;" %>
+                </p>
+                <p class="text-muted small mb-0"><%= other_user.city.presence || "Location not specified" %></p>
+              </div>
+            </div>
+
+            <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Offer Details</h5>
+            <div class="mb-4 pb-4" style="border-bottom: 1px solid #E2E8F0;">
+              <p class="mb-2 small"><strong>Quote:</strong> €<%= @offer.quote %></p>
+              <p class="mb-2 small"><strong>Suggested Date &amp; Time:</strong> <%= @offer.suggested_date_and_time.present? ? @offer.suggested_date_and_time.strftime("%B %d, %Y at %H:%M") : "Not specified" %></p>
+              <p class="mb-2 small"><strong>Estimated Duration:</strong> <%= @offer.estimated_duration_hours.present? ? "#{@offer.estimated_duration_hours} hours" : "Not specified" %></p>
+              <p class="mb-0 small"><strong>Note:</strong> <%= @offer.note.presence || "No additional notes." %></p>
+            </div>
+
+            <% if current_user.role == "customer" && @offer.offer_status == "pending" %>
+              <div class="d-flex gap-2">
+                <%# CHANGED: Accept — was green (#16A34A), now the same blue used for chat bubbles / links %>
+                <%= button_to accept_listing_offer_path(@listing, @offer), method: :patch, class: "btn flex-fill py-2 fw-semibold text-white d-inline-flex align-items-center justify-content-center gap-2", style: "background-color: #2F6BFF; border-radius: 12px; border: none;" do %>
+                  <i class="bi bi-check-lg"></i> Accept Offer
+                <% end %>
+                <%# CHANGED: Decline — was white bg / red text / red border, now light grey to match the Pending badge/secondary-action language %>
+                <%= button_to decline_listing_offer_path(@listing, @offer), method: :patch, class: "btn flex-fill py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-2", style: "background-color: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; border-radius: 12px;" do %>
+                  <i class="bi bi-x-lg"></i> Decline
+                <% end %>
+              </div>
+            <% elsif current_user.contractor? && (@offer.offer_status.nil? || @offer.offer_status == "pending") %>
+              <div class="d-flex gap-2">
+                <%= button_to edit_listing_offer_path(@listing, @offer), method: :get, class: "btn btn-light border flex-fill py-2 fw-semibold text-dark d-inline-flex align-items-center justify-content-center gap-2", style: "border-radius: 12px;" do %>
+                  <i class="bi bi-pencil-square"></i> Edit Offer
+                <% end %>
+                <%= button_to listing_offer_path(@listing, @offer), method: :delete, class: "btn flex-fill py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-2", style: "background-color: #EEF3FF; color: #2F6BFF; border: 1px solid #c7d2e8; border-radius: 12px;", data: { turbo_confirm: "Are you sure you want to cancel this offer? This cannot be undone." } do %>
+                  <i class="bi bi-trash"></i> Cancel Offer
+                <% end %>
+              </div>
+            <% elsif @offer.offer_status == "accepted" %>
+              <% if @offer.booking.present? %>
+                <%= link_to booking_path(@offer.booking), class: "btn w-100 py-2 fw-semibold text-white d-inline-flex align-items-center justify-content-center gap-2", style: "background-color: #2F6BFF; border-radius: 12px;" do %>
+                  <i class="bi bi-calendar-check"></i> View Booking
+                <% end %>
+              <% else %>
+                <p class="text-muted small text-center mb-0">Booking not yet created.</p>
+              <% end %>
+            <% elsif @offer.offer_status == "declined" %>
+              <p class="text-muted small text-center mb-0">This offer was declined.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <%# RIGHT COLUMN: Chat %>
+      <div class="col-lg-4">
+        <div class="card border-0 position-sticky d-flex flex-column p-0" style="top: 24px; height: 560px; background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 20px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02); overflow: hidden;">
+
+          <div class="px-4 py-3 border-bottom" style="border-color: #E2E8F0;">
+            <h5 class="fw-bold mb-0 d-flex align-items-center gap-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.05rem;">
+              <i class="bi bi-chat-dots"></i> Chat
+            </h5>
+          </div>
+
+          <div class="flex-grow-1 overflow-auto px-4 py-3">
+            <% if @messages.empty? %>
+              <p class="text-muted small text-center mt-4 mb-0">No messages yet — say hello.</p>
+            <% else %>
+              <% @messages.each do |message| %>
+                <% is_mine = message.user == current_user %>
+                <div class="d-flex flex-column <%= is_mine ? 'align-items-end' : 'align-items-start' %> mb-3">
+                  <div class="px-3 py-2 rounded-3" style="max-width: 80%; background-color: <%= is_mine ? '#2F6BFF' : '#F1F5F9' %>; color: <%= is_mine ? '#FFFFFF' : '#0B1B33' %>;">
+                    <p class="mb-0" style="font-size: 14px; line-height: 1.5;"><%= message.content %></p>
+                  </div>
+                  <small class="text-muted mt-1" style="font-size: 11px;">
+                    <%= message.user.first_name %> · <%= message.created_at.strftime("%b %d, %H:%M") %>
+                  </small>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+
+          <div class="px-3 py-3 border-top" style="border-color: #E2E8F0;">
+            <%= simple_form_for [@listing, @offer, @message], html: { data: { controller: "message-form" } } do |f| %>
+              <div class="d-flex align-items-center gap-2 p-2 rounded-3" style="border: 1px solid #E2E8F0; background-color: #F8FAFC;">
+                <%= f.input :content,
+                    label: false,
+                    placeholder: "Type a message...",
+                    wrapper: false,
+                    input_html: {
+                      class: "form-control border-0 bg-transparent",
+                      style: "box-shadow: none; font-size: 14px; resize: none;",
+                      rows: 1,
+                      data: { message_form_target: "input", action: "input->message-form#toggleSubmit keydown->message-form#handleKeydown" }
+                    } %>
+                <%= f.submit "↑",
+                    class: "btn btn-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0",
+                    style: "width: 38px; height: 38px; padding: 0; font-size: 18px; background-color: #2F6BFF; border: none;",
+                    disabled: true,
+                    data: { message_form_target: "submit" } %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
+
+<style>
+  .object-cover { object-fit: cover; }
+  .text-muted-hover:hover { color: #0B1B33 !important; }
+</style>
