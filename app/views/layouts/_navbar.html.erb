@@ -79,11 +79,12 @@
             resource.is_a?(Booking) ? booking_path(resource) : nil
           when 'new_review'
             resource.is_a?(Review) ? profile_path(current_user) : nil
+          when 'new_message'
+            resource.is_a?(Message) ? listing_offer_path(resource.offer.listing, resource.offer) : nil
           end
         else
           nil
         end %>
-
         <li>
           <a href="<%= nav_link_url || '#' %>"
    style="text-decoration: none; <%= 'pointer-events: none; cursor: default;' unless nav_link_url %>"
