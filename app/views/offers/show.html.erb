@@ -110,13 +110,13 @@
 
             <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Offer Details</h5>
             <div class="mb-4 pb-4" style="border-bottom: 1px solid #E2E8F0;">
-              <p class="mb-2 small"><strong>Quote:</strong> €<%= @offer.quote %></p>
+              <p class="mb-2 small"><strong>Quote:</strong> €<%= @offer.quote.round %></p>
               <p class="mb-2 small"><strong>Suggested Date &amp; Time:</strong> <%= @offer.suggested_date_and_time.present? ? @offer.suggested_date_and_time.strftime("%B %d, %Y at %H:%M") : "Not specified" %></p>
               <p class="mb-2 small"><strong>Estimated Duration:</strong> <%= @offer.estimated_duration_hours.present? ? "#{@offer.estimated_duration_hours} hours" : "Not specified" %></p>
               <p class="mb-0 small"><strong>Note:</strong> <%= @offer.note.presence || "No additional notes." %></p>
             </div>
 
-            <% if current_user.role == "customer" && @offer.offer_status == "pending" %>
+            <% if current_user.role == "customer" && (@offer.offer_status.nil? || @offer.offer_status == "pending") %>
               <div class="d-flex gap-2">
                 <%# CHANGED: Accept — was green (#16A34A), now the same blue used for chat bubbles / links %>
                 <%= button_to accept_listing_offer_path(@listing, @offer), method: :patch, class: "btn flex-fill py-2 fw-semibold text-white d-inline-flex align-items-center justify-content-center gap-2", style: "background-color: #2F6BFF; border-radius: 12px; border: none;" do %>
