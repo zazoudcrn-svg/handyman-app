@@ -21,24 +21,34 @@ def index
     @bookings = @bookings.where(booking_status: params[:status])
   end
    end
+   # calendar Filter bookings correctly
+   if current_user.contractor?
+      @calendar_bookings = Booking.joins(:offer).where(offers: { user_id: current_user.id }).where(booking_status: "confirmed")
+   else
+     @calendar_bookings = Booking.joins(:listing).where(listings: { user_id: current_user.id }).where(booking_status: "confirmed")
+   end
 end
 
+# CUSTOMER: View booking details
+def show
+  @booking = Booking.find(params[:id])
+  @listing = @booking.listing
+  @offer = @booking.offer
+  @messages = @offer.messages.order(:created_at)
+  @message = Message.new
 
-  # CUSTOMER: View booking details
-  def show
-    @booking = Booking.find(params[:id])
-    @listing = @booking.listing
-    @offer = @booking.offer
-    @messages = @offer.messages.order(:created_at)
-    @message = Message.new
-    if params[:accepted] == "true"
+  if params[:accepted] == "true"
     if current_user.customer?
-      flash.now[:notice] = "The customer accepted the contractor proposed date."
+      flash[:notice] = "The customer accepted the contractor proposed date."
     elsif current_user.contractor?
-      flash.now[:notice] = "The contractor accepted the customer proposed date."
+      flash[:notice] = "The contractor accepted the customer proposed date."
     end
-    end
+
+    # ⭐ Redirect to clean URL so message doesn't repeat on refresh
+    redirect_to booking_path(@booking) and return
   end
+end
+
 
 def edit
   @booking = Booking.find(params[:id])
@@ -74,9 +84,6 @@ def update
   end
 end
 
-
-
-
   def destroy
    @booking = Booking.find(params[:id])
    @booking.destroy
@@ -100,7 +107,6 @@ def propose_date
     redirect_to edit_booking_path(@booking), alert: "Something went wrong."
   end
 end
-
 
   # CUSTOMER or CONTRACTOR: Accept new date
   def accept_date

@@ -96,10 +96,12 @@
           <p><strong>New Proposed Date:</strong> <%= @booking.new_proposed_date_and_time %></p>
           <% if @booking.proposed_by != current_user.role %>
            <%= button_to "Accept New Date",
-           accept_date_booking_path(@booking),
-           method: :patch,
-           data: { turbo: false },
-           class: "btn btn-success mb-3" %>
+      accept_date_booking_path(@booking),
+      method: :patch,
+      data: { turbo: false },
+      class: "btn fw-semibold mb-3",
+      style: "background-color: #16A34A; color: #FFFFFF; border-radius: 8px; font-size: 12px; padding: 10px 12px;" %>
+
           <% end %>
           <% end %>
           <% end %>
