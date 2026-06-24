@@ -75,7 +75,7 @@
           case notification.notification_type
           when 'new_match', 'new_offer', 'offer_updated', 'offer_accepted', 'offer_declined'
             resource.is_a?(Offer) ? listing_offer_path(resource.listing, resource) : (resource.is_a?(Listing) ? listing_path(resource) : nil)
-          when 'booking_confirmed', 'booking_cancelled', 'date_changed'
+          when 'booking_confirmed', 'booking_cancelled', 'date_changed', 'booking_completed'
             resource.is_a?(Booking) ? booking_path(resource) : nil
           when 'new_review'
             resource.is_a?(Review) ? profile_path(current_user) : nil
@@ -87,8 +87,9 @@
         end %>
         <li>
           <a href="<%= nav_link_url || '#' %>"
-   style="text-decoration: none; <%= 'pointer-events: none; cursor: default;' unless nav_link_url %>"
-onclick="<%= "fetch('/notifications/#{notification.id}/mark_read', {method: 'PATCH', headers: {'X-CSRF-Token': document.querySelector('meta[name=csrf-token]').content}}).then(() => { const badge = document.getElementById('notification-badge'); if(badge) { const count = parseInt(badge.innerText || '0') - 1; if(count <= 0) { badge.style.display = 'none'; badge.innerText = ''; } else { badge.innerText = count > 9 ? '9+' : count; } } })" if nav_link_url && !notification.read? %>">            <div style="padding: 12px 20px; display: flex; align-items: flex-start; gap: 12px; background: <%= notification.read? ? 'white' : '#F0F5FF' %>; border-bottom: 1px solid #F1F5F9;"
+          style="text-decoration: none; <%= 'pointer-events: none; cursor: default;' unless nav_link_url %>"
+          data-turbo="false"
+          onclick="<%= "fetch('/notifications/#{notification.id}/mark_read', {method: 'PATCH', headers: {'X-CSRF-Token': document.querySelector('meta[name=csrf-token]').content}}).then(() => { const badge = document.getElementById('notification-badge'); if(badge) { const count = parseInt(badge.innerText || '0') - 1; if(count <= 0) { badge.style.display = 'none'; badge.innerText = ''; } else { badge.innerText = count > 9 ? '9+' : count; } } })" if nav_link_url && !notification.read? %>">            <div style="padding: 12px 20px; display: flex; align-items: flex-start; gap: 12px; background: <%= notification.read? ? 'white' : '#F0F5FF' %>; border-bottom: 1px solid #F1F5F9;"
                  onmouseover="this.style.background='<%= nav_link_url ? "#EEF3FF" : "white" %>'" onmouseout="this.style.background='<%= notification.read? ? "white" : "#F0F5FF" %>'">
               <div style="width: 36px; height: 36px; border-radius: 50%; background: <%= notification.read? ? '#E2E8F0' : '#2F6BFF' %>; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <i class="ti <%= case notification.notification_type
@@ -97,6 +98,7 @@ onclick="<%= "fetch('/notifications/#{notification.id}/mark_read', {method: 'PAT
                                   when 'offer_accepted' then 'ti-circle-check'
                                   when 'offer_declined' then 'ti-circle-x'
                                   when 'booking_confirmed', 'booking_cancelled' then 'ti-calendar'
+                                  when 'booking_completed' then 'ti-circle-check'
                                   when 'new_message' then 'ti-message'
                                   when 'new_review' then 'ti-star'
                                   else 'ti-bell'
@@ -113,6 +115,7 @@ onclick="<%= "fetch('/notifications/#{notification.id}/mark_read', {method: 'PAT
                         when 'offer_declined' then "Your offer was declined"
                         when 'booking_confirmed' then "Booking confirmed"
                         when 'booking_cancelled' then "Booking cancelled"
+                        when 'booking_completed' then "Booking completed"
                         when 'new_message' then "New message received"
                         when 'new_review' then "You received a new review"
                         when 'listing_deleted' then "A listing you applied to was removed"

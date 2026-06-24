@@ -13,8 +13,8 @@
           case notification.notification_type
           when 'new_match', 'new_offer', 'offer_updated', 'offer_accepted', 'offer_declined'
             resource.is_a?(Offer) ? listing_offer_path(resource.listing, resource) : (resource.is_a?(Listing) ? listing_path(resource) : nil)
-          when 'booking_confirmed', 'booking_cancelled', 'date_changed'
-            resource.is_a?(Booking) ? booking_path(resource) : nil
+          when 'booking_confirmed', 'booking_cancelled', 'date_changed', 'booking_completed'
+          resource.is_a?(Booking) ? booking_path(resource) : nil
           when 'new_review'
             resource.is_a?(Review) ? profile_path(current_user) : nil
           when 'new_message'
@@ -33,6 +33,7 @@
                                 when 'offer_accepted' then 'ti-circle-check'
                                 when 'offer_declined' then 'ti-circle-x'
                                 when 'booking_confirmed', 'booking_cancelled' then 'ti-calendar'
+                                when 'booking_completed' then 'ti-circle-check'
                                 when 'new_message' then 'ti-message'
                                 when 'new_review' then 'ti-star'
                                 when 'listing_deleted' then 'ti-trash'
@@ -51,6 +52,7 @@
                       when 'offer_declined' then "Your offer was declined"
                       when 'booking_confirmed' then "Booking confirmed"
                       when 'booking_cancelled' then "Booking cancelled"
+                      when 'booking_completed' then "Booking completed"
                       when 'new_message' then "New message received"
                       when 'new_review' then "You received a new review"
                       when 'listing_deleted' then "A listing you applied to was removed"

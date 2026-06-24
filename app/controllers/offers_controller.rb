@@ -93,6 +93,10 @@ class OffersController < ApplicationController
     booking_status: "confirmed"
   )
 
+  # Notify both parties
+  NotificationJob.perform_later("offer_accepted", @offer.user, @offer)
+  NotificationJob.perform_later("booking_confirmed", @listing.user, @booking)
+
   redirect_to booking_path(@booking), notice: "Offer accepted!"
   end
 

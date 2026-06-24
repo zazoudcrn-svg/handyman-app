@@ -155,4 +155,17 @@ class NotificationMailer < ApplicationMailer
     )
   end
 
+  # 14. Email to both parties when a booking is completed
+  def booking_completed(booking, recipient)
+    @booking = booking
+    @offer = booking.offer
+    @listing = @offer.listing
+    @recipient = recipient
+
+    mail(
+      to: recipient.email,
+      subject: "Booking completed: #{@listing.title}"
+    )
+  end
+
 end
