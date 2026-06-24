@@ -25,22 +25,13 @@
 <div class="col-12">
   <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
 
-    <% if offer.offer_status.nil? || offer.offer_status == "pending" %>
+    <% if (offer.offer_status.nil? || offer.offer_status == "pending") && current_user.contractor? %>
       <div class="position-absolute d-flex gap-2" style="top: 16px; right: 16px; z-index: 2;">
-        <% if current_user.customer? %>
-          <%= button_to accept_listing_offer_path(offer.listing, offer), method: :patch, class: "btn", style: accept_style, title: "Accept" do %>
-            <i class="bi bi-check-lg"></i>
-          <% end %>
-          <%= button_to decline_listing_offer_path(offer.listing, offer), method: :patch, class: "btn", style: decline_style, title: "Decline" do %>
-            <i class="bi bi-x-lg"></i>
-          <% end %>
-        <% elsif current_user.contractor? %>
-          <%= link_to edit_listing_offer_path(offer.listing, offer), class: "btn", style: edit_style, title: "Edit offer" do %>
-            <i class="bi bi-pencil"></i>
-          <% end %>
-          <%= button_to listing_offer_path(offer.listing, offer), method: :delete, class: "btn", style: cancel_style, title: "Cancel offer", data: { turbo_confirm: "Are you sure?" } do %>
-            <i class="bi bi-trash"></i>
-          <% end %>
+        <%= link_to edit_listing_offer_path(offer.listing, offer), class: "btn", style: edit_style, title: "Edit offer" do %>
+          <i class="bi bi-pencil"></i>
+        <% end %>
+        <%= button_to listing_offer_path(offer.listing, offer), method: :delete, class: "btn", style: cancel_style, title: "Cancel offer", data: { turbo_confirm: "Are you sure?" } do %>
+          <i class="bi bi-trash"></i>
         <% end %>
       </div>
     <% end %>
@@ -94,7 +85,7 @@
 
         <%# Contractor/quote/duration/date stays on the same row as the action button, at the bottom %>
         <div class="d-flex justify-content-between align-items-center">
-          <div class="text-muted small d-flex align-items-center flex-wrap gap-2">
+          <div class="text-muted small d-flex align-items-center flex-wrap gap-4">
             <span class="d-inline-flex align-items-center gap-1">
               <i class="bi bi-person-circle"></i>
               <% if current_user.customer? %>
