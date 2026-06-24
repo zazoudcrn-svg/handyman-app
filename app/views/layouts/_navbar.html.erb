@@ -78,7 +78,7 @@
           when 'booking_confirmed', 'booking_cancelled', 'date_changed', 'booking_completed'
             resource.is_a?(Booking) ? booking_path(resource) : nil
           when 'new_review'
-            resource.is_a?(Review) ? profile_path(current_user) : nil
+            resource.is_a?(Review) ? reviews_path : nil
           when 'new_message'
             resource.is_a?(Message) ? listing_offer_path(resource.offer.listing, resource.offer) : nil
           end
