@@ -79,6 +79,8 @@ class OffersController < ApplicationController
     @listing = Listing.find(params[:listing_id])
     @offer = Offer.find(params[:id])
     @offer.update(offer_status: "accepted")
+    # Decline all other offers for the same listing
+    @listing.offers.where.not(id: @offer.id).update_all(offer_status: "declined")
     redirect_to booking_path(@offer.booking), notice: "Offer accepted!"
   end
 

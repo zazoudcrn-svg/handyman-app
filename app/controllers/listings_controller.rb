@@ -53,15 +53,22 @@ class ListingsController < ApplicationController
 
   # 2. PATCH/PUT /listings/:id
   def update
-    @listing = current_user.listings.find(params[:id])
-    if @listing.update(listing_params)
-      redirect_to dashboard_path, notice: "Your job listing was successfully updated!"
-    else
-      render :edit, status: :unprocessable_entity
-    end
+  @listing = current_user.listings.find(params[:id])
+
+  if params[:listing][:photos].is_a?(Array)
+    params[:listing][:photos].reject!(&:blank?)
+    params[:listing].delete(:photos) if params[:listing][:photos].empty?
+  end
+
+  if @listing.update(listing_params)
+    redirect_to dashboard_path, notice: "Your job listing was successfully updated!"
+  else
+    render :edit, status: :unprocessable_entity
+  end
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: "You are not authorized to update this listing."
   end
+
 
   # 3. DELETE /listings/:id
   def destroy
