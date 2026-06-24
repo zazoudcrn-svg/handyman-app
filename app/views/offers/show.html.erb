@@ -110,7 +110,7 @@
 
             <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Offer Details</h5>
             <div class="mb-4 pb-4" style="border-bottom: 1px solid #E2E8F0;">
-              <p class="mb-2 small"><strong>Quote:</strong> €<%= @offer.quote %></p>
+              <p class="mb-2 small"><strong>Quote:</strong> €<%= @offer.quote.round %></p>
               <p class="mb-2 small"><strong>Suggested Date &amp; Time:</strong> <%= @offer.suggested_date_and_time.present? ? @offer.suggested_date_and_time.strftime("%B %d, %Y at %H:%M") : "Not specified" %></p>
               <p class="mb-2 small"><strong>Estimated Duration:</strong> <%= @offer.estimated_duration_hours.present? ? "#{@offer.estimated_duration_hours} hours" : "Not specified" %></p>
               <p class="mb-0 small"><strong>Note:</strong> <%= @offer.note.presence || "No additional notes." %></p>
