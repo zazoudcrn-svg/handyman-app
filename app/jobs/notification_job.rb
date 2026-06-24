@@ -4,7 +4,14 @@ class NotificationJob < ApplicationJob
   def perform(notification_type, recipient, resource = nil)
     # 1. Send email
     begin
-      NotificationMailer.send(notification_type, resource).deliver_now
+      case notification_type
+      when "new_match"
+        NotificationMailer.new_match(recipient, resource).deliver_now
+      when "welcome"
+        NotificationMailer.welcome(recipient).deliver_now
+      else
+        NotificationMailer.send(notification_type, resource).deliver_now
+      end
     rescue => e
       Rails.logger.error "Mailer error: #{e.message}"
     end
