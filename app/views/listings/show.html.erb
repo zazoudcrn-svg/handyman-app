@@ -2,9 +2,9 @@
 
 <%
   urgency_label = case @listing.urgency
-                  when "emergency" then "🔴 Emergency"
-                  when "this_week" then "🟡 This week"
-                  when "flexible" then "🟢 Flexible"
+                  when "emergency" then "Emergency"
+                  when "this_week" then "This week"
+                  when "flexible" then "Flexible"
                   else @listing.urgency&.humanize
                   end
 
