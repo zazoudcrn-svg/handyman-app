@@ -12,6 +12,11 @@ class OffersController < ApplicationController
       end
     else
       @offers = current_user.offers
+
+      # Category filter — contractor only
+      if params[:category_ids].present?
+        @offers = @offers.where(listing_id: Listing.where(category_id: params[:category_ids]).pluck(:id))
+      end
     end
 
     # Status filter — default to pending
