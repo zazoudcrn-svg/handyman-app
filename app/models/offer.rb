@@ -6,7 +6,7 @@ class Offer < ApplicationRecord
 
   # --- Callbacks ---
   after_create :notify_new_offer
-  after_update :notify_offer_updated
+  after_update :notify_offer_updated, if: :relevant_changes?
 
   private
 
@@ -18,5 +18,9 @@ class Offer < ApplicationRecord
   def notify_offer_updated
     customer = listing.user
     NotificationJob.perform_later("offer_updated", customer, self)
+  end
+
+  def relevant_changes?
+    saved_change_to_quote? || saved_change_to_suggested_date_and_time? || saved_change_to_note?
   end
 end

@@ -144,4 +144,15 @@ class NotificationMailer < ApplicationMailer
     )
   end
 
+  # 13.Email to contractor when a listing they offered on is deleted
+  def listing_deleted(offer)
+    @offer = offer
+    @contractor = offer.user
+
+    mail(
+      to: @contractor.email,
+      subject: "A job listing you applied to has been removed"
+    )
+  end
+
 end

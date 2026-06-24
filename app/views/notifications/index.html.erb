@@ -33,6 +33,7 @@
                                 when 'booking_confirmed', 'booking_cancelled' then 'ti-calendar'
                                 when 'new_message' then 'ti-message'
                                 when 'new_review' then 'ti-star'
+                                when 'listing_deleted' then 'ti-trash'
                                 else 'ti-bell'
                                 end %>"
                  style="font-size: 18px; color: <%= link_url ? '#2F6BFF' : '#94a3b8' %>;" aria-hidden="true"></i>
@@ -50,6 +51,7 @@
                       when 'booking_cancelled' then "Booking cancelled"
                       when 'new_message' then "New message received"
                       when 'new_review' then "You received a new review"
+                      when 'listing_deleted' then "A listing you applied to was removed"
                       else "New notification"
                       end %>
               </p>
