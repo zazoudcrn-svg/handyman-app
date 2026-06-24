@@ -13,7 +13,6 @@ Rails.application.routes.draw do
 
   resources :offers, only: [:index]
 
-
   resources :listings, only: [:new, :create, :show, :edit, :update, :destroy] do
     member do
       post :reopen
@@ -47,4 +46,10 @@ Rails.application.routes.draw do
   get 'onboarding/contractor', to: 'onboardings#contractor', as: :onboarding_contractor
   patch 'onboarding/contractor', to: 'onboardings#contractor_update'
   patch '/skip_onboarding', to: 'onboardings#skip', as: :skip_onboarding
+
+  resources :notifications, only: [:index] do
+    collection do
+      patch :mark_all_read
+    end
+  end
 end
