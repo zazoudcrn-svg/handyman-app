@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <body style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; margin: 0; padding: 0;">
+    <div style="max-width: 600px; margin: 40px auto; background: white; border-radius: 16px; overflow: hidden; border: 1px solid #E2E8F0;">
+
+      <%# Header %>
+      <div style="background: #2F6BFF; padding: 32px; text-align: center;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style="margin-bottom: 12px;">
+          <path d="M4 14C4 9 8 4 12 4C16 4 20 9 20 14C20 19 16 20 12 20C8 20 4 19 4 14Z" fill="white"/>
+          <path d="M8 12C10 10 14 10 16 12" stroke="#2F6BFF" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h1 style="color: white; margin: 0; font-size: 22px;">Welcome to Handyman! 🎉</h1>
+      </div>
+
+      <%# Body %>
+      <div style="padding: 32px;">
+        <p style="color: #0B1B33; font-size: 16px;">Hi <strong><%= @user.first_name.presence || @user.email %></strong>,</p>
+        <p style="color: #64748B;">We're thrilled to have you on board! Here's what you can do on Handyman:</p>
+
+        <% if @user.customer? %>
+          <div style="background: #F8FAFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 20px; margin: 24px 0;">
+            <p style="margin: 0 0 12px; font-weight: 700; color: #0B1B33;">As a Customer you can:</p>
+            <p style="margin: 0 0 8px; color: #64748B; font-size: 14px;">✅ Post job listings for any home repair or maintenance task</p>
+            <p style="margin: 0 0 8px; color: #64748B; font-size: 14px;">✅ Receive offers from trusted local craftsmen</p>
+            <p style="margin: 0 0 8px; color: #64748B; font-size: 14px;">✅ Book and manage your appointments easily</p>
+            <p style="margin: 0; color: #64748B; font-size: 14px;">✅ Leave reviews for completed jobs</p>
+          </div>
+
+          <a href="<%= new_listing_url %>"
+             style="display: inline-block; background: #2F6BFF; color: white; padding: 12px 28px; border-radius: 9999px; text-decoration: none; font-weight: 600; font-size: 14px;">
+            Post Your First Job →
+          </a>
+
+        <% else %>
+          <div style="background: #F8FAFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 20px; margin: 24px 0;">
+            <p style="margin: 0 0 12px; font-weight: 700; color: #0B1B33;">As a Craftsman you can:</p>
+            <p style="margin: 0 0 8px; color: #64748B; font-size: 14px;">✅ Browse jobs that match your skills and location</p>
+            <p style="margin: 0 0 8px; color: #64748B; font-size: 14px;">✅ Send offers with your quote and availability</p>
+            <p style="margin: 0 0 8px; color: #64748B; font-size: 14px;">✅ Manage your bookings and calendar</p>
+            <p style="margin: 0; color: #64748B; font-size: 14px;">✅ Build your reputation with reviews</p>
+          </div>
+
+          <a href="<%= dashboard_url %>"
+             style="display: inline-block; background: #2F6BFF; color: white; padding: 12px 28px; border-radius: 9999px; text-decoration: none; font-weight: 600; font-size: 14px;">
+            Browse Available Jobs →
+          </a>
+        <% end %>
+      </div>
+
+      <%# Footer %>
+      <div style="padding: 20px 32px; border-top: 1px solid #E2E8F0; text-align: center;">
+        <p style="color: #94a3b8; font-size: 12px; margin: 0;">© <%= Time.current.year %> Handyman. All rights reserved.</p>
+      </div>
+
+    </div>
+  </body>
+</html>

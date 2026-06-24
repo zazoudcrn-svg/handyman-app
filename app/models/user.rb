@@ -16,13 +16,18 @@ class User < ApplicationRecord
   has_many :reviews_received, class_name: "Review", foreign_key: "reviewee_id"
   has_many :declined_listings, dependent: :destroy
   has_one_attached :avatar
+  has_many :notifications, dependent: :destroy
 
   # --- Geocoding Setup ---
   geocoded_by :full_address
   after_validation :geocode, if: ->(obj){ obj.street_changed? || obj.postcode_changed? || obj.city_changed? }
 
+
+  # --- Callbacks ---
   # Automatically trigger profile creation right after a new user is saved
   after_create :create_contractor_profile_if_needed
+  after_create :send_welcome_notification
+
 
   def full_address
     [street, postcode, city, country].compact.join(', ')
@@ -36,7 +41,12 @@ class User < ApplicationRecord
     role == "contractor"
   end
 
+
   private
+
+  def send_welcome_notification
+    NotificationJob.perform_later("welcome", self, self)
+  end
 
   # Check the database 'role' column and build a contractor profile if matched
   def create_contractor_profile_if_needed

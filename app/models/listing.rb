@@ -5,9 +5,9 @@ class Listing < ApplicationRecord
   # --- Associations ---
   belongs_to :user
   belongs_to :category
-  has_many :offers
+  has_many :offers, dependent: :destroy
   has_one :booking
-  has_many_attached :photos # Left out of validation to remain optional
+  has_many_attached :photos
   validate :max_five_photos
   has_many :declined_listings, dependent: :destroy
 
@@ -15,17 +15,15 @@ class Listing < ApplicationRecord
   geocoded_by :full_address
   after_validation :geocode, if: ->(obj) { obj.street_changed? || obj.postcode_changed? || obj.city_changed? }
 
+  # --- Callbacks ---
+  after_create :notify_matching_contractors
+  before_destroy :cleanup_notifications
+
   # --- Validations ---
-  # Core data integrity validations
   validates :title, presence: true, length: { minimum: 5, maximum: 100 }
   validates :description, presence: true, length: { minimum: 10 }
-
-  # Structural selection updates
   validates :urgency, presence: true
   validates :availability_profile, presence: true
-
-
-  # Address attributes required for successful geocoding execution
   validates :street, presence: true
   validates :postcode, presence: true
   validates :city, presence: true
@@ -52,9 +50,44 @@ end
 
   private
 
+  def cleanup_notifications
+    # Notify contractors whose offers are affected
+    offers.each do |offer|
+      NotificationJob.perform_later("listing_deleted", offer.user, offer)
+    end
+
+    # Clean up listing notifications
+    Notification.where(resource_type: "Listing", resource_id: id).destroy_all
+
+    # Clean up offer notifications
+    offer_ids = offers.pluck(:id)
+    Notification.where(resource_type: "Offer", resource_id: offer_ids).destroy_all
+  end
+
+  def notify_matching_contractors
+    return unless latitude.present? && longitude.present?
+
+    matching_contractors = User.joins(:specialties)
+                               .where(specialties: { category_id: category_id })
+                               .where.not(id: user_id)
+                               .select { |u| u.latitude.present? && u.longitude.present? }
+                               .select { |u|
+                                 radius = u.contractor_profile&.travel_radius || 50
+                                 Geocoder::Calculations.distance_between(
+                                   [latitude, longitude],
+                                   [u.latitude, u.longitude],
+                                   units: :km
+                                 ) <= radius
+                               }
+
+    matching_contractors.each do |contractor|
+      NotificationJob.perform_later("new_match", contractor, self)
+    end
+  end
+
   def max_five_photos
     if photos.count > 5
-      errors.add(:photos, "You can only upload a maximum of 3 photos")
+      errors.add(:photos, "You can only upload a maximum of 5 photos")
     end
   end
 end

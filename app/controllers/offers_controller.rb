@@ -93,14 +93,22 @@ class OffersController < ApplicationController
     booking_status: "confirmed"
   )
 
+  # Notify both parties
+  NotificationJob.perform_later("offer_accepted", @offer.user, @offer)
+  NotificationJob.perform_later("booking_confirmed", @listing.user, @booking)
+
   redirect_to booking_path(@booking), notice: "Offer accepted!"
   end
 
   def decline
-    @listing = Listing.find(params[:listing_id])
-    @offer = Offer.find(params[:id])
-    @offer.update(offer_status: "declined")
-    redirect_to listing_offers_path(@listing), notice: "The offer has been declined" # CHANGED
+  @listing = Listing.find(params[:listing_id])
+  @offer = Offer.find(params[:id])
+  @offer.update(offer_status: "declined")
+
+  # Notify contractor that their offer was declined
+  NotificationJob.perform_later("offer_declined", @offer.user, @offer)
+
+  redirect_to listing_offers_path(@listing), notice: "The offer has been declined"
   end
 
   def destroy

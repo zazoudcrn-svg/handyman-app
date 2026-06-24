@@ -1,6 +1,7 @@
 class ReviewsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_booking, only: [:new, :create]
+
   def index
     @received_reviews = Review.where(reviewee_id: current_user.id)
     @sent_reviews = Review.where(user_id: current_user.id)
@@ -11,7 +12,7 @@ class ReviewsController < ApplicationController
   end
 
   def create
-    unless @booking.listing.user == current_user
+    unless @booking.listing.user == current_user || @booking.offer.user == current_user
       redirect_to new_review_path, alert: "Not authorized."
       return
     end
@@ -29,9 +30,11 @@ class ReviewsController < ApplicationController
     @review = Review.new(review_params)
     @review.booking = @booking
     @review.user = current_user
-    @review.reviewee = @booking.offer.user
+    @review.reviewee = current_user == @booking.listing.user ? @booking.offer.user : @booking.listing.user
 
     if @review.save
+      # Notify reviewee
+      NotificationJob.perform_later("new_review", @review.reviewee, @review)
       redirect_to booking_path(@booking), notice: "Review submitted!"
     else
       render :new, status: :unprocessable_entity
