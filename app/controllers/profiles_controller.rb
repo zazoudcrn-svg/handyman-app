@@ -5,18 +5,18 @@ class ProfilesController < ApplicationController
   before_action :authorize_own_profile!, only: [:edit, :update]
 
   def show
+    @back_path = (request.referer.present? && !request.referer.include?('/profiles/')) ? request.referer : dashboard_path
     @is_own_profile = current_user == @user
     @reviews = @user.reviews_received.includes(:user).order(created_at: :desc)
     @avg_rating = @reviews.average(:rating)&.round(1)
 
     if @user.contractor?
       @jobs_completed = @user.offers.joins(:booking)
-                             .where(bookings: { booking_status: "completed" }).count
+                            .where(bookings: { booking_status: "completed" }).count
     else
       @jobs_posted = @user.listings.count
     end
   end
-
   def edit
   end
 
