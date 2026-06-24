@@ -16,7 +16,6 @@
       <h2 class="mb-1 fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">
         <%= @contractor_profile&.business_name || @user.first_name %>
       </h2>
-      <p class="mb-3" style="font-size: 14px; color: #475569;"><%= @user.bio %></p>
 
       <% if @user.bio.present? %>
         <p class="mb-3" style="font-size: 14px; color: #475569;"><%= @user.bio %></p>
@@ -26,7 +25,7 @@
         <div class="d-flex flex-wrap gap-2">
           <% @user.categories.each do |category| %>
             <span class="badge rounded-pill" style="background-color: #EFF6FF; color: #2F6BFF; font-size: 11px; font-weight: 600; padding: 5px 10px;">
-              <%= category.name %>
+              <%= category.name.titleize.gsub("Ac", "AC") %>
             </span>
           <% end %>
         </div>
