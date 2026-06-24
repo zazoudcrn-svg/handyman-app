@@ -1,2 +1,91 @@
-<h1>Notifications#index</h1>
-<p>Find me in app/views/notifications/index.html.erb</p>
+<div class="container mt-4 mb-5" style="max-width: 700px;">
+
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h1 style="font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 700; color: #0B1B33; margin: 0;">Notifications</h1>
+  </div>
+
+  <% if @notifications.any? %>
+    <div style="background: white; border-radius: 20px; border: 1px solid #E2E8F0; overflow: hidden;">
+      <% @notifications.each do |notification| %>
+        <% resource = notification.resource %>
+        <% link_url = case notification.notification_type
+                        when 'new_match', 'new_offer', 'offer_updated', 'offer_accepted', 'offer_declined'
+                          resource.is_a?(Offer) ? listing_offer_path(resource.listing, resource) : (resource.is_a?(Listing) ? listing_path(resource) : notifications_path)
+                        when 'booking_confirmed', 'booking_cancelled', 'date_changed'
+                          resource.is_a?(Booking) ? booking_path(resource) : notifications_path
+                        when 'new_review'
+                          resource.is_a?(Review) ? profile_path(current_user) : notifications_path
+                        else
+                          notifications_path
+                        end %>
+
+        <%= link_to link_url, style: "text-decoration: none;" do %>
+          <div style="padding: 16px 20px; display: flex; align-items: flex-start; gap: 12px; border-bottom: 1px solid #F1F5F9; transition: background 0.15s;" onmouseover="this.style.background='#F8FAFF'" onmouseout="this.style.background='white'">
+
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: #EEF3FF; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <i class="ti <%= case notification.notification_type
+                                when 'new_match' then 'ti-map-pin'
+                                when 'new_offer', 'offer_updated' then 'ti-briefcase'
+                                when 'offer_accepted' then 'ti-circle-check'
+                                when 'offer_declined' then 'ti-circle-x'
+                                when 'booking_confirmed', 'booking_cancelled' then 'ti-calendar'
+                                when 'new_message' then 'ti-message'
+                                when 'new_review' then 'ti-star'
+                                else 'ti-bell'
+                                end %>"
+                 style="font-size: 18px; color: #2F6BFF;" aria-hidden="true"></i>
+            </div>
+
+            <div style="flex: 1;">
+              <p style="margin: 0 0 2px; font-size: 14px; color: #0B1B33; font-weight: 500;">
+                <%= case notification.notification_type
+                      when 'new_match' then "New job match available"
+                      when 'new_offer' then "New offer received"
+                      when 'offer_updated' then "An offer was updated"
+                      when 'offer_accepted' then "Your offer was accepted"
+                      when 'offer_declined' then "Your offer was declined"
+                      when 'booking_confirmed' then "Booking confirmed"
+                      when 'booking_cancelled' then "Booking cancelled"
+                      when 'new_message' then "New message received"
+                      when 'new_review' then "You received a new review"
+                      else "New notification"
+                      end %>
+              </p>
+
+              <%# Show resource details %>
+              <% if resource.present? %>
+                <p style="margin: 0 0 2px; font-size: 13px; color: #2F6BFF;">
+                  <%= if resource.is_a?(Listing)
+                        resource.title
+                      elsif resource.is_a?(Offer)
+                        resource.listing&.title
+                      elsif resource.is_a?(Booking)
+                        resource.offer&.listing&.title
+                      elsif resource.is_a?(Review)
+                        "#{resource.user&.first_name} left you a #{resource.rating}★ review"
+                      end %>
+                </p>
+                <% if resource.is_a?(Listing) %>
+                  <p style="margin: 0 0 2px; font-size: 12px; color: #64748b;">
+                    📍 <%= resource.city %> · Posted by <%= resource.user&.first_name %>
+                  </p>
+                <% end %>
+              <% end %>
+
+              <p style="margin: 0; font-size: 12px; color: #94a3b8;"><%= time_ago_in_words(notification.created_at) %> ago</p>
+            </div>
+
+            <i class="ti ti-chevron-right" style="font-size: 16px; color: #cbd5e1; margin-top: 2px;" aria-hidden="true"></i>
+
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 20px; border: 1px solid #E2E8F0;">
+      <i class="ti ti-bell-off" style="font-size: 48px; color: #E2E8F0; display: block; margin-bottom: 16px;" aria-hidden="true"></i>
+      <p style="color: #94a3b8; font-size: 15px; margin: 0;">No notifications yet</p>
+    </div>
+  <% end %>
+
+</div>
