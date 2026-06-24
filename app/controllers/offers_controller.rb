@@ -75,12 +75,20 @@ class OffersController < ApplicationController
   end
 
   def accept
-    @listing = Listing.find(params[:listing_id])
-    @offer = Offer.find(params[:id])
-    @offer.update(offer_status: "accepted")
-    # Decline all other offers for the same listing
-    @listing.offers.where.not(id: @offer.id).update_all(offer_status: "declined")
-    redirect_to booking_path(@offer.booking), notice: "Offer accepted!"
+  @listing = Listing.find(params[:listing_id])
+  @offer = Offer.find(params[:id])
+  @offer.update(offer_status: "accepted")
+  # Decline all other offers for the same listing
+  @listing.offers.where.not(id: @offer.id).update_all(offer_status: "declined")
+
+  @booking = Booking.create!(
+    listing: @listing,
+    offer: @offer,
+    scheduled_date_and_time: @offer.suggested_date_and_time,
+    booking_status: "confirmed"
+  )
+
+  redirect_to booking_path(@booking), notice: "Offer accepted!"
   end
 
   def decline
