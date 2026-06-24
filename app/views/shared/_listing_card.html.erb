@@ -1,6 +1,14 @@
 <%# Standard styles for the badge %>
 <% badge_style ||= 'background-color: #F1F5F9; color: #475569;' %>
 
+<%
+  # ADDED: hard 300-character cap with a trailing "..." instead of CSS line-clamp,
+  # so card height stays fixed regardless of how much text is in the description
+  truncated_description = if listing.description.present?
+                             listing.description.length > 300 ? "#{listing.description[0...250]}..." : listing.description
+                           end
+%>
+
 <div class="col-12">
   <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
     <div class="row g-0">
@@ -12,7 +20,6 @@
           <%= cl_image_tag listing.photos.first.key, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
         <% else %>
           <%
-            # Fallback logic for seed data based on title keywords
             image_path = if listing.title.include?("EMERGENCY") then "listings/burst_pipe.png"
                          elsif listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
                          elsif listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
@@ -30,7 +37,10 @@
       </div>
 
       <%# Text and details area %>
-      <div class="col-md-8 p-4 d-flex flex-column justify-content-between">
+      <%# CHANGED: explicit height: 304.25px + overflow hidden — every card now renders at this
+          exact height, regardless of title or description length, instead of relying on content
+          amount to coincidentally land there %>
+      <div class="col-md-8 p-4 d-flex flex-column justify-content-between" style="height: 250px; overflow: hidden;">
         <div>
           <div class="mb-3">
             <span class="badge px-3 py-1.5 fw-semibold" style="border-radius: 6px; <%= badge_style %>">
@@ -40,8 +50,9 @@
           <h3 class="fw-bold tracking-tight mb-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.4rem;">
             <%= link_to listing.title, action_path, class: "text-decoration-none text-dark hover-blue-text" %>
           </h3>
-          <% if listing.description.present? %>
-            <p class="text-muted small mb-0 text-clamp-2" style="line-height: 1.5; color: #64748B !important;"><%= listing.description %></p>
+          <%# CHANGED: text-clamp-2 replaced by the 250-char hard truncation above %>
+          <% if truncated_description.present? %>
+            <p class="text-muted small mb-0" style="line-height: 1.5; color: #64748B !important;"><%= truncated_description %></p>
           <% end %>
         </div>
 

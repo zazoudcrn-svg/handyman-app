@@ -109,7 +109,7 @@
                 <p class="fw-semibold mb-1" style="color: #0B1B33;">
                   <%= link_to offer.user.contractor_profile&.business_name || offer.user.first_name, profile_path(offer.user), style: "color: #2F6BFF; text-decoration: none;" %>
                 </p>
-                <p class="mb-1 small"><strong>Quote:</strong> €<%= offer.quote %></p>
+                <p class="mb-1 small"><strong>Quote:</strong> €<%= offer.quote.round %></p>
                 <p class="mb-2 small"><strong>Date:</strong> <%= offer.suggested_date_and_time&.strftime("%b %d, %Y") || "Not specified" %></p>
                 <%= link_to "View Offer →", listing_offer_path(@listing, offer), class: "btn btn-primary btn-sm w-100", style: "border-radius: 8px; background-color: #2F6BFF; border: none;" %>
               </div>
