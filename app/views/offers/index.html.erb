@@ -44,6 +44,32 @@
           </div>
         <% end %>
 
+        <%# CATEGORY — contractor only, shown if more than 1 specialty %>
+        <% if current_user.contractor? && current_user.categories.count > 1 %>
+          <div class="dropdown">
+            <button class="btn custom-filter-btn <%= params[:category_ids].present? ? 'active' : '' %>"
+                    type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+              Category
+              <% if params[:category_ids].present? %>
+                <span class="badge rounded-pill ms-1" style="font-size: 10px;"><%= params[:category_ids].size %></span>
+              <% end %>
+              <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+            </button>
+            <div class="dropdown-menu p-3 shadow-sm" style="min-width: 200px; border-radius: 12px; border: 1px solid #E2E8F0;">
+              <% current_user.categories.each do |category| %>
+                <div class="form-check mb-2">
+                  <%= check_box_tag "category_ids[]",
+                      category.id,
+                      Array(params[:category_ids]).map(&:to_s).include?(category.id.to_s),
+                      class: "form-check-input",
+                      id: "category_#{category.id}" %>
+                  <%= label_tag "category_#{category.id}", category.name.titleize.gsub("Ac", "AC"), class: "form-check-label", style: "font-size: 13px;" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
         <%# STATUS %>
         <div class="dropdown">
           <button class="btn custom-filter-btn <%= params[:status].present? ? 'active' : '' %>"
