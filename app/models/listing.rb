@@ -13,7 +13,7 @@ class Listing < ApplicationRecord
 
   # --- Geocoding Setup ---
   geocoded_by :full_address
-  after_validation :geocode, if: ->(obj){ obj.street_changed? || obj.postcode_changed? || obj.city_changed? }
+  after_validation :geocode, if: ->(obj) { obj.street_changed? || obj.postcode_changed? || obj.city_changed? }
 
   # --- Callbacks ---
   after_create :notify_matching_contractors
@@ -31,8 +31,22 @@ class Listing < ApplicationRecord
 
   # --- Instance Methods ---
   def full_address
-    [street, postcode, city, country].compact.join(', ')
+    [ street, postcode, city, country ].compact.join(", ")
   end
+
+def category_icon # ← ADD THIS
+  case category.name
+  when "kitchen"
+    "fa-solid fa-kitchen-set"
+  when "bathroom"
+    "fa-solid fa-bath"
+  when "painting"
+    "fa-solid fa-paint-roller"
+  else
+    "fa-solid fa-briefcase"
+  end
+end
+
 
   private
 

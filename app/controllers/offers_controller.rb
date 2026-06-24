@@ -6,8 +6,35 @@ class OffersController < ApplicationController
   def index
     if current_user.role == "customer"
       @offers = Offer.where(listing: current_user.listings)
+
+      if params[:listing_id].present?
+        @offers = @offers.where(listing_id: params[:listing_id])
+      end
     else
       @offers = current_user.offers
+
+      # Category filter — contractor only
+      if params[:category_ids].present?
+        @offers = @offers.where(listing_id: Listing.where(category_id: params[:category_ids]).pluck(:id))
+      end
+    end
+
+    # Status filter — default to pending
+    if params[:status] == "accepted"
+      @offers = @offers.where(offer_status: "accepted")
+    elsif params[:status] == "declined"
+      @offers = @offers.where(offer_status: "declined")
+    else
+      @offers = @offers.where(offer_status: [nil, "pending"])
+    end
+
+    # Sorting
+    if params[:sort_by] == "quote_asc"
+      @offers = @offers.order(quote: :asc)
+    elsif params[:sort_by] == "quote_desc"
+      @offers = @offers.order(quote: :desc)
+    else
+      @offers = @offers.order(created_at: :desc)
     end
   end
 
@@ -53,12 +80,20 @@ class OffersController < ApplicationController
   end
 
   def accept
-    @listing = Listing.find(params[:listing_id])
-    @offer = Offer.find(params[:id])
-    @offer.update(offer_status: "accepted")
-    # Decline all other offers for the same listing
-    @listing.offers.where.not(id: @offer.id).update_all(offer_status: "declined")
-    redirect_to booking_path(@offer.booking), notice: "Offer accepted!"
+  @listing = Listing.find(params[:listing_id])
+  @offer = Offer.find(params[:id])
+  @offer.update(offer_status: "accepted")
+  # Decline all other offers for the same listing
+  @listing.offers.where.not(id: @offer.id).update_all(offer_status: "declined")
+
+  @booking = Booking.create!(
+    listing: @listing,
+    offer: @offer,
+    scheduled_date_and_time: @offer.suggested_date_and_time,
+    booking_status: "confirmed"
+  )
+
+  redirect_to booking_path(@booking), notice: "Offer accepted!"
   end
 
   def decline
