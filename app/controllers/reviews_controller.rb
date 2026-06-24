@@ -32,10 +32,11 @@ class ReviewsController < ApplicationController
   @review.reviewee = current_user == @booking.listing.user ? @booking.offer.user : @booking.listing.user
 
   if @review.save
-    redirect_to booking_path(@booking), notice: "Review submitted!"
+  # Notify reviewee
+  NotificationJob.perform_later("new_review", @review.reviewee, @review)
+  redirect_to booking_path(@booking), notice: "Review submitted!"
   else
     render :new, status: :unprocessable_entity
-  end
   end
 
   private

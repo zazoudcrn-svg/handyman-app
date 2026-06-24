@@ -138,15 +138,18 @@ class BookingsController < ApplicationController
 
 
   def cancel_booking
-    @booking = Booking.find(params[:id])
+  @booking = Booking.find(params[:id])
+  @booking.update(
+    booking_status: "cancelled",
+    cancellation_note: params[:booking][:cancellation_note],
+    cancelled_by: current_user.role
+  )
 
-    @booking.update(
-      booking_status: "cancelled",
-      cancellation_note: params[:booking][:cancellation_note],
-      cancelled_by: current_user.role
-    )
+  # Notify both parties
+  NotificationJob.perform_later("booking_cancelled", @booking.contractor, @booking)
+  NotificationJob.perform_later("booking_cancelled", @booking.customer, @booking)
 
-    redirect_to bookings_path, notice: "Booking cancelled successfully"
+  redirect_to bookings_path, notice: "Booking cancelled successfully"
   end
 
 

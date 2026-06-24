@@ -14,7 +14,7 @@
           when 'new_match', 'new_offer', 'offer_updated', 'offer_accepted', 'offer_declined'
             resource.is_a?(Offer) ? listing_offer_path(resource.listing, resource) : (resource.is_a?(Listing) ? listing_path(resource) : nil)
           when 'booking_confirmed', 'booking_cancelled', 'date_changed', 'booking_completed'
-          resource.is_a?(Booking) ? booking_path(resource) : nil
+          resource.is_a?(Booking) ? booking_path(resource) : nilx
           when 'new_review'
             resource.is_a?(Review) ? profile_path(current_user) : nil
           when 'new_message'
