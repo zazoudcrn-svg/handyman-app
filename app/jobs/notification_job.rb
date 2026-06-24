@@ -9,6 +9,8 @@ class NotificationJob < ApplicationJob
         NotificationMailer.new_match(recipient, resource).deliver_now
       when "welcome"
         NotificationMailer.welcome(recipient).deliver_now
+      when "new_message"
+        NotificationMailer.new_message(resource, recipient).deliver_now
       else
         NotificationMailer.send(notification_type, resource).deliver_now
       end
