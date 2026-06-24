@@ -87,8 +87,7 @@
         <li>
           <a href="<%= nav_link_url || '#' %>"
    style="text-decoration: none; <%= 'pointer-events: none; cursor: default;' unless nav_link_url %>"
-   onclick="<%= "fetch('/notifications/#{notification.id}/mark_read', {method: 'PATCH', headers: {'X-CSRF-Token': document.querySelector('meta[name=csrf-token]').content}})" if nav_link_url && !notification.read? %>">
-            <div style="padding: 12px 20px; display: flex; align-items: flex-start; gap: 12px; background: <%= notification.read? ? 'white' : '#F0F5FF' %>; border-bottom: 1px solid #F1F5F9;"
+onclick="<%= "fetch('/notifications/#{notification.id}/mark_read', {method: 'PATCH', headers: {'X-CSRF-Token': document.querySelector('meta[name=csrf-token]').content}}).then(() => { const badge = document.getElementById('notification-badge'); if(badge) { const count = parseInt(badge.innerText || '0') - 1; if(count <= 0) { badge.style.display = 'none'; badge.innerText = ''; } else { badge.innerText = count > 9 ? '9+' : count; } } })" if nav_link_url && !notification.read? %>">            <div style="padding: 12px 20px; display: flex; align-items: flex-start; gap: 12px; background: <%= notification.read? ? 'white' : '#F0F5FF' %>; border-bottom: 1px solid #F1F5F9;"
                  onmouseover="this.style.background='<%= nav_link_url ? "#EEF3FF" : "white" %>'" onmouseout="this.style.background='<%= notification.read? ? "white" : "#F0F5FF" %>'">
               <div style="width: 36px; height: 36px; border-radius: 50%; background: <%= notification.read? ? '#E2E8F0' : '#2F6BFF' %>; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <i class="ti <%= case notification.notification_type
