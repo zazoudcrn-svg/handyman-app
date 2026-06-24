@@ -113,10 +113,13 @@
 
   <%# ERROR MESSAGE CONTAINER - Styled as a subtle notification box %>
   <div id="validation-error"
-      class="text-danger mb-4 p-3 shadow-sm"
-      style="display: none; background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 10px; margin: 0 auto; max-width: 500px;">
-    <span class="fw-bold">⚠️ Please fill out all required fields in this step to continue.</span>
-  </div>
+     style="display: none; margin-top: 16px; padding: 14px 18px; background-color: #FFFBEB; border-left: 4px solid #F59E0B; border-radius: 10px; align-items: center; gap: 10px;">
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="10" cy="10" r="10" fill="#F59E0B"/>
+    <text x="10" y="15" text-anchor="middle" fill="white" font-size="13" font-weight="bold" font-family="sans-serif">!</text>
+  </svg>
+  <span style="color: #92400E; font-size: 14px; font-weight: 500;">Please fill out all required fields to continue.</span>
+</div>
 
   <%# Dynamic Steering Navigation Layout %>
   <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
@@ -169,10 +172,27 @@
   #next-btn {
   color: #ffffff !important;
   }
+
+  .step-indicator.active {
+  border-bottom: 4px solid #2F6BFF !important;
+  color: #2F6BFF !important;
+  }
+
+  #submit-btn {
+  background-color: #2F6BFF !important;
+  border-color: #2F6BFF !important;
+  color: #ffffff !important;
+  }
+
 </style>
 <script>
   (function() {
+    let wizardInitialized = false;  // ← NEU
+
     function initWizard() {
+      if (wizardInitialized) return;  // ← NEU
+      wizardInitialized = true;       // ← NEU
+
       let currentStep = 0;
       const steps = document.querySelectorAll(".wizard-step");
       const indicators = document.querySelectorAll(".step-indicator");
@@ -230,8 +250,8 @@
 
         indicators.forEach((indicator, index) => {
           if (index === currentStep) {
-            indicator.style.borderBottom = "4px solid #38bdf8";
-            indicator.style.color = "#38bdf8";
+            indicator.style.borderBottom = "4px solid #2F6BFF";
+            indicator.style.color = "#2F6BFF";
             indicator.style.fontWeight = "bold";
           } else {
             indicator.style.borderBottom = "4px solid #ccc";
@@ -336,14 +356,16 @@
           .catch(err => console.log("Geocoding failed:", err));
       }
 
-      //next button
-      nextBtn.addEventListener("click", (e) => {
+     // --- PREVENT ACCIDENT-SUBMITS & HANDLE NAVIGATION ---
+        nextBtn.addEventListener("click", (e) => {
         e.preventDefault();
 
+        // 1. Identify required fields in the current step
         const currentStepElement = steps[currentStep];
         const requiredFields = currentStepElement.querySelectorAll(".required-field");
         let isValid = true;
 
+        // 2. Validate Text/Input fields
         requiredFields.forEach(field => {
           if (!field.value.trim()) {
             field.style.borderColor = "red";
@@ -353,20 +375,29 @@
           }
         });
 
+        // 3. SPECIAL CASE: Validate Categories (Step 2 is index 1)
         if (currentStep === 1) {
           const checkboxes = currentStepElement.querySelectorAll('input[name="category_ids[]"]');
           const isChecked = Array.from(checkboxes).some(cb => cb.checked);
-          if (!isChecked) isValid = false;
+
+          if (!isChecked) {
+            isValid = false;
+          }
         }
 
+        // 4. Only proceed if valid
         if (isValid) {
+          // Hide error box on success
           document.getElementById("validation-error").style.display = "none";
+
           if (currentStep < steps.length - 1) {
             currentStep++;
             showStep();
           }
         } else {
-          document.getElementById("validation-error").style.display = "block";
+         const errorBox = document.getElementById("validation-error");
+        errorBox.style.display = "block";
+        setTimeout(() => { errorBox.style.display = "none"; }, 3000);
         }
       });
 
@@ -376,7 +407,6 @@
           currentStep--;
           showStep();
         }
-
       });
 
 
@@ -389,11 +419,8 @@
       showStep();
       }
 
-    if (document.readyState === "loading") {
-      document.addEventListener("turbo:load", initWizard);
-    } else {
-      initWizard();
-      document.addEventListener("turbo:load", initWizard);
-    }
+
+    document.addEventListener("turbo:load", initWizard);
+    initWizard();
   })();
 </script>
