@@ -8,22 +8,24 @@
     <div id="status_message"></div>
 
     <!-- READ-ONLY DETAILS -->
-    <div class="mb-4">
-      <p><strong>Title:</strong> <%= @booking.listing.title %></p>
+    <div class="<%= current_user.customer? ? 'mb-4' : 'mb-2' %>">
+  <p class="mb-1"><strong>Title:</strong> <%= @booking.listing.title %></p>
 
-      <% if current_user.customer? %>
-        <p><strong>Contractor:</strong> <%= @booking.offer.user.first_name %></p>
-      <% else %>
-        <p><strong>Customer:</strong> <%= @booking.listing.user.first_name %></p>
-      <% end %>
-    </div>
+ <% if current_user.contractor? %>
+  <p class="mb-1"><strong>Address:</strong> <%= @booking.listing.full_address %></p>
+  <p class="mb-1"><strong>Customer:</strong> <%= @booking.listing.user.first_name %></p>
+<% else %>
+  <p class="mb-1"><strong>Contractor:</strong> <%= @booking.offer.user.first_name %></p>
+<% end %>
+
+</div>
 
     <!-- ⭐ ONE SINGLE FORM FOR ALL BOOKING UPDATES -->
     <%= form_with model: @booking, url: booking_path(@booking), method: :patch, class: "row g-3" do |f| %>
 
-      <!-- ADDRESS -->
-      <h5 class="mt-4">Address</h5>
-
+      <% if current_user.customer? %>
+  <!-- ADDRESS (CUSTOMER CAN EDIT) -->
+      <h5 class="mt-1 mb-2">Address</h5>
       <%= f.fields_for :listing do |lf| %>
         <%= lf.hidden_field :id %>
 
@@ -49,19 +51,8 @@
           </div>
         </div>
       <% end %>
-
-      <!-- SCHEDULED DATE (READ ONLY) -->
-      <div class="col-md-6 mt-4">
-        <strong><%= f.label :scheduled_date_and_time, "Scheduled Date & Time", class: "form-label" %></strong>
-
-        <input type="text"
-               class="form-control"
-               value="<%= @booking.scheduled_date_and_time.strftime('%A, %d %B %Y at %I:%M %p') %>"
-               disabled>
-
-        <small class="text-muted">This date cannot be edited. Use “Propose New Date”.</small>
-      </div>
-
+      <% end %>
+     <% if current_user.customer? %>
       <!-- ⭐ SAVE BUTTON -->
       <div class="col-12 mt-4">
         <%= f.hidden_field :form_type, value: "save_changes" %>
@@ -73,34 +64,59 @@
       class: "btn fw-semibold ms-2 cancel-btn",
       style: "border: 1px solid #CBD5E1; color: #475569; border-radius: 8px; font-size: 13px; padding: 12px 32px;" %>
      </div>
-
+     <% end %>
 
     <% end %>
 
     <hr class="my-4">
+<!-- ⭐ PROPOSE NEW DATE FORM -->
+<h4 class="mb-3">Propose a New Date</h4>
 
-    <!-- ⭐ PROPOSE NEW DATE FORM -->
-    <h4 class="mb-3">Propose a New Date</h4>
+<div class="card p-3 border-0 shadow-sm" style="border-radius: 12px; background: #F8FAFC;">
+  <%= form_with model: @booking,
+        url: propose_date_booking_path(@booking),
+        method: :patch,
+        data: { turbo: false },
+        class: "row g-4" do |f| %>
 
-    <%= form_with model: @booking,
-          url: propose_date_booking_path(@booking),
-          method: :patch,
-          data: { turbo: false },
-          class: "row g-3" do |f| %>
+    <!-- CURRENT SCHEDULED DATE (READ ONLY) -->
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Scheduled Date & Time</label>
+      <div class="input-group">
+        <span class="input-group-text bg-white">
+          <i class="bi bi-calendar-event"></i>
+        </span>
+        <input type="text"
+               class="form-control bg-white"
+               value="<%= @booking.scheduled_date_and_time.strftime('%A, %d %B %Y at %I:%M %p') %>"
+               disabled
+               style="border-radius: 0 8px 8px 0;">
+      </div>
+      <small class="text-muted">This date cannot be edited. Use “Propose New Date”.</small>
+    </div>
 
-      <div class="col-md-6">
-        <%= f.label :new_proposed_date_and_time, "Select Date & Time", class: "form-label" %>
-        <%= f.text_field :new_proposed_date_and_time, class: "form-control date-picker" %>
+    <!-- NEW DATE + BUTTON IN SAME COLUMN -->
+    <div class="col-md-6">
+      <%= f.label :new_proposed_date_and_time, "Select New Date & Time", class: "form-label fw-semibold" %>
+      <div class="input-group mb-3">
+        <span class="input-group-text bg-white">
+          <i class="bi bi-calendar-plus"></i>
+        </span>
+        <%= f.text_field :new_proposed_date_and_time,
+              class: "form-control date-picker",
+              style: "border-radius: 0 8px 8px 0;" %>
       </div>
 
-      <div class="col-12">
-        <%= f.hidden_field :form_type, value: "propose_date" %>
-        <%= f.submit "Propose New Date",
-              class: "btn fw-semibold mt-2",
-              style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 8px; font-size: 13px; padding: 15px 38px; display: inline-block;" %>
-      </div>
+      <!-- BUTTON RIGHT BELOW NEW DATE -->
+      <%= f.hidden_field :form_type, value: "propose_date" %>
+      <%= f.submit "Propose New Date",
+            class: "btn fw-semibold",
+            style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 8px; font-size: 14px; padding: 12px 32px;" %>
+    </div>
 
-    <% end %>
+  <% end %>
+</div>
+
 
   </div>
 </div>
