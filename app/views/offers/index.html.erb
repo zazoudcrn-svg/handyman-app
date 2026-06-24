@@ -1,88 +1,131 @@
-<% pending_offers  = @offers.select { |o| o.offer_status.nil? || o.offer_status == "pending" } %>
-<% accepted_offers = @offers.select { |o| o.offer_status == "accepted" } %>
-<% declined_offers = @offers.select { |o| o.offer_status == "declined" } %>
-
 <div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
   <div class="container" style="max-width: 1200px;">
 
+    <%# HEADER %>
     <div class="mb-5 pb-4 border-bottom" style="border-color: #E2E8F0 !important;">
       <h1 class="h2 mb-0" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">
         <%= current_user.customer? ? "Offers Received" : "My Offers" %>
       </h1>
     </div>
 
-    <div class="d-flex align-items-center flex-wrap gap-3 mb-4" role="tablist">
-      <span class="text-uppercase fw-bold" style="font-size: 10px; color: #94A3B8; letter-spacing: 0.05em; margin-right: 5px;">Filter:</span>
-      <% [
-        { id: "pending",  label: "Pending",  count: pending_offers.size },
-        { id: "accepted", label: "Accepted", count: accepted_offers.size },
-        { id: "declined", label: "Declined", count: declined_offers.size }
-      ].each_with_index do |tab, index| %>
-        <button class="nav-link btn <%= 'active' if index == 0 %> custom-filter-btn"
-                id="<%= tab[:id] %>-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#<%= tab[:id] %>"
-                type="button" role="tab">
-          <%= tab[:label] %>
-          <span class="badge rounded-pill ms-1" style="font-size: 10px;"><%= tab[:count] %></span>
-        </button>
+    <%# FILTER FORM %>
+    <%= form_with url: offers_path, method: :get, local: true do |f| %>
+      <div class="d-flex align-items-center flex-wrap gap-3 mb-4">
+        <span class="text-uppercase fw-bold" style="font-size: 10px; color: #94A3B8; letter-spacing: 0.05em;">Filter by:</span>
+
+        <%# LISTING — customer only %>
+        <% if current_user.customer? %>
+          <div class="dropdown">
+            <button class="btn custom-filter-btn <%= params[:listing_id].present? ? 'active' : '' %>"
+                    type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+              Listing
+              <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+            </button>
+            <div class="dropdown-menu p-3 shadow-sm" style="min-width: 320px; border-radius: 12px; border: 1px solid #E2E8F0;">
+              <% Listing.where(id: @offers.pluck(:listing_id).uniq).each do |listing| %>
+                <div class="form-check mb-2">
+                  <%= radio_button_tag :listing_id,
+                      listing.id,
+                      params[:listing_id] == listing.id.to_s,
+                      class: "form-check-input",
+                      id: "listing_#{listing.id}" %>
+                  <%= label_tag "listing_#{listing.id}", listing.title, class: "form-check-label", style: "font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; display: block;" %>
+                </div>
+              <% end %>
+              <div class="form-check mt-2 pt-2" style="border-top: 1px solid #F1F5F9;">
+                <%= radio_button_tag :listing_id,
+                    "",
+                    params[:listing_id].blank?,
+                    class: "form-check-input",
+                    id: "listing_all" %>
+                <%= label_tag "listing_all", "All listings", class: "form-check-label", style: "font-size: 13px; color: #64748B;" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <%# STATUS %>
+        <div class="dropdown">
+          <button class="btn custom-filter-btn <%= params[:status].present? ? 'active' : '' %>"
+                  type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+            Status
+            <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+          </button>
+          <div class="dropdown-menu p-3 shadow-sm" style="min-width: 180px; border-radius: 12px; border: 1px solid #E2E8F0;">
+            <div class="form-check mb-2">
+              <%= radio_button_tag :status, "", params[:status].blank?, class: "form-check-input", id: "status_pending" %>
+              <%= label_tag "status_pending", "Pending", class: "form-check-label", style: "font-size: 13px;" %>
+            </div>
+            <div class="form-check mb-2">
+              <%= radio_button_tag :status, "accepted", params[:status] == "accepted", class: "form-check-input", id: "status_accepted" %>
+              <%= label_tag "status_accepted", "Accepted", class: "form-check-label", style: "font-size: 13px;" %>
+            </div>
+            <div class="form-check">
+              <%= radio_button_tag :status, "declined", params[:status] == "declined", class: "form-check-input", id: "status_declined" %>
+              <%= label_tag "status_declined", "Declined", class: "form-check-label", style: "font-size: 13px;" %>
+            </div>
+          </div>
+        </div>
+
+        <%# SORT %>
+        <div class="dropdown">
+          <button class="btn custom-filter-btn <%= params[:sort_by].present? ? 'active' : '' %>"
+                  type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+            Sort by
+            <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+          </button>
+          <div class="dropdown-menu p-3 shadow-sm" style="min-width: 200px; border-radius: 12px; border: 1px solid #E2E8F0;">
+            <div class="form-check mb-2">
+              <%= radio_button_tag :sort_by, "", params[:sort_by].blank?, class: "form-check-input", id: "sort_recent" %>
+              <%= label_tag "sort_recent", "Most recent", class: "form-check-label", style: "font-size: 13px;" %>
+            </div>
+            <div class="form-check mb-2">
+              <%= radio_button_tag :sort_by, "quote_asc", params[:sort_by] == "quote_asc", class: "form-check-input", id: "sort_quote_asc" %>
+              <%= label_tag "sort_quote_asc", "Quote: low to high", class: "form-check-label", style: "font-size: 13px;" %>
+            </div>
+            <div class="form-check">
+              <%= radio_button_tag :sort_by, "quote_desc", params[:sort_by] == "quote_desc", class: "form-check-input", id: "sort_quote_desc" %>
+              <%= label_tag "sort_quote_desc", "Quote: high to low", class: "form-check-label", style: "font-size: 13px;" %>
+            </div>
+          </div>
+        </div>
+
+        <%# APPLY + CLEAR %>
+        <%= f.submit "Apply",
+            class: "btn btn-primary btn-sm px-4",
+            style: "border-radius: 9999px; font-size: 13px;" %>
+        <%= link_to "Clear", offers_path,
+            class: "btn btn-link btn-sm",
+            style: "font-size: 13px; color: #94A3B8; text-decoration: none;" %>
+        <span class="text-muted" style="font-size: 12px;">
+          <%= @offers.size %> offer<%= @offers.size == 1 ? "" : "s" %>
+        </span>
+      </div>
+    <% end %>
+
+    <%# OFFERS GRID %>
+    <div class="row g-4">
+      <% if @offers.empty? %>
+        <div class="col-12">
+          <p class="text-muted text-center py-5" style="font-size: 14px;">No offers found.</p>
+        </div>
+      <% else %>
+        <% @offers.each do |offer| %>
+          <%= render "shared/offer_card", offer: offer %>
+        <% end %>
       <% end %>
     </div>
 
-    <div class="tab-content">
-
-      <%# PENDING %>
-      <%# CHANGED: col-md-4 grid replaced with the shared offer_card partial (col-12 stacked layout) %>
-      <div class="tab-pane fade show active" id="pending" role="tabpanel">
-        <div class="row g-4">
-          <% if pending_offers.any? %>
-            <% pending_offers.each do |offer| %>
-              <%= render "shared/offer_card", offer: offer %>
-            <% end %>
-          <% else %>
-            <p class="text-muted">No pending offers.</p>
-          <% end %>
-        </div>
-      </div>
-
-      <%# ACCEPTED %>
-      <%# CHANGED: col-md-4 grid replaced with the shared offer_card partial (col-12 stacked layout) %>
-      <div class="tab-pane fade" id="accepted" role="tabpanel">
-        <div class="row g-4">
-          <% if accepted_offers.any? %>
-            <% accepted_offers.each do |offer| %>
-              <%= render "shared/offer_card", offer: offer %>
-            <% end %>
-          <% else %>
-            <p class="text-muted">No accepted offers.</p>
-          <% end %>
-        </div>
-      </div>
-
-      <%# DECLINED %>
-      <%# CHANGED: col-md-4 grid replaced with the shared offer_card partial (col-12 stacked layout) %>
-      <div class="tab-pane fade" id="declined" role="tabpanel">
-        <div class="row g-4">
-          <% if declined_offers.any? %>
-            <% declined_offers.each do |offer| %>
-              <%= render "shared/offer_card", offer: offer %>
-            <% end %>
-          <% else %>
-            <p class="text-muted">No declined offers.</p>
-          <% end %>
-        </div>
-      </div>
-
-    </div>
   </div>
 </div>
 
 <style>
   .custom-filter-btn {
-    border-radius: 9999px !important; font-family: 'Outfit', sans-serif; font-size: 13px; padding: 6px 16px !important;
+    border-radius: 9999px !important; font-family: 'Outfit', sans-serif; font-size: 13px; padding: 4px 12px !important;
     background-color: #F8FAFC !important; color: #64748B !important; border: 1px solid #E2E8F0 !important; transition: all 0.2s ease;
+    box-shadow: none !important; outline: none !important;
   }
-  .custom-filter-btn.active { background-color: #2F6BFF !important; color: #FFFFFF !important; border-color: #2F6BFF !important; }
-  .custom-filter-btn .badge { background-color: #F1F5F9; color: #475569; }
-  .custom-filter-btn.active .badge { background-color: rgba(255, 255, 255, 0.25); color: #FFFFFF; }
+  .custom-filter-btn:focus { box-shadow: none !important; outline: none !important; }
+  .custom-filter-btn.active { background-color: #F8FAFC !important; color: #2F6BFF !important; border-color: #2F6BFF !important; }
+  .custom-filter-btn .badge { background-color: #EFF6FF; color: #2F6BFF; }
 </style>

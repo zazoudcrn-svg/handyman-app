@@ -7,7 +7,6 @@ class OffersController < ApplicationController
     if current_user.role == "customer"
       @offers = Offer.where(listing: current_user.listings)
 
-      # Listing filter
       if params[:listing_id].present?
         @offers = @offers.where(listing_id: params[:listing_id])
       end
