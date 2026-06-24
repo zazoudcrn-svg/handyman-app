@@ -116,7 +116,7 @@
               <p class="mb-0 small"><strong>Note:</strong> <%= @offer.note.presence || "No additional notes." %></p>
             </div>
 
-            <% if current_user.role == "customer" && @offer.offer_status == "pending" %>
+            <% if current_user.role == "customer" && (@offer.offer_status.nil? || @offer.offer_status == "pending") %>
               <div class="d-flex gap-2">
                 <%# CHANGED: Accept — was green (#16A34A), now the same blue used for chat bubbles / links %>
                 <%= button_to accept_listing_offer_path(@listing, @offer), method: :patch, class: "btn flex-fill py-2 fw-semibold text-white d-inline-flex align-items-center justify-content-center gap-2", style: "background-color: #2F6BFF; border-radius: 12px; border: none;" do %>
