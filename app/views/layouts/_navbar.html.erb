@@ -72,20 +72,20 @@
         <% nav_link_url = if resource.present?
           case notification.notification_type
           when 'new_match', 'new_offer', 'offer_updated', 'offer_accepted', 'offer_declined'
-            resource.is_a?(Offer) ? listing_offer_path(resource.listing, resource) : (resource.is_a?(Listing) ? listing_path(resource) : notifications_path)
+            resource.is_a?(Offer) ? listing_offer_path(resource.listing, resource) : (resource.is_a?(Listing) ? listing_path(resource) : nil)
           when 'booking_confirmed', 'booking_cancelled', 'date_changed'
-            resource.is_a?(Booking) ? booking_path(resource) : notifications_path
+            resource.is_a?(Booking) ? booking_path(resource) : nil
           when 'new_review'
-            resource.is_a?(Review) ? profile_path(current_user) : notifications_path
+            resource.is_a?(Review) ? profile_path(current_user) : nil
           end
         else
-          notifications_path
+          nil
         end %>
 
         <li>
-          <a href="<%= nav_link_url %>" style="text-decoration: none;">
+          <a href="<%= nav_link_url || '#' %>" style="text-decoration: none; <%= 'pointer-events: none; cursor: default;' unless nav_link_url %>">
             <div style="padding: 12px 20px; display: flex; align-items: flex-start; gap: 12px; background: <%= notification.read? ? 'white' : '#F0F5FF' %>; border-bottom: 1px solid #F1F5F9;"
-                 onmouseover="this.style.background='#EEF3FF'" onmouseout="this.style.background='<%= notification.read? ? "white" : "#F0F5FF" %>'">
+                 onmouseover="this.style.background='<%= nav_link_url ? "#EEF3FF" : "white" %>'" onmouseout="this.style.background='<%= notification.read? ? "white" : "#F0F5FF" %>'">
               <div style="width: 36px; height: 36px; border-radius: 50%; background: <%= notification.read? ? '#E2E8F0' : '#2F6BFF' %>; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <i class="ti <%= case notification.notification_type
                                   when 'new_match' then 'ti-map-pin'
@@ -100,7 +100,7 @@
                    style="font-size: 16px; color: <%= notification.read? ? '#64748b' : 'white' %>;" aria-hidden="true"></i>
               </div>
               <div style="flex: 1; min-width: 0;">
-                <p style="margin: 0 0 2px; font-size: 13px; color: #0B1B33; line-height: 1.4;">
+                <p style="margin: 0 0 2px; font-size: 13px; color: <%= nav_link_url ? '#0B1B33' : '#94a3b8' %>; line-height: 1.4;">
                   <%= case notification.notification_type
                         when 'new_match' then "New job match available"
                         when 'new_offer' then "New offer received"
@@ -123,6 +123,11 @@
                         elsif resource.is_a?(Booking)
                           resource.offer&.listing&.title
                         end %>
+                  </p>
+                <% else %>
+                  <p style="margin: 0 0 2px; font-size: 11px; color: #94a3b8; font-style: italic;">
+                    <i class="ti ti-trash" style="font-size: 11px;" aria-hidden="true"></i>
+                    No longer available
                   </p>
                 <% end %>
                 <p style="margin: 0; font-size: 11px; color: #94a3b8;"><%= time_ago_in_words(notification.created_at) %> ago</p>
@@ -151,6 +156,7 @@
 
   </ul>
 </div>
+<%# Notification %>
         <%# Notification %>
 
         <%# User dropdown trigger — Pill shape %>
