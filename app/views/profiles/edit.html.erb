@@ -1,50 +1,156 @@
-<div class="container my-4">
-  <div class="card p-4">
-    <h1>Edit Profile</h1>
+<div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
+  <div class="container" style="max-width: 800px;">
+
+    <%# BACK BUTTON %>
+    <div class="mb-4">
+      <%= link_to profile_path(@user), class: "text-decoration-none d-inline-flex align-items-center gap-2 small fw-medium", style: "color: #64748B; transition: color 0.2s;" do %>
+        <i class="bi bi-arrow-left"></i> Back to Profile
+      <% end %>
+    </div>
+
+    <%# HEADER %>
+    <div class="mb-4">
+      <h1 class="h2" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Edit Profile</h1>
+    </div>
 
     <%= simple_form_for @user, url: profile_path(@user), method: :patch, html: { multipart: true } do |f| %>
 
-      <h2 class="mt-4">Personal Information</h2>
-      <%= f.input :first_name %>
-      <%= f.input :last_name %>
-      <%= f.input :email %>
-      <%= f.input :bio, as: :text, label: "Bio", input_html: { rows: 4, placeholder: "Tell people a bit about yourself..." } %>
-
-      <div class="mb-3">
-        <label class="form-label fw-semibold">Profile Photo</label>
-        <% if @user.avatar.attached? %>
-          <div class="mb-2">
-            <%= image_tag @user.avatar, class: "rounded-circle", style: "width: 60px; height: 60px; object-fit: cover;" %>
-          </div>
-        <% end %>
-        <%= f.input :avatar, as: :file, label: false %>
-      </div>
-
-      <h2 class="mt-4">Address</h2>
-      <%= f.input :street %>
-      <%= f.input :city %>
-      <%= f.input :postcode %>
-      <%= f.input :country %>
-
+      <%# BUSINESS INFORMATION — contractors only, shown first %>
       <% if @user.contractor? && @contractor_profile %>
-        <h2 class="mt-4">Business Information</h2>
-        <%= f.simple_fields_for :contractor_profile, @contractor_profile do |cf| %>
-          <%= cf.input :business_name %>
-          <%= cf.input :street %>
-          <%= cf.input :city %>
-          <%= cf.input :postcode %>
-          <%= cf.input :country %>
-          <%= cf.input :travel_radius, label: "Travel Radius (km)" %>
-          <%= cf.input :weekday_availability %>
-          <%= cf.input :start_time, as: :time, label: "Start Time" %>
-          <%= cf.input :end_time, as: :time, label: "End Time" %>
-          <%= cf.input :google_business_profile, label: "Google Business Profile URL" %>
-        <% end %>
+        <div class="card p-4 mb-4" style="border: 1px solid #E2E8F0; border-radius: 16px;">
+          <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Business Information</h5>
+          <hr class="mt-0 mb-3">
+
+          <%= f.simple_fields_for :contractor_profile, @contractor_profile do |cf| %>
+            <%= cf.input :business_name, required: true %>
+            <%= cf.input :travel_radius, label: "Travel Radius (km)", required: true %>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Available Days</label>
+              <% existing_days = @contractor_profile.weekday_availability.to_s.split(", ") %>
+              <%= cf.hidden_field :weekday_availability, id: "hidden-weekdays", value: @contractor_profile.weekday_availability %>
+              <div class="d-flex flex-wrap gap-2 mt-2">
+                <% [["Mo", "Mo"], ["Tu", "Tu"], ["We", "We"], ["Th", "Th"], ["Fr", "Fr"], ["Sa", "Sa"], ["Su", "Su"]].each do |label, value| %>
+                  <button type="button"
+                          class="day-btn <%= 'active' if existing_days.include?(value) %>"
+                          data-day="<%= value %>">
+                    <%= label %>
+                  </button>
+                <% end %>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <%= cf.input :start_time, as: :time, label: "Working Hours (Start)", required: true %>
+              </div>
+              <div class="col-md-6">
+                <%= cf.input :end_time, as: :time, label: "Working Hours (End)", required: true %>
+              </div>
+            </div>
+
+            <%= cf.input :google_business_profile,
+                label: "Website URL",
+                required: false,
+                placeholder: "https://yourwebsite.com" %>
+          <% end %>
+        </div>
       <% end %>
 
-      <%= f.submit "Save Changes", class: "btn btn-primary mt-3" %>
-    <% end %>
+      <%# PERSONAL INFORMATION %>
+      <div class="card p-4 mb-4" style="border: 1px solid #E2E8F0; border-radius: 16px;">
+        <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Personal Information</h5>
+        <hr class="mt-0 mb-3">
 
-    <%= link_to "Cancel", profile_path(@user), class: "btn btn-secondary mt-3 ms-2" %>
+        <%= f.input :first_name, required: true %>
+        <%= f.input :last_name, required: true %>
+        <%= f.input :email, required: true %>
+        <%= f.input :bio,
+            as: :text,
+            required: false,
+            input_html: { rows: 4, placeholder: "Tell people a bit about yourself..." } %>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Profile Photo <span class="text-muted fw-normal" style="font-size: 12px;">(optional)</span></label>
+          <% if @user.avatar.attached? %>
+            <div class="mb-2">
+              <%= image_tag @user.avatar, class: "rounded-circle", style: "width: 60px; height: 60px; object-fit: cover;" %>
+            </div>
+          <% end %>
+          <%= f.input :avatar, as: :file, label: false, required: false %>
+        </div>
+      </div>
+
+      <%# ADDRESS %>
+      <div class="card p-4 mb-4" style="border: 1px solid #E2E8F0; border-radius: 16px;">
+        <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Address</h5>
+        <hr class="mt-0 mb-3">
+
+        <%= f.input :street, required: true %>
+        <%= f.input :city, required: true %>
+        <%= f.input :postcode, required: true %>
+        <%= f.input :country, required: true %>
+      </div>
+
+      <%# ACTIONS %>
+      <div class="d-flex gap-3 mt-2">
+        <%= f.submit "Save Changes",
+            class: "btn btn-primary",
+            style: "border-radius: 9999px; padding: 10px 28px; font-family: 'Outfit', sans-serif;" %>
+        <%= link_to "Cancel", profile_path(@user),
+            class: "btn btn-outline-secondary",
+            style: "border-radius: 9999px; padding: 10px 28px; font-family: 'Outfit', sans-serif;" %>
+      </div>
+
+    <% end %>
   </div>
 </div>
+
+<style>
+  .day-btn {
+    padding: 8px 14px;
+    border: 1px solid #E2E8F0;
+    background-color: #F8FAFC;
+    color: #64748B;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.2s ease;
+  }
+  .day-btn.active {
+    background-color: #2F6BFF;
+    color: #FFFFFF;
+    border-color: #2F6BFF;
+  }
+</style>
+
+<script>
+  document.addEventListener("turbo:load", function() {
+    const hiddenInput = document.getElementById("hidden-weekdays");
+    const dayBtns = document.querySelectorAll(".day-btn");
+
+    if (!hiddenInput || dayBtns.length === 0) return;
+
+    let selectedDays = hiddenInput.value
+      ? hiddenInput.value.split(", ").filter(Boolean)
+      : [];
+
+    dayBtns.forEach(btn => {
+      btn.addEventListener("click", function(e) {
+        e.preventDefault();
+        const day = this.getAttribute("data-day");
+        this.classList.toggle("active");
+
+        if (this.classList.contains("active")) {
+          if (!selectedDays.includes(day)) selectedDays.push(day);
+        } else {
+          selectedDays = selectedDays.filter(d => d !== day);
+        }
+
+        hiddenInput.value = selectedDays.join(", ");
+      });
+    });
+  });
+</script>

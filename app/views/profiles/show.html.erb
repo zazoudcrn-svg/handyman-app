@@ -1,14 +1,24 @@
-<div class="container my-4 pb-4">
-  <div class="row g-4 align-items-start">
-    <div class="col-lg-6">
-      <% if @user.contractor? %>
-        <%= render "contractor_profile" %>
-      <% else %>
-        <%= render "customer_profile" %>
+<div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
+  <div class="container" style="max-width: 1200px;">
+
+    <div class="mb-4">
+      <%= link_to @back_path, class: "text-decoration-none d-inline-flex align-items-center gap-2 small fw-medium", style: "color: #64748B; transition: color 0.2s;" do %>
+        <i class="bi bi-arrow-left"></i> Back
       <% end %>
     </div>
-    <div class="col-lg-6">
-      <%= render "reviews" %>
+
+    <div class="row g-4 align-items-start">
+      <div class="col-lg-6">
+        <% if @user.contractor? %>
+          <%= render "contractor_profile" %>
+        <% else %>
+          <%= render "customer_profile" %>
+        <% end %>
+      </div>
+      <div class="col-lg-6">
+        <%= render "reviews" %>
+      </div>
     </div>
+
   </div>
 </div>
