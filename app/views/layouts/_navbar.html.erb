@@ -47,9 +47,11 @@
   <div class="position-relative" style="cursor: pointer;" data-bs-toggle="dropdown" aria-expanded="false">
     <i class="ti ti-bell" style="font-size: 22px; color: #64748b;" aria-hidden="true"></i>
     <% if unread_count > 0 %>
-      <span style="position: absolute; top: -4px; right: -4px; background: #2F6BFF; color: white; font-size: 10px; font-weight: 600; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; line-height: 1;">
+      <span id="notification-badge" style="position: absolute; top: -4px; right: -4px; background: #2F6BFF; color: white; font-size: 10px; font-weight: 600; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; line-height: 1;">
         <%= unread_count > 9 ? "9+" : unread_count %>
       </span>
+    <% else %>
+      <span id="notification-badge"></span>
     <% end %>
   </div>
 
@@ -83,7 +85,9 @@
         end %>
 
         <li>
-          <a href="<%= nav_link_url || '#' %>" style="text-decoration: none; <%= 'pointer-events: none; cursor: default;' unless nav_link_url %>">
+          <a href="<%= nav_link_url || '#' %>"
+   style="text-decoration: none; <%= 'pointer-events: none; cursor: default;' unless nav_link_url %>"
+   onclick="<%= "fetch('/notifications/#{notification.id}/mark_read', {method: 'PATCH', headers: {'X-CSRF-Token': document.querySelector('meta[name=csrf-token]').content}})" if nav_link_url && !notification.read? %>">
             <div style="padding: 12px 20px; display: flex; align-items: flex-start; gap: 12px; background: <%= notification.read? ? 'white' : '#F0F5FF' %>; border-bottom: 1px solid #F1F5F9;"
                  onmouseover="this.style.background='<%= nav_link_url ? "#EEF3FF" : "white" %>'" onmouseout="this.style.background='<%= notification.read? ? "white" : "#F0F5FF" %>'">
               <div style="width: 36px; height: 36px; border-radius: 50%; background: <%= notification.read? ? '#E2E8F0' : '#2F6BFF' %>; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
@@ -156,7 +160,7 @@
 
   </ul>
 </div>
-<%# Notification %>
+
         <%# Notification %>
 
         <%# User dropdown trigger — Pill shape %>

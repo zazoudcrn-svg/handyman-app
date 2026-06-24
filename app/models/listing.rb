@@ -5,7 +5,7 @@ class Listing < ApplicationRecord
   # --- Associations ---
   belongs_to :user
   belongs_to :category
-  has_many :offers
+  has_many :offers, dependent: :destroy
   has_one :booking
   has_many_attached :photos # Left out of validation to remain optional
   validate :max_five_photos
@@ -18,6 +18,7 @@ class Listing < ApplicationRecord
 
   # --- Callbacks ---
   after_create :notify_matching_contractors
+  before_destroy :cleanup_notifications
 
 
   # --- Validations ---
@@ -42,6 +43,10 @@ class Listing < ApplicationRecord
   end
 
   private
+
+  def cleanup_notifications
+    Notification.where(resource_type: "Listing", resource_id: id).destroy_all
+  end
 
   def notify_matching_contractors
     return unless latitude.present? && longitude.present?
