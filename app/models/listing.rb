@@ -15,6 +15,11 @@ class Listing < ApplicationRecord
   geocoded_by :full_address
   after_validation :geocode, if: ->(obj){ obj.street_changed? || obj.postcode_changed? || obj.city_changed? }
 
+
+  # --- Callbacks ---
+  after_create :notify_matching_contractors
+
+
   # --- Validations ---
   # Core data integrity validations
   validates :title, presence: true, length: { minimum: 5, maximum: 100 }
@@ -38,9 +43,30 @@ class Listing < ApplicationRecord
 
   private
 
+  def notify_matching_contractors
+    return unless latitude.present? && longitude.present?
+
+    matching_contractors = User.joins(:specialties)
+                               .where(specialties: { category_id: category_id })
+                               .where.not(id: user_id)
+                               .select { |u| u.latitude.present? && u.longitude.present? }
+                               .select { |u|
+                                 radius = u.contractor_profile&.travel_radius || 50
+                                 Geocoder::Calculations.distance_between(
+                                   [latitude, longitude],
+                                   [u.latitude, u.longitude],
+                                   units: :km
+                                 ) <= radius
+                               }
+
+    matching_contractors.each do |contractor|
+      NotificationJob.perform_later("new_match", contractor, self)
+    end
+  end
+
   def max_five_photos
     if photos.count > 5
-      errors.add(:photos, "You can only upload a maximum of 3 photos")
+      errors.add(:photos, "You can only upload a maximum of 5 photos")
     end
   end
 end

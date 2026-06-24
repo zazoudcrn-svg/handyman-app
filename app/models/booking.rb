@@ -18,6 +18,9 @@ class Booking < ApplicationRecord
     cancelled: "cancelled"
   }
 
+  # --- Callbacks ---
+  after_update :notify_booking_status_change
+
   def proposed?
     new_proposed_date_and_time.present?
   end
@@ -28,5 +31,25 @@ class Booking < ApplicationRecord
 
   def proposed_by_contractor?
     proposed_by == "contractor"
+  end
+
+  private
+
+  def notify_booking_status_change
+    if saved_change_to_booking_status?
+      case booking_status
+      when "confirmed"
+        NotificationJob.perform_later("booking_confirmed", contractor, self)
+        NotificationJob.perform_later("booking_confirmed", customer, self)
+      when "cancelled"
+        NotificationJob.perform_later("booking_cancelled", contractor, self)
+        NotificationJob.perform_later("booking_cancelled", customer, self)
+      end
+    end
+
+    if saved_change_to_scheduled_date_and_time?
+      NotificationJob.perform_later("date_changed", contractor, self)
+      NotificationJob.perform_later("date_changed", customer, self)
+    end
   end
 end
