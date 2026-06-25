@@ -28,6 +28,9 @@ def index
 
   # 4. CALENDAR should ALWAYS use ALL confirmed bookings
   @calendar_bookings = @all_bookings.where(booking_status: "confirmed")
+
+  # ⭐5. NEW: Sort all bookings by scheduled date
+  @all_bookings = @all_bookings.order(:scheduled_date_and_time)
 end
 
   # CUSTOMER: View booking details
