@@ -1,4 +1,4 @@
-<div class="container mt-5" style="max-width: 750px;">
+<div class="container mt-5 mb-5" style="max-width: 750px;">
   <h1 class="mb-4">Customer Onboarding</h1>
   <p class="text-muted">Please complete your profile to continue.</p>
 
@@ -58,13 +58,70 @@
               oninvalid: "this.setCustomValidity('Please fill out this field.')",
               oninput: "this.setCustomValidity('')" %>
         </div>
+        <%# NEW CODE STARTS HERE %>
         <div class="col-md-4 mb-3">
           <%= f.label :country, "Country", class: "form-label" %>
-          <%= f.text_field :country, value: "Germany", class: "form-control", required: true,
-              oninvalid: "this.setCustomValidity('Please fill out this field.')",
-              oninput: "this.setCustomValidity('')" %>
+          <%= f.hidden_field :country, id: "cd-hidden-country", value: @user.country.presence || "" %>
+          <div class="cd-wrapper" id="countryDropdown">
+            <div class="cd-trigger" id="cdTrigger" tabindex="0" role="combobox" aria-expanded="false">
+              <span id="cdLabel" class="<%= @user.country.present? ? '' : 'cd-placeholder' %>">
+                <%= @user.country.present? ? @user.country : "Select country" %>
+              </span>
+              <span class="cd-arrow">▼</span>
+            </div>
+            <div class="cd-list" id="cdList" role="listbox">
+              <div class="cd-option" data-value="United Kingdom" role="option">🇬🇧 United Kingdom</div>
+              <div class="cd-option" data-value="Germany" role="option">🇩🇪 Germany</div>
+              <div class="cd-option" data-value="Austria" role="option">🇦🇹 Austria</div>
+              <div class="cd-option" data-value="Switzerland" role="option">🇨🇭 Switzerland</div>
+              <div class="cd-divider"></div>
+              <div class="cd-option" data-value="Afghanistan" role="option">🇦🇫 Afghanistan</div>
+              <div class="cd-option" data-value="Albania" role="option">🇦🇱 Albania</div>
+              <div class="cd-option" data-value="Algeria" role="option">🇩🇿 Algeria</div>
+              <div class="cd-option" data-value="Argentina" role="option">🇦🇷 Argentina</div>
+              <div class="cd-option" data-value="Australia" role="option">🇦🇺 Australia</div>
+              <div class="cd-option" data-value="Belgium" role="option">🇧🇪 Belgium</div>
+              <div class="cd-option" data-value="Brazil" role="option">🇧🇷 Brazil</div>
+              <div class="cd-option" data-value="Canada" role="option">🇨🇦 Canada</div>
+              <div class="cd-option" data-value="China" role="option">🇨🇳 China</div>
+              <div class="cd-option" data-value="Croatia" role="option">🇭🇷 Croatia</div>
+              <div class="cd-option" data-value="Czech Republic" role="option">🇨🇿 Czech Republic</div>
+              <div class="cd-option" data-value="Denmark" role="option">🇩🇰 Denmark</div>
+              <div class="cd-option" data-value="Egypt" role="option">🇪🇬 Egypt</div>
+              <div class="cd-option" data-value="Finland" role="option">🇫🇮 Finland</div>
+              <div class="cd-option" data-value="France" role="option">🇫🇷 France</div>
+              <div class="cd-option" data-value="Greece" role="option">🇬🇷 Greece</div>
+              <div class="cd-option" data-value="Hungary" role="option">🇭🇺 Hungary</div>
+              <div class="cd-option" data-value="India" role="option">🇮🇳 India</div>
+              <div class="cd-option" data-value="Indonesia" role="option">🇮🇩 Indonesia</div>
+              <div class="cd-option" data-value="Ireland" role="option">🇮🇪 Ireland</div>
+              <div class="cd-option" data-value="Israel" role="option">🇮🇱 Israel</div>
+              <div class="cd-option" data-value="Italy" role="option">🇮🇹 Italy</div>
+              <div class="cd-option" data-value="Japan" role="option">🇯🇵 Japan</div>
+              <div class="cd-option" data-value="Mexico" role="option">🇲🇽 Mexico</div>
+              <div class="cd-option" data-value="Netherlands" role="option">🇳🇱 Netherlands</div>
+              <div class="cd-option" data-value="New Zealand" role="option">🇳🇿 New Zealand</div>
+              <div class="cd-option" data-value="Norway" role="option">🇳🇴 Norway</div>
+              <div class="cd-option" data-value="Poland" role="option">🇵🇱 Poland</div>
+              <div class="cd-option" data-value="Portugal" role="option">🇵🇹 Portugal</div>
+              <div class="cd-option" data-value="Romania" role="option">🇷🇴 Romania</div>
+              <div class="cd-option" data-value="Russia" role="option">🇷🇺 Russia</div>
+              <div class="cd-option" data-value="Saudi Arabia" role="option">🇸🇦 Saudi Arabia</div>
+              <div class="cd-option" data-value="Serbia" role="option">🇷🇸 Serbia</div>
+              <div class="cd-option" data-value="Slovakia" role="option">🇸🇰 Slovakia</div>
+              <div class="cd-option" data-value="Slovenia" role="option">🇸🇮 Slovenia</div>
+              <div class="cd-option" data-value="South Africa" role="option">🇿🇦 South Africa</div>
+              <div class="cd-option" data-value="Spain" role="option">🇪🇸 Spain</div>
+              <div class="cd-option" data-value="Sweden" role="option">🇸🇪 Sweden</div>
+              <div class="cd-option" data-value="Turkey" role="option">🇹🇷 Turkey</div>
+              <div class="cd-option" data-value="Ukraine" role="option">🇺🇦 Ukraine</div>
+              <div class="cd-option" data-value="United Arab Emirates" role="option">🇦🇪 United Arab Emirates</div>
+              <div class="cd-option" data-value="United States" role="option">🇺🇸 United States</div>
+            </div>
+          </div>
         </div>
-      </div>
+        <%# NEW CODE ENDS HERE %>
+      </div><%# <-- diese Zeile schliesst das div class="row" %>
 
       <div class="d-flex align-items-center justify-content-between mt-4 pt-3" style="border-top: 1px solid #e2e8f0;">
         <%= f.submit "Save profile & continue", class: "btn btn-primary", style: "background-color: #2F6BFF; border-color: #2F6BFF; border-radius: 8px; padding: 8px 25px; font-weight: 500;" %>
@@ -74,3 +131,68 @@
     <% end %>
   </div>
 </div>
+
+
+<<style>
+  .cd-wrapper { position: relative; width: 100%; font-family: inherit; }
+  .cd-trigger { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; border: 1px solid #E2E8F0; border-radius: 12px; background: #fff; cursor: pointer; font-size: 14px; color: #0B1B33; user-select: none; transition: border-color 0.15s; }
+  .cd-trigger:hover { border-color: #2F6BFF; }
+  .cd-trigger.open { border-color: #2F6BFF; box-shadow: 0 0 0 3px rgba(47,107,255,0.1); }
+  .cd-placeholder { color: #94a3b8; }
+  .cd-arrow { font-size: 12px; color: #94a3b8; transition: transform 0.2s; }
+  .cd-trigger.open .cd-arrow { transform: rotate(180deg); }
+  .cd-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); z-index: 999; max-height: 240px; overflow-y: auto; display: none; }
+  .cd-list.open { display: block; }
+  .cd-option { padding: 10px 1rem; font-size: 14px; color: #0B1B33; cursor: pointer; transition: background 0.1s; }
+  .cd-option:hover { background: #EEF3FF; color: #2F6BFF; }
+  .cd-option.selected { background: #EEF3FF; color: #2F6BFF; font-weight: 500; }
+  .cd-divider { height: 1px; background: #E2E8F0; margin: 4px 0; }
+  .cd-list::-webkit-scrollbar { width: 6px; }
+  .cd-list::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 6px; }
+</style>
+
+<script>
+  (function() {
+    const trigger = document.getElementById("cdTrigger");
+    const list = document.getElementById("cdList");
+    const label = document.getElementById("cdLabel");
+    const hiddenInput = document.getElementById("cd-hidden-country");
+    const options = list.querySelectorAll(".cd-option");
+
+    trigger.addEventListener("click", () => {
+      const isOpen = list.classList.toggle("open");
+      trigger.classList.toggle("open", isOpen);
+      trigger.setAttribute("aria-expanded", isOpen);
+    });
+
+    options.forEach(opt => {
+      opt.addEventListener("click", () => {
+        options.forEach(o => o.classList.remove("selected"));
+        opt.classList.add("selected");
+        label.textContent = opt.textContent.trim();
+        label.classList.remove("cd-placeholder");
+        hiddenInput.value = opt.getAttribute("data-value");
+        list.classList.remove("open");
+        trigger.classList.remove("open");
+        trigger.setAttribute("aria-expanded", false);
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!document.getElementById("countryDropdown").contains(e.target)) {
+        list.classList.remove("open");
+        trigger.classList.remove("open");
+        trigger.setAttribute("aria-expanded", false);
+      }
+    });
+
+    const current = hiddenInput.value;
+    if (current) {
+      options.forEach(opt => {
+        if (opt.getAttribute("data-value") === current) {
+          opt.classList.add("selected");
+        }
+      });
+    }
+  })();
+</script>

@@ -9,6 +9,7 @@
 </div>
 <%= simple_form_for(@listing, html: {
   data: { turbo: false },
+  novalidate: true,
   # Senior interceptor: Validates the final step active fields during submission to block bad database payloads
   onsubmit: "if(this.dataset.submitting === 'true') { event.preventDefault(); return false; } else { " \
             "  const currentStepEl = document.querySelector('.form-step:not([style*=\"display: none\"])');" \
@@ -86,7 +87,8 @@
   <%# STEP 4: DETAILED DESCRIPTION & VIRTUAL AI ANSWERS %>
   <div class="form-step" id="step-4" style="display: none;">
     <h2>Tell us more details</h2>
-    <%= f.input :description, as: :text, placeholder: "Describe the job as best as you can...", input_html: { rows: 5 }, required: true %>
+   <%= f.input :description, as: :text, placeholder: "Describe the job as best as you can...", input_html: { rows: 5, maxlength: 1000 }, required: true %>
+  <p id="char-counter" style="font-size: 12px; color: #94a3b8; text-align: right; margin-top: 4px;">0 / 1000</p>
 
     <%# Premium Inline SaaS Error Message Slot %>
     <div class="step-error-message text-danger small mb-3 fw-semibold" style="display: none;"></div>
@@ -184,8 +186,7 @@
     </div>
 
     <button type="button" class="prev-btn">&larr; Back</button>
-    <%= f.submit "Post Listing", class: "submit-btn" %>
-    <% if @listing.persisted? %>
+    <%= f.submit @listing.persisted? ? "Update Listing" : "Post Listing", class: "submit-btn" %>    <% if @listing.persisted? %>
       <%= link_to "Cancel", listing_path(@listing), class: "btn btn-light border fw-semibold ms-2", style: "border-radius: 9999px; padding: 12px 28px; color: #64748b;" %>
     <% end %>
   </div>
@@ -216,6 +217,20 @@
     const getCategorySelect = () => document.querySelector('select[name^="listing[category"]');
     const getTitleInput = () => document.querySelector('input[name="listing[title]"]');
     const getDescriptionArea = () => document.querySelector('textarea[name="listing[description]"]');
+    // NEW CODE STARTS HERE
+    const descArea = getDescriptionArea();
+    const charCounter = document.getElementById("char-counter");
+    if (descArea && charCounter) {
+      descArea.addEventListener("input", () => {
+        const count = descArea.value.length;
+        charCounter.innerText = `${count} / 1000`;
+        charCounter.style.color = count > 900 ? "#EF4444" : "#94a3b8";
+        // Hide error message when user types
+        const errorBox = document.querySelector("#step-4 .step-error-message");
+        if (errorBox) errorBox.style.display = "none";
+      });
+    }
+    // NEW CODE ENDS HERE
 
     const keywordMapping = {
       "plumbing, heating & ac": ["water", "faucet", "pipe", "shower", "wc", "toilet", "heating", "leak", "sink", "boiler"],
@@ -362,6 +377,33 @@
 
         let isStepValid = true;
 
+        // NEW CODE STARTS HERE
+        if (currentStep === 3) {
+          const descArea = getDescriptionArea();
+          if (descArea && descArea.value.trim().length > 0 && descArea.value.trim().length < 10) {
+            isStepValid = false;
+            descArea.classList.add("is-invalid");
+            const errorBox = currentStepEl.querySelector(".step-error-message");
+            if (errorBox) {
+              errorBox.innerText = "Your description must be at least 10 characters long.";
+              errorBox.style.display = "block";
+            }
+            return;
+          }
+
+          if (descArea && descArea.value.trim().length >= 1000) {
+            isStepValid = false;
+            descArea.classList.add("is-invalid");
+            const errorBox = currentStepEl.querySelector(".step-error-message");
+            if (errorBox) {
+              errorBox.innerText = "Your description must be no longer than 1000 characters.";
+              errorBox.style.display = "block";
+            }
+            return;
+          }
+        }
+        // NEW CODE ENDS HERE
+
         // 2. Custom Checkbox verification logic specifically for step 2 criteria bounds
         if (currentStep === 1) {
           const checkboxes = currentStepEl.querySelectorAll(".sub-cb");
@@ -385,7 +427,7 @@
               isStepValid = false;
               input.closest(".custom-radio-group")?.classList.add("is-invalid-group");
             }
-          } else if (input.type !== "checkbox" && !input.value.trim()) {
+          } else if (input.type !== "checkbox" && (!input.value.trim() || (input.tagName === "TEXTAREA" && input.value.trim().length < 10))) {
             isStepValid = false;
             input.classList.add("is-invalid");
 
@@ -400,7 +442,13 @@
 
         if (!isStepValid) {
           if (errorMessageContainer) {
-            errorMessageContainer.innerText = "Please fill out all required parts inside this step before shifting forward.";
+            // NEW CODE STARTS HERE
+            const descArea = getDescriptionArea();
+            const isDescStep = currentStep === 3;
+            errorMessageContainer.innerText = isDescStep && descArea && descArea.value.trim().length > 0 && descArea.value.trim().length < 10
+              ? "Your description must be at least 10 characters long."
+              : "Please fill out all required parts inside this step before shifting forward.";
+            // NEW CODE ENDS HERE
             errorMessageContainer.style.display = "block";
             errorMessageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }
@@ -437,6 +485,12 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", initializeMultiStepForm);
+  // NEW CODE STARTS HERE
   document.addEventListener("turbo:load", initializeMultiStepForm);
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    initializeMultiStepForm();
+  } else {
+    document.addEventListener("DOMContentLoaded", initializeMultiStepForm);
+  }
+  // NEW CODE ENDS HERE
 </script>

@@ -133,14 +133,14 @@
                 <p class="mb-3 small"><i class="bi bi-geo-alt me-2" style="color: #2F6BFF;"></i><%= [@listing.postcode, @listing.city].compact.join(", ") %></p>
               <% end %>
 
-              <%= link_to edit_listing_path(@listing), class: "btn btn-light border py-2 fw-semibold text-dark w-100", style: "border-radius: 12px;" do %>
+              <%= link_to edit_listing_path(@listing), class: "btn btn-light border py-2 fw-semibold text-dark w-100 btn-edit-listing", style: "border-radius: 12px; transition: all 0.2s ease;" do %>
                 <i class="bi bi-pencil-square me-1"></i> Edit Details
               <% end %>
-              <button type="button" class="btn w-100 py-2 fw-semibold mt-2"
-                data-bs-toggle="modal" data-bs-target="#deleteModal"
-                style="border-radius: 12px; background-color: #EEF3FF; color: #2F6BFF; border: 1px solid #c7d2e8;">
-                <i class="bi bi-trash me-1"></i> Delete Listing
-              </button>
+              <button type="button" class="btn w-100 py-2 fw-semibold mt-2 btn-delete-listing"
+              data-bs-toggle="modal" data-bs-target="#deleteModal"
+              style="border-radius: 12px; background-color: #EEF3FF; color: #2F6BFF; border: 1px solid #c7d2e8; transition: all 0.2s ease;">
+              <i class="bi bi-trash me-1"></i> Delete Listing
+            </button>
             </div>
           </div>
 
@@ -250,4 +250,15 @@
 <style>
   .object-cover { object-fit: cover; }
   .text-muted-hover:hover { color: #0B1B33 !important; }
+
+   .btn-edit-listing:hover {
+    background-color: #0B1B33 !important;
+    color: white !important;
+    border-color: #0B1B33 !important;
+  }
+  .btn-delete-listing:hover {
+    background-color: #2F6BFF !important;
+    color: white !important;
+    border-color: #2F6BFF !important;
+  }
 </style>

@@ -4,6 +4,18 @@ class DashboardsController < ApplicationController
   def show
     cookies.permanent[:has_account] = "true"
 
+    # NEW CODE STARTS HERE
+    if current_user.contractor? && current_user.contractor_profile&.business_name.blank?
+      @onboarding_incomplete = true
+      render :contractor_show and return
+    end
+
+    if current_user.customer? && !current_user.first_name.present?
+      @onboarding_incomplete = true
+      render :customer_show and return
+    end
+    # NEW CODE ENDS HERE
+
     if current_user.contractor_profile.present?
       profile = current_user.contractor_profile
       contractor_category_ids = current_user.categories.pluck(:id)
