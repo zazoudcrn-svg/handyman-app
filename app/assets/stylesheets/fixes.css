@@ -1,0 +1,76 @@
+/* ADDED: object-fit fallback for card images */
+.object-fit-cover {
+  object-fit: cover;
+}
+
+/* ADDED: hover state for primary (blue) buttons — darker blue on hover,
+   matching the listing show page's .btn-delete-listing pattern */
+.btn-primary:not(nav .btn-primary),
+button.btn-primary:not(nav button.btn-primary),
+a.btn-primary:not(nav a.btn-primary) {
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  cursor: pointer;
+}
+
+.btn-primary:not(nav .btn-primary),
+button.btn-primary:not(nav button.btn-primary),
+a.btn-primary:not(nav a.btn-primary) {
+  --bs-btn-hover-bg: #1E4FD6;
+  --bs-btn-hover-border-color: #1E4FD6;
+  --bs-btn-hover-color: #FFFFFF;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  cursor: pointer;
+}
+
+.btn-primary:hover:not(nav .btn-primary),
+button.btn-primary:hover:not(nav button.btn-primary),
+a.btn-primary:hover:not(nav a.btn-primary) {
+  background-color: #1E4FD6 !important;
+  border-color: #1E4FD6 !important;
+  color: #FFFFFF !important;
+}
+
+/* ADDED: hover state for everything else (buttons, links, inputs) — navy on hover,
+   matching the listing show page's .btn-edit-listing pattern. Covers inline-styled
+   blue buttons too — they get navy hover, which is fine */
+.btn:not(.btn-primary):not(nav .btn),
+button:not(.btn-primary):not(nav button),
+a.btn:not(.btn-primary):not(nav a.btn),
+input[type="submit"]:not(nav input[type="submit"]),
+input[type="button"]:not(nav input[type="button"]) {
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  cursor: pointer;
+}
+
+.btn:hover:not(.btn-primary):not(.navbar-guest-btn-outline):not(nav .btn),
+button:hover:not(.btn-primary):not(.navbar-guest-btn-outline):not(nav button),
+a.btn:hover:not(.btn-primary):not(.navbar-guest-btn-outline):not(nav a.btn),
+input[type="submit"]:hover:not(nav input[type="submit"]),
+input[type="button"]:hover:not(nav input[type="button"]) {
+  background-color: #0B1B33 !important;
+  color: #FFFFFF !important;
+  border-color: #0B1B33 !important;
+}
+
+/* ADDED: plain links (profile hyperlinks, etc.) — navy text on hover */
+a:not(.btn):not(nav a) {
+  transition: color 0.15s ease;
+  cursor: pointer;
+}
+
+a:not(.btn):not(nav a):hover {
+  color: #0B1B33 !important;
+}
+
+/* ADDED: explicitly clickable non-button/link elements */
+[role="button"]:not(nav [role="button"]),
+.clickable:not(nav .clickable) {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+[role="button"]:hover:not(nav [role="button"]),
+.clickable:hover:not(nav .clickable) {
+  background-color: #0B1B33 !important;
+  color: #FFFFFF !important;
+}
