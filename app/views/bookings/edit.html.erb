@@ -1,132 +1,134 @@
-<div class="container mt-4">
+<div class="container my-4" style="max-width: 850px;">
 
-  <%= link_to "← Back to all Bookings", booking_path(@booking), class: "btn btn-outline-secondary mb-3" %>
+  <div class="mb-4">
+    <%= link_to booking_path(@booking), class: "text-decoration-none d-inline-flex align-items-center gap-2 small fw-medium", style: "color: #64748B; transition: color 0.2s;" do %>
+      <i class="bi bi-arrow-left"></i> Back to Booking
+    <% end %>
+  </div>
 
-  <div class="card shadow-sm p-4">
+  <div class="mb-4">
+    <h1 class="fw-bold" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 2rem; letter-spacing: -0.5px;">Edit Booking</h1>
+  </div>
 
-    <h2 class="mb-4 text-center">Edit Booking</h2>
-    <div id="status_message"></div>
+  <div class="card" style="border-radius: 20px; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02); background: #FFFFFF;">
+    <div class="p-4 p-md-5">
 
-    <!-- READ-ONLY DETAILS -->
-    <div class="<%= current_user.customer? ? 'mb-4' : 'mb-2' %>">
-  <p class="mb-1"><strong>Title:</strong> <%= @booking.listing.title %></p>
+      <%# JOB DETAILS — read only %>
+      <h5 class="fw-bold mb-4" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Job Details</h5>
+      <div class="mb-4 pb-4" style="border-bottom: 1px solid #E2E8F0;">
+        <p class="mb-2 small" style="color: #475569;">
+          <i class="bi bi-briefcase me-2" style="color: #2F6BFF;"></i>
+          <strong>Title:</strong> <%= @booking.listing.title %>
+        </p>
+        <% if current_user.contractor? %>
+          <p class="mb-2 small" style="color: #475569;">
+            <i class="bi bi-geo-alt me-2" style="color: #2F6BFF;"></i>
+            <strong>Address:</strong> <%= @booking.listing.full_address %>
+          </p>
+          <p class="mb-0 small" style="color: #475569;">
+            <i class="bi bi-person me-2" style="color: #2F6BFF;"></i>
+            <strong>Customer:</strong> <%= @booking.listing.user.first_name %> <%= @booking.listing.user.last_name&.first %>.
+          </p>
+        <% else %>
+          <p class="mb-0 small" style="color: #475569;">
+            <i class="bi bi-person me-2" style="color: #2F6BFF;"></i>
+            <strong>Contractor:</strong> <%= @booking.offer.user.first_name %> <%= @booking.offer.user.last_name&.first %>.
+          </p>
+        <% end %>
+      </div>
 
- <% if current_user.contractor? %>
-  <p class="mb-1"><strong>Address:</strong> <%= @booking.listing.full_address %></p>
-  <p class="mb-1"><strong>Customer:</strong> <%= @booking.listing.user.first_name %></p>
-<% else %>
-  <p class="mb-1"><strong>Contractor:</strong> <%= @booking.offer.user.first_name %></p>
-<% end %>
-
-</div>
-
-    <!-- ⭐ ONE SINGLE FORM FOR ALL BOOKING UPDATES -->
-    <%= form_with model: @booking, url: booking_path(@booking), method: :patch, class: "row g-3" do |f| %>
-
+      <%# ADDRESS EDIT FORM — customers only %>
       <% if current_user.customer? %>
-  <!-- ADDRESS (CUSTOMER CAN EDIT) -->
-      <h5 class="mt-1 mb-2">Address</h5>
-      <%= f.fields_for :listing do |lf| %>
-        <%= lf.hidden_field :id %>
+        <%= form_with model: @booking, url: booking_path(@booking), method: :patch do |f| %>
+          <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Job Address</h5>
+          <%= f.fields_for :listing do |lf| %>
+            <%= lf.hidden_field :id %>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <%= lf.label :street, "Street", class: "form-label small fw-semibold", style: "color: #0B1B33;" %>
+                <%= lf.text_field :street, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; font-size: 14px;" %>
+              </div>
+              <div class="col-md-6">
+                <%= lf.label :city, "City", class: "form-label small fw-semibold", style: "color: #0B1B33;" %>
+                <%= lf.text_field :city, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; font-size: 14px;" %>
+              </div>
+              <div class="col-md-6">
+                <%= lf.label :postcode, "Postcode", class: "form-label small fw-semibold", style: "color: #0B1B33;" %>
+                <%= lf.text_field :postcode, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; font-size: 14px;" %>
+              </div>
+              <div class="col-md-6">
+                <%= lf.label :country, "Country", class: "form-label small fw-semibold", style: "color: #0B1B33;" %>
+                <%= lf.text_field :country, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; font-size: 14px;" %>
+              </div>
+            </div>
+          <% end %>
+          <div class="d-flex align-items-center gap-2 mt-4">
+            <%= f.hidden_field :form_type, value: "save_changes" %>
+            <%= f.submit "Save Changes",
+                class: "btn fw-semibold",
+                style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 9999px; font-family: 'Outfit', sans-serif; font-size: 13px; padding: 10px 28px; border: none; transition: all 0.2s ease;" %>
+            <%= link_to "Cancel", booking_path(@booking),
+                class: "btn fw-semibold",
+                style: "border: 1px solid #E2E8F0; color: #475569; border-radius: 9999px; font-family: 'Outfit', sans-serif; font-size: 13px; padding: 10px 28px; background: #F8FAFC; transition: all 0.2s ease;" %>
+          </div>
+        <% end %>
 
-        <div class="row">
+        <hr style="border-color: #E2E8F0; margin: 2rem 0;">
+      <% end %>
+
+      <%# PROPOSE NEW DATE FORM %>
+      <h5 class="fw-bold mb-4" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Propose a New Date</h5>
+
+      <%= form_with model: @booking,
+            url: propose_date_booking_path(@booking),
+            method: :patch,
+            data: { turbo: false } do |f| %>
+        <div class="row g-3">
           <div class="col-md-6">
-            <%= lf.label :street, "Street", class: "form-label" %>
-            <%= lf.text_field :street, class: "form-control" %>
+            <label class="form-label small fw-semibold" style="color: #0B1B33;">Current Scheduled Date</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white" style="border-radius: 10px 0 0 10px; border: 1px solid #E2E8F0; border-right: none;">
+                <i class="bi bi-calendar-event" style="color: #2F6BFF;"></i>
+              </span>
+              <input type="text"
+                     class="form-control bg-white"
+                     value="<%= @booking.scheduled_date_and_time.strftime('%A, %d %B %Y at %I:%M %p') %>"
+                     disabled
+                     style="border-radius: 0 10px 10px 0; border: 1px solid #E2E8F0; font-size: 14px; color: #64748B;">
+            </div>
+            <small class="text-muted" style="font-size: 11px;">Use the field below to propose a change.</small>
           </div>
-
           <div class="col-md-6">
-            <%= lf.label :city, "City", class: "form-label" %>
-            <%= lf.text_field :city, class: "form-control" %>
-          </div>
-
-          <div class="col-md-6 mt-3">
-            <%= lf.label :postcode, "Postcode", class: "form-label" %>
-            <%= lf.text_field :postcode, class: "form-control" %>
-          </div>
-
-          <div class="col-md-6 mt-3">
-            <%= lf.label :country, "Country", class: "form-label" %>
-            <%= lf.text_field :country, class: "form-control" %>
+            <%= f.label :new_proposed_date_and_time, "Select New Date & Time", class: "form-label small fw-semibold", style: "color: #0B1B33;" %>
+            <div class="input-group">
+              <span class="input-group-text bg-white" style="border-radius: 10px 0 0 10px; border: 1px solid #E2E8F0; border-right: none;">
+                <i class="bi bi-calendar-plus" style="color: #2F6BFF;"></i>
+              </span>
+              <%= f.text_field :new_proposed_date_and_time,
+                    class: "form-control date-picker",
+                    style: "border-radius: 0 10px 10px 0; border: 1px solid #E2E8F0; font-size: 14px;" %>
+            </div>
           </div>
         </div>
+        <div class="mt-4">
+          <%= f.hidden_field :form_type, value: "propose_date" %>
+          <%= f.submit "Propose New Date",
+                class: "btn fw-semibold",
+                style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 9999px; font-family: 'Outfit', sans-serif; font-size: 13px; padding: 10px 28px; border: none; transition: all 0.2s ease;" %>
+        </div>
       <% end %>
-      <% end %>
-     <% if current_user.customer? %>
-      <!-- ⭐ SAVE BUTTON -->
-      <div class="col-12 mt-4">
-        <%= f.hidden_field :form_type, value: "save_changes" %>
-        <%= f.submit "Save Changes",
-              class: "btn fw-semibold",
-              style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 8px; font-size: 13px; padding: 12px 32px;" %>
 
-        <%= link_to "Cancel", booking_path(@booking),
-      class: "btn fw-semibold ms-2 cancel-btn",
-      style: "border: 1px solid #CBD5E1; color: #475569; border-radius: 8px; font-size: 13px; padding: 12px 32px;" %>
-     </div>
-     <% end %>
-
-    <% end %>
-
-    <hr class="my-4">
-<!-- ⭐ PROPOSE NEW DATE FORM -->
-<h4 class="mb-3">Propose a New Date</h4>
-
-<div class="card p-3 border-0 shadow-sm" style="border-radius: 12px; background: #F8FAFC;">
-  <%= form_with model: @booking,
-        url: propose_date_booking_path(@booking),
-        method: :patch,
-        data: { turbo: false },
-        class: "row g-4" do |f| %>
-
-    <!-- CURRENT SCHEDULED DATE (READ ONLY) -->
-    <div class="col-md-6">
-      <label class="form-label fw-semibold">Scheduled Date & Time</label>
-      <div class="input-group">
-        <span class="input-group-text bg-white">
-          <i class="bi bi-calendar-event"></i>
-        </span>
-        <input type="text"
-               class="form-control bg-white"
-               value="<%= @booking.scheduled_date_and_time.strftime('%A, %d %B %Y at %I:%M %p') %>"
-               disabled
-               style="border-radius: 0 8px 8px 0;">
-      </div>
-      <small class="text-muted">This date cannot be edited. Use “Propose New Date”.</small>
     </div>
-
-    <!-- NEW DATE + BUTTON IN SAME COLUMN -->
-    <div class="col-md-6">
-      <%= f.label :new_proposed_date_and_time, "Select New Date & Time", class: "form-label fw-semibold" %>
-      <div class="input-group mb-3">
-        <span class="input-group-text bg-white">
-          <i class="bi bi-calendar-plus"></i>
-        </span>
-        <%= f.text_field :new_proposed_date_and_time,
-              class: "form-control date-picker",
-              style: "border-radius: 0 8px 8px 0;" %>
-      </div>
-
-      <!-- BUTTON RIGHT BELOW NEW DATE -->
-      <%= f.hidden_field :form_type, value: "propose_date" %>
-      <%= f.submit "Propose New Date",
-            class: "btn fw-semibold",
-            style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 8px; font-size: 14px; padding: 12px 32px;" %>
-    </div>
-
-  <% end %>
-</div>
-
-
   </div>
+
 </div>
 
 <style>
-  .cancel-btn:hover {
-  background-color: #E2E8F0; /* darker grey */
-  color: #1E293B !important; /* darker text */
-  border-color: #CBD5E1;
-  transition: all 0.2s ease;
-}
-
-  </style>
+  .form-control:focus {
+    border-color: #2F6BFF !important;
+    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.1) !important;
+  }
+  .btn:hover[style*="background-color: #2F6BFF"] {
+    background-color: #0B1B33 !important;
+  }
+</style>

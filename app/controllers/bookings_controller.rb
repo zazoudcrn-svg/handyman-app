@@ -71,9 +71,9 @@ end
       @booking.proposed_by = current_user.role
 
       if @booking.save
-        redirect_to edit_booking_path(@booking), notice: "New date proposed successfully."
+        redirect_to booking_path(@booking), notice: "New date proposed successfully."
       else
-        redirect_to edit_booking_path(@booking), alert: "Something went wrong."
+        redirect_to booking_path(@booking), alert: "Something went wrong."
       end
 
     when "save_changes"
@@ -121,9 +121,9 @@ end
     end
 
     if @booking.save
-      redirect_to edit_booking_path(@booking), notice: "New date proposed successfully."
+      redirect_to booking_path(@booking), notice: "New date proposed successfully."
     else
-      redirect_to edit_booking_path(@booking), alert: "Something went wrong."
+      redirect_to booking_path(@booking), alert: "Something went wrong."
     end
   end
 
