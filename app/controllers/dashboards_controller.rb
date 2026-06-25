@@ -9,6 +9,11 @@ class DashboardsController < ApplicationController
       @onboarding_incomplete = true
       render :contractor_show and return
     end
+
+    if current_user.customer? && !current_user.first_name.present?
+      @onboarding_incomplete = true
+      render :customer_show and return
+    end
     # NEW CODE ENDS HERE
 
     if current_user.contractor_profile.present?

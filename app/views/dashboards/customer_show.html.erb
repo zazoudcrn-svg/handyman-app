@@ -1,3 +1,16 @@
+<%# NEW CODE STARTS HERE %>
+<% if @onboarding_incomplete %>
+  <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background-color: #F8FAFC;">
+    <div style="text-align: center; padding: 80px 20px;">
+      <i class="ti ti-user-check" style="font-size: 64px; color: #2F6BFF; display: block; margin-bottom: 24px;"></i>
+      <h2 style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-weight: 700; font-size: 1.8rem; margin-bottom: 12px;">Complete your profile to get started</h2>
+      <p style="color: #64748b; font-size: 16px; margin-bottom: 32px;">Finish your onboarding to start posting jobs.</p>
+      <%= link_to "Complete Onboarding →", onboarding_customer_path, class: "btn", style: "background: #2F6BFF; color: white; border-radius: 9999px; padding: 12px 28px; font-weight: 600; font-size: 15px;" %>
+    </div>
+  </div>
+<% else %>
+<%# NEW CODE ENDS HERE %>
+
 <div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
   <div class="container" style="max-width: 1200px;">
 
@@ -115,3 +128,4 @@
   .custom-filter-btn .badge { background-color: #EFF6FF; color: #2F6BFF; }
   .custom-primary-btn:hover { background-color: #0B1B33 !important; }
 </style>
+<% end %>
