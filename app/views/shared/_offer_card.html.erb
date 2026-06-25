@@ -41,7 +41,11 @@
       <div class="col-md-4 position-relative" style="min-height: 220px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center;">
 
         <% if offer.listing.photos.attached? && offer.listing.photos.first.present? %>
-          <%= cl_image_tag offer.listing.photos.first.key, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
+          <%# CHANGED: added width/height/crop/gravity so Cloudinary delivers an already-cropped,
+    correctly-sized image instead of relying on CSS to force-fit the original %>
+<%= cl_image_tag offer.listing.photos.first.key,
+      width: 400, height: 220, crop: :fill, gravity: :auto,
+      class: "w-100 h-100 object-fit-cover position-absolute top-0 start-0" %>
         <% else %>
           <%
             image_path = if offer.listing.title.include?("EMERGENCY") then "listings/burst_pipe.png"

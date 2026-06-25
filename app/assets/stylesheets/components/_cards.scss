@@ -1,0 +1,4 @@
+/* ADDED: explicit fallback in case Bootstrap's object-fit utility isn't enabled */
+.object-fit-cover {
+  object-fit: cover;
+}

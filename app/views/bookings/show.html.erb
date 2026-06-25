@@ -1,84 +1,170 @@
-<div class="container mt-4">
+<%
+  # status color for the inline "Status: X" line, same pattern as the listing page's
+  # "Status: open" treatment — pending mirrors "open" (blue), accepted green, declined red
+  status_color = case @booking.booking_status
+                 when "confirmed" then "#1E40AF"
+                 when "completed" then "#16A34A"
+                 when "cancelled" then "#DC2626"
+                 else "#2F6BFF"
+                 end
 
-  <!-- Back Button -->
-  <%= link_to "← Back to all Bookings", bookings_path, class: "btn btn-outline-secondary mb-3" %>
+  # which party to show in the "Posted by"-style block, mirrored from the listing page
+  if current_user.customer?
+    other_user       = @booking.offer.user
+    other_user_label = "Contractor"
+    other_user_name  = @booking.offer.user.contractor_profile&.business_name ||
+                       @booking.offer.user.first_name
+  else
+    other_user       = @booking.listing.user
+    other_user_label = "Customer"
+    other_user_name  = "#{other_user.first_name} #{other_user.last_name&.first}."
+  end
+%>
 
-  <div class="row g-4">
+<div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
+  <div class="container" style="max-width: 1100px;">
 
-    <div class="col-md-8">
+    <div class="mb-4">
+      <%= link_to bookings_path, class: "text-decoration-none d-inline-flex align-items-center gap-2 small fw-medium text-muted-hover", style: "color: #64748B; transition: color 0.2s;" do %>
+        <i class="bi bi-arrow-left"></i> Back to all Bookings
+      <% end %>
+    </div>
+    <div class="row g-4">
 
-      <div class="card shadow-sm p-4">
+      <%# LEFT COLUMN: offer card with picture %>
+      <div class="col-lg-8">
+        <div class="card border-0 overflow-hidden" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 20px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
 
-        <h2 class="mb-4 text-center">Booking Details</h2>
+          <div class="position-relative" style="border-radius: 20px 20px 0 0; overflow: hidden;">
+
+            <div id="main-photo" style="height: 320px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center;">
+              <% if @booking.listing.photos.attached? && @booking.listing.photos.first.present? %>
+               <%= cl_image_tag @booking.listing.photos.first.key,
+               class: "w-100 h-100 object-cover",
+               id: "main-photo-img" %>
+              <% else %>
+             <%
+               title = @booking.listing.title.downcase
+               image_path =
+                if title.include?("sink")      then "listings/kitchen_sink.png"
+                elsif title.include?("boiler") then "listings/boiler_repair.png"
+                elsif title.include?("radiator") then "listings/radiator_valve.png"
+                elsif title.include?("shower") then "listings/shower_seal.png"
+                else nil
+                end
+            %>
+              <% if image_path.present? %>
+              <%= image_tag image_path,
+               class: "w-100 h-100 object-cover",
+               id: "main-photo-img" %>
+              <% else %>
+             <div class="text-center" style="color: #64748B;">
+               <i class="bi bi-camera" style="font-size: 3rem; display: block; margin-bottom: 0.5rem;"></i>
+               <span class="fw-semibold" style="font-size: 1.1rem;">No photo attached</span>
+               </div>
+               <% end %>
+               <% end %>
+           </div>
+
+            <% if @listing.photos.count > 1 %>
+              <div class="d-flex gap-2 p-2" style="background: #F8FAFC; border-top: 1px solid #E2E8F0;">
+                <% @listing.photos.each_with_index do |photo, index| %>
+                  <img src="<%= cl_image_path(photo.key) %>"
+                      onclick="document.getElementById('main-photo-img').src = this.src"
+                      style="width: 64px; height: 64px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid <%= index == 0 ? '#2F6BFF' : '#E2E8F0' %>;"
+                      onmouseover="this.style.borderColor='#2F6BFF'"
+                      onmouseout="this.style.borderColor='#E2E8F0'">
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+            <div class="p-4 p-md-5">
+              <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                 <span class="badge border text-capitalize px-3 py-1.5" style="border-radius: 6px; background-color: #F1F5F9; color: #475569; font-size: 12px; font-weight: 600; border-color: #E2E8F0 !important;">
+                 <%= @booking.listing.category&.name || "General" %>
+                 </span>
+                <span class="text-muted small d-flex align-items-center gap-1">
+                <i class="bi bi-activity"></i> Status: <strong class="text-capitalize" style="color: <%= status_color %>;"><%= @booking.booking_status || "pending" %></strong>
+                </span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="fw-bold m-0"
+      style="font-family: 'Outfit', sans-serif; color: #0B1B33; max-width: 75%;">
+    <%= @booking.listing.title %>
+  </h3>
 
   <% unless ["completed", "cancelled"].include?(@booking.booking_status) %>
-  <div class="d-flex justify-content-end gap-2 mb-3">
+    <div class="d-flex gap-2">
 
-    <!-- EDIT ICON -->
-    <%= link_to edit_booking_path(@booking),
-        class: "d-flex align-items-center justify-content-center rounded-circle",
-        style: "width:40px; height:40px; background:#f1f1f1;" do %>
-      <i class="bi bi-pencil text-dark"></i>
-    <% end %>
+      <%= link_to edit_booking_path(@booking),
+    class: "edit-btn d-flex align-items-center justify-content-center rounded-circle",
+    style: "width:40px; height:40px; background:#F1F5F9;" do %>
+    <i class="bi bi-pencil edit-icon"></i>
+     <% end %>
 
-    <!-- DELETE ICON -->
-       <%= link_to "#",
-          data: { bs_toggle: "modal", bs_target: "#cancelModal" },
-          class: "d-flex align-items-center justify-content-center rounded-circle",
-          style: "width:40px; height:40px; background:#ffe6e6;" do %>
-          <i class="bi bi-x-lg text-danger"></i>
-       <% end %>
 
-  </div>
-  <% end %>
-
-        <h4 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"><%= @booking.listing.title %></h4>
-
-<% if @booking.listing.photos.attached? %>
-  <div class="booking-photos">
-    <% @booking.listing.photos.each do |photo| %>
-      <%= image_tag photo, class: "img-fluid rounded mb-3", style: "max-width: 300px;" %>
-    <% end %>
-  </div>
-<% else %>
-  <div class="d-flex flex-column align-items-center mt-3">
-    <i class="bi bi-camera" style="font-size: 4rem; color: #94A3B8;"></i>
-    <p class="text-muted mt-2">No photos were uploaded for this job.</p>
-  </div>
+<%= link_to booking_path(@booking),
+    data: { bs_toggle: "modal", bs_target: "#cancelModal" },
+    class: "delete-btn d-flex align-items-center justify-content-center rounded-circle",
+    style: "width:40px; height:40px; background:#F1F5F9;" do %>
+    <i class="bi bi-x-lg delete-icon"></i>
 <% end %>
 
 
+    </div>
+  <% end %>
+</div>
 
+          <%# CUSTOMER VIEW %>
+          <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;"></h5>
 
-        <%# CUSTOMER VIEW %>
-        <% if current_user.customer? %>
-          <p><strong>Contractor:</strong> <%= link_to @booking.offer.user.contractor_profile&.business_name || @booking.offer.user.first_name, profile_path(@booking.offer.user) %></p>
-        <% end %>
+<div class="mb-4 pb-4" style="border-bottom: 1px solid #E2E8F0;">
 
-        <% if current_user.contractor? %>
-          <p><strong>Customer:</strong> <%= link_to @booking.listing.user.first_name, profile_path(@booking.listing.user) %></p>
-        <% end %>
+  <% if current_user.customer? %>
+    <p class="mb-2 small">
+      <strong>Contractor:</strong>
+      <%= link_to(
+            @booking.offer.user.contractor_profile&.business_name || @booking.offer.user.first_name,
+            profile_path(@booking.offer.user),
+            style: "color: #2F6BFF; text-decoration: none;"
+          ) %>
+    </p>
+  <% else %>
+    <p class="mb-2 small">
+      <strong>Customer:</strong>
+      <%= link_to(
+            "#{@booking.listing.user.first_name} #{@booking.listing.user.last_name&.first}.",
+            profile_path(@booking.listing.user),
+            style: "color: #2F6BFF; text-decoration: none;"
+          ) %>
+    </p>
+  <% end %>
 
-        <p><strong>Scheduled Date:</strong> <strong> <%= @booking.scheduled_date_and_time.strftime("%A") %></strong> •
-           <%= @booking.scheduled_date_and_time.strftime("%d %B %Y at %I:%M %p") %></p>
-        <p><strong>Address:</strong>
-        <%= @booking.listing.street %>, <%= @booking.listing.city %> <%= @booking.listing.postcode %>, <%= @booking.listing.country %>
-</p>
-        <p><strong>Description:</strong> <%= @booking.listing.description %></p>
-        <p>
-          <strong>Status:</strong>
-          <span class="badge bg-info text-dark"><%= @booking.booking_status %></span>
-        </p>
-          <% if @booking.booking_status == "cancelled" %>
-            <div class="mt-3" style="border-left: 4px solid #d9534f; padding-left: 10px;">
-            <strong style="color:#d9534f;">Booking Cancelled</strong>
-         <% if @booking.cancellation_note.present? %>
-            <p class="mt-2"><strong>Reason:</strong> <%= @booking.cancellation_note %></p>
-         <% end %>
-         </div>
-         <% end %>
+  <p class="mb-2 small">
+    <strong>Scheduled Date:</strong>
+    <%= @booking.scheduled_date_and_time.strftime("%A • %d %B %Y at %I:%M %p") %>
+  </p>
 
-        <% if current_user.contractor? &&
+  <p class="mb-2 small">
+    <strong>Address:</strong>
+    <%= @booking.listing.street %>,
+    <%= @booking.listing.city %>
+    <%= @booking.listing.postcode %>,
+    <%= @booking.listing.country %>
+  </p>
+
+  <p class="mb-2 small">
+    <strong>Description:</strong>
+    <%= @booking.listing.description.presence || "No description provided." %>
+  </p>
+
+  <% if @booking.booking_status == "cancelled" %>
+    <p class="mb-0 small">
+      <strong>Cancellation Note:</strong>
+      <%= @booking.cancellation_note.presence || "No cancellation note provided." %>
+    </p>
+  <% end %>
+  <% if current_user.contractor? &&
           @booking.booking_status == "confirmed" &&
           @booking.accepted_by == "customer" &&
           @booking.new_proposed_date_and_time.nil? %>
@@ -93,108 +179,62 @@
 
         <% unless ["cancelled", "completed", "pending"].include?(@booking.booking_status) %>
           <% if @booking.new_proposed_date_and_time.present? %>
-          <p><strong>New Proposed Date:</strong> <%= @booking.new_proposed_date_and_time %></p>
+          <p class="mb-2 small"><strong>New Proposed Date:</strong> <%= @booking.new_proposed_date_and_time %></p>
           <% if @booking.proposed_by != current_user.role %>
-           <%= button_to "Accept New Date",
+          <div class="mt-3">
+  <%= button_to "Accept New Date",
       accept_date_booking_path(@booking),
       method: :patch,
       data: { turbo: false },
-      class: "btn fw-semibold mb-3",
-      style: "background-color: #16A34A; color: #FFFFFF; border-radius: 8px; font-size: 12px; padding: 10px 12px;" %>
+      class: "btn fw-semibold",
+      style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 8px; font-size: 13px; padding: 12px 20px;" %>
+</div>
+          <% end %>
+          <% end %>
+          <% end %>
 
-          <% end %>
-          <% end %>
-          <% end %>
+</div>
 
         <% if (current_user.role == "contractor" && @offer.user_id == current_user.id) ||
       (current_user.role == "customer" && @booking.booking_status != "pending") %>
-        <hr>
 
-          <h4>Offer Details</h4>
-          <p><strong>Quote:</strong> <%= @offer.quote %></p>
-          <% if @offer.note.present? %>
-          <p><strong>Note:</strong> <%= @offer.note %></p>
-          <% else %>
-          <p><strong>Note:</strong> No note provided.</p>
-          <% end %>
-
-          <hr>
-          <% end %>
-
-<% unless ["completed", "cancelled", "pending"].include?(@booking.booking_status) %>
-        <div class="text-center mt-3">
-  <%= link_to "Mark as Completed",
-              complete_booking_path(@booking),
-              data: { turbo_method: :patch },
-              class: "btn fw-semibold",
-              style: "background-color: #10B981;
-                      color: #FFFFFF;
-                      border-radius: 8px;
-                      font-size: 15px;
-                      padding: 15px 38px;
-                      display: inline-block;" %>
-</div>
-<% end %>
-
-
-
-    <%# REVIEW BUTTON %>
-    <% if @booking.booking_status == "completed" %>
-      <% if Review.exists?(user_id: current_user.id, booking_id: @booking.id) %>
-        <p class="text-success mt-3">
-          <i class="bi bi-check-circle-fill"></i> Review submitted.
-        </p>
-      <% else %>
-        <%= link_to "Leave a Review",
-                    new_review_path(booking_id: @booking.id),
-                    class: "btn btn-primary mt-3" %>
-      <% end %>
-    <% end %>
-
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card p-4 d-flex flex-column" style="height: 500px;">
-        <h5 class="mb-3">Messages</h5>
-
-        <div class="flex-grow-1 overflow-auto mb-3 px-1">
-          <% @messages.each do |message| %>
-            <% is_mine = message.user == current_user %>
-            <div class="d-flex flex-column <%= is_mine ? 'align-items-end' : 'align-items-start' %> mb-3">
-              <div class="px-3 py-2 rounded-3" style="max-width: 80%; background-color: <%= is_mine ? '#2F6BFF' : '#F1F5F9' %>; color: <%= is_mine ? '#FFFFFF' : '#0B1B33' %>;">
-                <p class="mb-0" style="font-size: 14px; line-height: 1.5;"><%= message.content %></p>
-              </div>
-              <small class="text-muted mt-1" style="font-size: 11px;">
-                <%= message.user.first_name %> · <%= message.created_at.strftime("%b %d, %H:%M") %>
-              </small>
+          <h5 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Offer Details</h5>
+            <div class="mb-4 pb-4" style="border-bottom: 1px solid #E2E8F0;">
+              <p class="mb-2 small"><strong>Quote:</strong> €<%= @offer.quote %></p>
+              <p class="mb-2 small"><strong>Estimated Duration:</strong> <%= @offer.estimated_duration_hours.present? ? "#{@offer.estimated_duration_hours} hours" : "Not specified" %></p>
+              <p class="mb-0 small"><strong>Note:</strong> <%= @offer.note.presence || "No additional notes." %></p>
             </div>
           <% end %>
-        </div>
-        <%= simple_form_for [@booking.listing, @offer, @message], html: { data: { controller: "message-form" } } do |f| %>
-          <div class="d-flex align-items-center gap-2 p-2 rounded-3" style="border: 1px solid #E2E8F0; background-color: #F8FAFC;">
-            <%= f.input :content,
-                label: false,
-                placeholder: "Type a message...",
-                wrapper: false,
-                input_html: {
-                  class: "form-control border-0 bg-transparent",
-                  style: "box-shadow: none; font-size: 14px; resize: none;",
-                  rows: 1,
-                  data: { message_form_target: "input", action: "input->message-form#toggleSubmit keydown->message-form#handleKeydown" }
-                } %>
-            <%= f.submit "↑",
-                class: "btn btn-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0",
-                style: "width: 38px; height: 38px; padding: 0; font-size: 18px;",
-                disabled: true,
-                data: { message_form_target: "submit" } %>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
 
-<div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+             <% unless ["completed", "cancelled", "pending"].include?(@booking.booking_status) %>
+                <div class="text-start mt-3">
+                    <%= link_to "Mark as Completed",
+                      complete_booking_path(@booking),
+                      data: { turbo_method: :patch },
+                      class: "btn fw-semibold",
+                     style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 8px; font-size: 13px; padding: 12px 20px;" %>
+                 </div>
+              <% end %>
+
+              <% if @booking.booking_status == "completed" %>
+  <div class="mt-3" style="width: 100%; display: flex; justify-content: flex-start;">
+    <% if Review.exists?(user_id: current_user.id, booking_id: @booking.id) %>
+      <p class="d-flex align-items-center" style="font-size: 14px; color: #2F6BFF;">
+        <i class="bi bi-check-circle-fill me-1"></i>
+        Review submitted.
+      </p>
+    <% else %>
+      <%= link_to "Leave a Review",
+          new_review_path(booking_id: @booking.id),
+          class: "btn fw-semibold",
+          style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 8px; font-size: 13px; padding: 12px 20px;" %>
+    <% end %>
+  </div>
+<% end %>
+  </div>
+    <%# REVIEW BUTTON %>
+
+    <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
 
@@ -216,8 +256,10 @@
 
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <%= f.submit "Cancel Booking", class: "btn btn-danger" %>
-          </div>
+            <%= f.submit "Cancel Booking",
+            class: "btn fw-semibold",
+            style: "background-color: #2F6BFF; color: #FFFFFF;" %>
+           </div>
 
         <% end %>
       </div>
@@ -225,3 +267,98 @@
     </div>
   </div>
 </div>
+
+      </div>
+    </div>
+
+<%# RIGHT COLUMN: Message %>
+      <div class="col-lg-4">
+        <div class="card border-0 position-sticky d-flex flex-column p-0" style="top: 24px; height: 560px; background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 20px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02); overflow: hidden;">
+
+          <div class="px-4 py-3 border-bottom" style="border-color: #E2E8F0;">
+            <h5 class="fw-bold mb-0 d-flex align-items-center gap-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.05rem;">
+              <i class="bi bi-chat-dots"></i> Messages
+            </h5>
+          </div>
+
+          <div class="flex-grow-1 overflow-auto px-4 py-3">
+            <% if @messages.empty? %>
+              <p class="text-muted small text-center mt-4 mb-0">No messages yet — say hello.</p>
+            <% else %>
+              <% @messages.each do |message| %>
+                <% is_mine = message.user == current_user %>
+                <div class="d-flex flex-column <%= is_mine ? 'align-items-end' : 'align-items-start' %> mb-3">
+                  <div class="px-3 py-2 rounded-3" style="max-width: 80%; background-color: <%= is_mine ? '#2F6BFF' : '#F1F5F9' %>; color: <%= is_mine ? '#FFFFFF' : '#0B1B33' %>;">
+                    <p class="mb-0" style="font-size: 14px; line-height: 1.5;"><%= message.content %></p>
+                  </div>
+                  <small class="text-muted mt-1" style="font-size: 11px;">
+                    <%= message.user.first_name %> · <%= message.created_at.strftime("%b %d, %H:%M") %>
+                  </small>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+
+          <div class="px-3 py-3 border-top" style="border-color: #E2E8F0;">
+            <%= simple_form_for [@listing, @offer, @message], html: { data: { controller: "message-form" } } do |f| %>
+              <div class="d-flex align-items-center gap-2 p-2 rounded-3" style="border: 1px solid #E2E8F0; background-color: #F8FAFC;">
+                <%= f.input :content,
+                    label: false,
+                    placeholder: "Type a message...",
+                    wrapper: false,
+                    input_html: {
+                      class: "form-control border-0 bg-transparent",
+                      style: "box-shadow: none; font-size: 14px; resize: none;",
+                      rows: 1,
+                      data: { message_form_target: "input", action: "input->message-form#toggleSubmit keydown->message-form#handleKeydown" }
+                    } %>
+                <%= f.submit "↑",
+                    class: "btn btn-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0",
+                    style: "width: 38px; height: 38px; padding: 0; font-size: 18px; background-color: #2F6BFF; border: none;",
+                    disabled: true,
+                    data: { message_form_target: "submit" } %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+</div>
+</div>
+</div>
+
+<style>
+  /* Base styles */
+/* Base circle styles */
+/* Base circle styles */
+.edit-btn, .delete-btn {
+  transition: background 0.2s ease, border 0.2s ease;
+  border: 2px solid transparent;
+}
+
+/* ICON COLORS */
+.edit-icon {
+  color: #2F6BFF; /* always blue */
+  font-size: 18px; /* make edit icon visually equal */
+  transition: color 0.2s ease;
+}
+
+.delete-icon {
+  color: #475569; /* always grey */
+  font-size: 18px; /* match edit icon size */
+  transition: color 0.2s ease;
+}
+
+/* EDIT HOVER — dark blue ring */
+.edit-btn:hover {
+  background: #E8F0FF;        /* light blue background */
+  border-color: #1E3A8A;      /* dark blue ring */
+}
+
+/* DELETE HOVER — grey ring */
+.delete-btn:hover {
+  background: #F1F5F9;        /* same background */
+  border-color: #94A3B8;      /* grey ring */
+}
+
+  </style>
