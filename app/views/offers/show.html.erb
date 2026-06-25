@@ -123,7 +123,7 @@
                   <i class="bi bi-check-lg"></i> Accept Offer
                 <% end %>
                 <%# CHANGED: Decline — was white bg / red text / red border, now light grey to match the Pending badge/secondary-action language %>
-                <%= button_to decline_listing_offer_path(@listing, @offer), method: :patch, class: "btn flex-fill py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-2", style: "background-color: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; border-radius: 12px;" do %>
+                <%= button_to decline_listing_offer_path(@listing, @offer), method: :patch, class: "btn flex-fill py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 navbar-guest-btn-outline", style: "background-color: #F1F5F9; color: #475569; border-radius: 12px;" do %>
                   <i class="bi bi-x-lg"></i> Decline
                 <% end %>
               </div>
