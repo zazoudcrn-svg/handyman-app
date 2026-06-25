@@ -67,13 +67,70 @@
         <%= user_fields.label :city, "City" %><br>
         <%= user_fields.text_field :city, id: "wizard-city", class: "required-field" %>
       </p>
+      <%# NEW CODE STARTS HERE %>
       <p>
         <%= user_fields.label :country, "Country", class: "form-label" %><br>
-        <%= user_fields.country_select :country,
-              { priority_countries: ["GB", "DE", "AT", "CH"], include_blank: "Please select your country" },
-              { class: "form-select required-field", id: "wizard-country" }
-        %>
+        <%= user_fields.hidden_field :country, id: "wizard-country", value: current_user.country.presence || "" %>
+        <div class="cd-wrapper" id="contractorCountryDropdown">
+          <div class="cd-trigger" id="cdTriggerContractor" tabindex="0" role="combobox" aria-expanded="false">
+            <span id="cdLabelContractor" class="<%= current_user.country.present? ? '' : 'cd-placeholder' %>">
+              <%= current_user.country.present? ? current_user.country : "Select country" %>
+            </span>
+            <span class="cd-arrow">▼</span>
+          </div>
+          <div class="cd-list" id="cdListContractor" role="listbox">
+            <div class="cd-option" data-value="United Kingdom" role="option">🇬🇧 United Kingdom</div>
+            <div class="cd-option" data-value="Germany" role="option">🇩🇪 Germany</div>
+            <div class="cd-option" data-value="Austria" role="option">🇦🇹 Austria</div>
+            <div class="cd-option" data-value="Switzerland" role="option">🇨🇭 Switzerland</div>
+            <div class="cd-divider"></div>
+            <div class="cd-option" data-value="Afghanistan" role="option">🇦🇫 Afghanistan</div>
+            <div class="cd-option" data-value="Albania" role="option">🇦🇱 Albania</div>
+            <div class="cd-option" data-value="Algeria" role="option">🇩🇿 Algeria</div>
+            <div class="cd-option" data-value="Argentina" role="option">🇦🇷 Argentina</div>
+            <div class="cd-option" data-value="Australia" role="option">🇦🇺 Australia</div>
+            <div class="cd-option" data-value="Belgium" role="option">🇧🇪 Belgium</div>
+            <div class="cd-option" data-value="Brazil" role="option">🇧🇷 Brazil</div>
+            <div class="cd-option" data-value="Canada" role="option">🇨🇦 Canada</div>
+            <div class="cd-option" data-value="China" role="option">🇨🇳 China</div>
+            <div class="cd-option" data-value="Croatia" role="option">🇭🇷 Croatia</div>
+            <div class="cd-option" data-value="Czech Republic" role="option">🇨🇿 Czech Republic</div>
+            <div class="cd-option" data-value="Denmark" role="option">🇩🇰 Denmark</div>
+            <div class="cd-option" data-value="Egypt" role="option">🇪🇬 Egypt</div>
+            <div class="cd-option" data-value="Finland" role="option">🇫🇮 Finland</div>
+            <div class="cd-option" data-value="France" role="option">🇫🇷 France</div>
+            <div class="cd-option" data-value="Greece" role="option">🇬🇷 Greece</div>
+            <div class="cd-option" data-value="Hungary" role="option">🇭🇺 Hungary</div>
+            <div class="cd-option" data-value="India" role="option">🇮🇳 India</div>
+            <div class="cd-option" data-value="Indonesia" role="option">🇮🇩 Indonesia</div>
+            <div class="cd-option" data-value="Ireland" role="option">🇮🇪 Ireland</div>
+            <div class="cd-option" data-value="Israel" role="option">🇮🇱 Israel</div>
+            <div class="cd-option" data-value="Italy" role="option">🇮🇹 Italy</div>
+            <div class="cd-option" data-value="Japan" role="option">🇯🇵 Japan</div>
+            <div class="cd-option" data-value="Mexico" role="option">🇲🇽 Mexico</div>
+            <div class="cd-option" data-value="Netherlands" role="option">🇳🇱 Netherlands</div>
+            <div class="cd-option" data-value="New Zealand" role="option">🇳🇿 New Zealand</div>
+            <div class="cd-option" data-value="Norway" role="option">🇳🇴 Norway</div>
+            <div class="cd-option" data-value="Poland" role="option">🇵🇱 Poland</div>
+            <div class="cd-option" data-value="Portugal" role="option">🇵🇹 Portugal</div>
+            <div class="cd-option" data-value="Romania" role="option">🇷🇴 Romania</div>
+            <div class="cd-option" data-value="Russia" role="option">🇷🇺 Russia</div>
+            <div class="cd-option" data-value="Saudi Arabia" role="option">🇸🇦 Saudi Arabia</div>
+            <div class="cd-option" data-value="Serbia" role="option">🇷🇸 Serbia</div>
+            <div class="cd-option" data-value="Slovakia" role="option">🇸🇰 Slovakia</div>
+            <div class="cd-option" data-value="Slovenia" role="option">🇸🇮 Slovenia</div>
+            <div class="cd-option" data-value="South Africa" role="option">🇿🇦 South Africa</div>
+            <div class="cd-option" data-value="Spain" role="option">🇪🇸 Spain</div>
+            <div class="cd-option" data-value="Sweden" role="option">🇸🇪 Sweden</div>
+            <div class="cd-option" data-value="Turkey" role="option">🇹🇷 Turkey</div>
+            <div class="cd-option" data-value="Ukraine" role="option">🇺🇦 Ukraine</div>
+            <div class="cd-option" data-value="United Arab Emirates" role="option">🇦🇪 United Arab Emirates</div>
+            <div class="cd-option" data-value="United States" role="option">🇺🇸 United States</div>
+          </div>
+        </div>
       </p>
+      <%# NEW CODE ENDS HERE %>
+
     <% end %>
     <p>
       <%= f.label :travel_radius, "Travel Radius (in km)" %><br>
@@ -138,25 +195,24 @@
 <style>
   /* Only target the country select dropdown specifically by its ID */
   /* This prevents the style from breaking the smaller time_select fields */
-  .saas-form-wrapper #wizard-country.form-select {
-    border-radius: 12px;       /* Consistent rounded corners */
-    border: 1px solid #E2E8F0 ; /* Premium border color */
-    padding: 0.8rem 1rem;      /* Consistent padding */
-    font-size: 14px;
-    color: #0B1B33 ;
-    background-color: #FFFFFF;
-    background-position: right 1rem center; /* Proper arrow positioning */
-  }
-
-  /* Add focus state specifically for the country dropdown */
-  .saas-form-wrapper #wizard-country.form-select:focus {
-    border-color: #2F6BFF ;
-    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.1);
-  }
-
+  .cd-wrapper { position: relative; width: 100%; font-family: inherit; }
+  .cd-trigger { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; border: 1px solid #E2E8F0; border-radius: 12px; background: #fff; cursor: pointer; font-size: 14px; color: #0B1B33; user-select: none; transition: border-color 0.15s; }
+  .cd-trigger:hover { border-color: #2F6BFF; }
+  .cd-trigger.open { border-color: #2F6BFF; box-shadow: 0 0 0 3px rgba(47,107,255,0.1); }
+  .cd-placeholder { color: #94a3b8; }
+  .cd-arrow { font-size: 12px; color: #94a3b8; transition: transform 0.2s; }
+  .cd-trigger.open .cd-arrow { transform: rotate(180deg); }
+  .cd-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); z-index: 999; max-height: 240px; overflow-y: auto; display: none; }
+  .cd-list.open { display: block; }
+  .cd-option { padding: 10px 1rem; font-size: 14px; color: #0B1B33; cursor: pointer; transition: background 0.1s; }
+  .cd-option:hover { background: #EEF3FF; color: #2F6BFF; }
+  .cd-option.selected { background: #EEF3FF; color: #2F6BFF; font-weight: 500; }
+  .cd-divider { height: 1px; background: #E2E8F0; margin: 4px 0; }
+  .cd-list::-webkit-scrollbar { width: 6px; }
+  .cd-list::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 6px; }
   /* Style for all day buttons */
-/* Styling for your day buttons using your SaaS-Blue */
-/* Default State: Light Gray */
+  /* Styling for your day buttons using your SaaS-Blue */
+  /* Default State: Light Gray */
 
   .day-btn {
     background-color: #f1f5f9 !important;
@@ -305,16 +361,9 @@
       function updateMapRadius() {
         const city = document.getElementById('wizard-city').value;
         const postcode = document.getElementById('wizard-postcode').value;
-        // Access the country dropdown element
-        const countrySelect = document.getElementById('wizard-country');
-
-        // Get the selected country text; default to an empty string if nothing is selected
-        let country = (countrySelect && countrySelect.selectedIndex > 0)
-                      ? countrySelect.options[countrySelect.selectedIndex].text
-                      : "";
-
-        // Fallback to "Germany" if the user has not selected a country yet to ensure API search results
-        const finalCountry = country === "" ? "Germany" : country;
+        const countryHidden = document.getElementById('wizard-country');
+        const country = (countryHidden && countryHidden.value) ? countryHidden.value : "Germany";
+        const finalCountry = country;
         const radiusInKm = parseFloat(document.getElementById('wizard-radius').value) || 50;
 
         if (!city && !postcode) return;
@@ -417,6 +466,57 @@
       });
 
       showStep();
+
+       // NEW CODE STARTS HERE
+      const cdTrigger = document.getElementById("cdTriggerContractor");
+      const cdList = document.getElementById("cdListContractor");
+      const cdLabel = document.getElementById("cdLabelContractor");
+      const cdHidden = document.getElementById("wizard-country");
+
+      if (cdTrigger && cdList && cdLabel && cdHidden) {
+        const cdOptions = cdList.querySelectorAll(".cd-option");
+
+        cdTrigger.addEventListener("click", () => {
+          const isOpen = cdList.classList.toggle("open");
+          cdTrigger.classList.toggle("open", isOpen);
+          cdTrigger.setAttribute("aria-expanded", isOpen);
+        });
+
+        cdOptions.forEach(opt => {
+          opt.addEventListener("click", () => {
+            cdOptions.forEach(o => o.classList.remove("selected"));
+            opt.classList.add("selected");
+            cdLabel.textContent = opt.textContent.trim();
+            cdLabel.classList.remove("cd-placeholder");
+            cdHidden.value = opt.getAttribute("data-value");
+            cdList.classList.remove("open");
+            cdTrigger.classList.remove("open");
+            cdTrigger.setAttribute("aria-expanded", false);
+            updateMapRadius();
+          });
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!document.getElementById("contractorCountryDropdown").contains(e.target)) {
+            cdList.classList.remove("open");
+            cdTrigger.classList.remove("open");
+            cdTrigger.setAttribute("aria-expanded", false);
+          }
+        });
+
+        const currentVal = cdHidden.value;
+        if (currentVal) {
+          cdOptions.forEach(opt => {
+            if (opt.getAttribute("data-value") === currentVal) {
+              opt.classList.add("selected");
+              cdLabel.textContent = opt.textContent.trim();
+              cdLabel.classList.remove("cd-placeholder");
+            }
+          });
+        }
+      }
+      // NEW CODE ENDS HERE
+
       }
 
 

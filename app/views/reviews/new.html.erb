@@ -1,18 +1,58 @@
-<div class="container mt-5">
-  <%= link_to booking_path(@booking), class: "text-decoration-none d-inline-flex align-items-center gap-2 small fw-medium", style: "color: #64748B; transition: color 0.2s;" do %>
-    <i class="bi bi-arrow-left"></i> Back to booking
-  <% end %>
-  <h1>How did it go?</h1>
-  <h2>Leave a review for <%= @booking.offer.user.first_name %></h2>
+<div class="container my-4">
+  <div class="mb-4">
+    <%= link_to booking_path(@booking), class: "text-decoration-none d-inline-flex align-items-center gap-2 small fw-medium", style: "color: #64748B; transition: color 0.2s;" do %>
+      <i class="bi bi-arrow-left"></i> Back to booking
+    <% end %>
+  </div>
 
-  <%= simple_form_for @review, url: reviews_path do |f| %>
-    <%= f.error_notification %>
+  <% reviewee = current_user == @booking.listing.user ? @booking.offer.user : @booking.listing.user %>
 
-    <%= hidden_field_tag :booking_id, @booking.id %>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="saas-form-wrapper">
+        <div class="card p-4" style="border-radius: 20px; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
 
-    <%= f.input :rating, collection: [1,2,3,4,5], as: :select, label: "Rating" %>
-    <%= f.input :content, as: :text, label: "Your review", placeholder: "Describe your experience..." %>
+          <h5 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">How did it go?</h5>
+          <p class="text-muted small mb-4">Leave a review for <strong><%= reviewee.first_name %></strong></p>
 
-    <%= f.submit "Submit Review", class: "btn btn-primary" %>
-  <% end %>
+          <%= simple_form_for @review, url: reviews_path do |f| %>
+            <%= f.error_notification %>
+
+            <%= hidden_field_tag :booking_id, @booking.id %>
+
+            <%= f.input :rating,
+                collection: [1, 2, 3, 4, 5],
+                as: :select,
+                label: "Rating" %>
+
+            <%= f.input :content,
+                as: :text,
+                label: "Your review",
+                placeholder: "Describe your experience...",
+                input_html: { rows: 4 } %>
+
+            <%= f.submit "Submit Review", class: "mt-2" %>
+          <% end %>
+
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<style>
+  .saas-form-wrapper input[type="submit"] {
+    background-color: #2F6BFF;
+    color: #FFFFFF;
+    border-radius: 9999px;
+    border: none;
+    padding: 12px 28px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .saas-form-wrapper input[type="submit"]:hover {
+    background-color: #0B1B33;
+  }
+</style>

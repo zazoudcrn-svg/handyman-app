@@ -257,8 +257,8 @@
 
       <% else %>
         <%# Guest CTAs %>
-        <%= link_to "For Customers", new_user_registration_path(role: 'customer'), class: "text-decoration-none fw-medium", style: "font-size: 14px; color: #0B1B33;" %>
-        <%= link_to "For Craftsmen", new_user_registration_path(role: 'contractor'), class: "btn text-white fw-medium", style: "font-size: 14px; background: #2F6BFF; border-radius: 8px; padding: 8px 20px;" %>
+        <%= link_to "For Home Owners", new_user_registration_path(role: 'customer'), class: "text-decoration-none fw-medium navbar-guest-btn-outline", style: "font-size: 14px; color: #0B1B33; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 20px;" %>
+        <%= link_to "For Contractors", new_user_registration_path(role: 'contractor'), class: "btn text-white fw-medium navbar-guest-btn-primary", style: "font-size: 14px; background: #2F6BFF; border-radius: 8px; padding: 8px 20px;" %>
       <% end %>
     </div>
 
@@ -290,4 +290,13 @@
     background-color: #F8FAFF !important;
     color: #0B1B33 !important;
   }
+
+  .navbar-guest-btn-outline:hover {
+  background: #F8FAFF !important;
+  border-color: #2F6BFF !important;
+  color: #2F6BFF !important;
+}
+.navbar-guest-btn-primary:hover {
+  background: #0B1B33 !important;
+}
 </style>

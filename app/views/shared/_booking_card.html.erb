@@ -1,0 +1,90 @@
+<%# Offer card partial — mirrors the listing card structure (picture left, content right). %>
+<%# Expects local: offer %>
+
+<%
+  # ADDED: badge text + color per offer_status, mirroring listing card's badge_style pattern
+  badge_text, badge_style = case booking.booking_status
+                             when "confirmed"
+                               ["Confirmed", "background-color: #DBEAFE; color: #1E40AF;"]
+                             when "completed"
+                               ["Completed", "background-color: #DCFCE7; color: #166534;"]
+                             when "cancelled"
+                               ["Cancelled", "background-color: #FEE2E2; color: #991B1B;"]
+                             else
+                               ["Pending", "background-color: #F1F5F9; color: #475569;"]
+                             end
+%>
+
+<div class="col-12">
+  <div class="card border-0 overflow-hidden custom-dashboard-card" style="background-color: #FFFFFF; border: 1px solid #E2E8F0 !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(11, 27, 51, 0.02);">
+    <div class="row g-0">
+
+      <%# Optimized Image Block: 1. Listing Photo, 2. Seed Keyword, 3. Placeholder — same logic as listing card, keyed off offer.listing %>
+      <div class="col-md-4 position-relative" style="min-height: 220px; background-color: #E2E8F0; display: flex; align-items: center; justify-content: center;">
+
+        <% if booking.listing.photos.attached? && booking.listing.photos.first.present? %>
+          <%= cl_image_tag booking.listing.photos.first.key, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
+        <% else %>
+          <%
+            # Fallback logic for seed data based on title keywords
+            image_path = if booking.listing.title.downcase.include?("sink") then "listings/kitchen_sink.png"
+                         elsif booking.listing.title.downcase.include?("boiler") then "listings/boiler_repair.png"
+                         elsif booking.listing.title.downcase.include?("radiator") then "listings/radiator_valve.png"
+                         elsif booking.listing.title.downcase.include?("shower") then "listings/shower_seal.png"
+                         else nil end
+          %>
+
+          <% if image_path.present? %>
+            <%= image_tag image_path, class: "w-100 h-100 object-cover position-absolute top-0 start-0" %>
+          <% else %>
+            <i class="bi bi-camera" style="font-size: 3rem; color: #94A3B8;"></i>
+          <% end %>
+        <% end %>
+      </div>
+
+      <%# Text and details area — full offer content on the right side %>
+      <div class="col-md-8 p-4 d-flex flex-column justify-content-between">
+          <div class="mb-3">
+            <span class="badge px-3 py-1.5 fw-semibold" style="border-radius: 6px; <%= badge_style %>">
+              <%= badge_text %>
+            </span>
+          </div>
+
+          <%# CHANGED: title is the listing's title, not an offer-specific field %>
+          <h3 class="fw-bold tracking-tight mb-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.4rem;">
+            <%= booking.listing.title %>
+          </h3>
+          <%# ADDED: Contractor / Customer line — role-aware, same pattern as offers/index %>
+          <p class="mb-2 small" style="color: #64748B !important;">
+            <% if current_user.customer? %>
+              <strong style="color: #0B1B33;">Contractor:</strong>
+              <%= link_to booking.offer.user.contractor_profile&.business_name || booking.offer.user.first_name, profile_path(booking.offer.user), style: "color: #2F6BFF; text-decoration: none;" %>
+            <% else %>
+              <strong style="color: #0B1B33;">Customer:</strong>
+              <%= link_to "#{booking.listing.user.first_name} #{booking.listing.user.last_name&.first}.", profile_path(booking.listing.user), style: "color: #2F6BFF; text-decoration: none;" %>
+            <% end %>
+          </p>
+                <% if booking.booking_status == "cancelled" %>
+                <% if booking.cancellation_note.present? %>
+                <p class="mb-1"><strong>Cancellation Note:</strong> <%= booking.cancellation_note %></p>
+               <% else %>
+               <p class="mb-1 text-muted">No cancellation note provided.</p>
+              <% end %>
+             <% else %>
+             <p class="mb-1"><strong>Scheduled:</strong> <%= booking.scheduled_date_and_time %></p>
+            <% end %>
+          <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top"
+              style="border-color: rgba(226, 232, 240, 0.6) !important;">
+           <div class="text-muted small">
+             <i class="bi bi-geo-alt-fill" style="color: #2F6BFF;"></i>
+             <%= booking.listing.postcode %> <%= booking.listing.city %>
+          </div>
+              <%= link_to "View Details →",
+              booking_path(booking),
+              class: "btn btn-sm px-4 py-2 text-white fw-semibold",
+              style: "background-color: #2F6BFF; border-radius: 9999px; font-size: 13px;" %>
+          </div>
+    </div>
+  </div>
+</div>
+</div>

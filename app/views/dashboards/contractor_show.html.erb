@@ -1,6 +1,37 @@
 <% is_calendar_active = params[:start_date].present? || params[:prev_date].present? || params[:date].present? %>
 
-<div class="py-5" style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;">
+<%# NEW CODE STARTS HERE %>
+<% if @onboarding_incomplete %>
+  <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background-color: #F8FAFC;">
+    <div style="text-align: center; padding: 80px 20px;">
+    <i class="ti ti-user-check" style="font-size: 64px; color: #2F6BFF; display: block; margin-bottom: 24px;"></i>
+    <h2 style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-weight: 700; font-size: 1.8rem; margin-bottom: 12px;">Complete your profile to get started</h2>
+    <p style="color: #64748b; font-size: 16px; margin-bottom: 32px;">Finish your onboarding to see available jobs in your area.</p>
+    <%= link_to "Complete Onboarding →", onboarding_contractor_path, class: "btn", style: "background: #2F6BFF; color: white; border-radius: 9999px; padding: 12px 28px; font-weight: 600; font-size: 15px;" %>
+    </div>
+  </div>
+<% else %>
+<%# NEW CODE ENDS HERE %>
+
+<% listings_json = @available_listings.map { |l|
+  {
+    id:                   l.id,
+    title:                l.title,
+    latitude:             l.latitude,
+    longitude:            l.longitude,
+    urgency:              l.urgency,
+    availability_profile: l.availability_profile,
+    url:                  listing_path(l, from: "available"),
+    photo_url:            l.photos.attached? ? url_for(l.photos.first) : nil,
+    city:                 l.city
+  }
+}.to_json %>
+
+<div class="py-5"
+     style="font-family: 'Manrope', sans-serif; background-color: #F8FAFC; min-height: 100vh;"
+     data-controller="map"
+     data-map-token-value="<%= ENV["MAPBOX_API_KEY"] %>"
+     data-map-listings-value="<%= listings_json %>">
   <div class="container" style="max-width: 1200px;">
 
     <% # 1. PREMIUM HEADER SECTION %>
@@ -11,10 +42,25 @@
         </span>
         <h1 class="h2 mt-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">Find your next Job</h1>
       </div>
+
+      <%# VIEW TOGGLE %>
+      <div class="btn-group" role="group" aria-label="View toggle">
+        <button type="button"
+                class="btn btn-outline-primary active"
+                data-map-target="listBtn"
+                data-action="click->map#showList">
+          <i class="bi bi-grid-3x2-gap me-1"></i> List
+        </button>
+        <button type="button"
+                class="btn btn-outline-primary"
+                data-map-target="mapBtn"
+                data-action="click->map#showMap">
+          <i class="bi bi-map me-1"></i> Map
+        </button>
+      </div>
     </div>
 
-    <% # 2. MODERN FILTER NAVIGATION (Contractor Version) %>
-    <%# FILTER FORM %>
+    <% # 2. FILTER FORM (unchanged) %>
     <%= form_with url: dashboard_path, method: :get, local: true do |f| %>
       <div class="d-flex align-items-center flex-wrap gap-3 mb-4">
         <span class="text-uppercase fw-bold" style="font-size: 10px; color: #94A3B8; letter-spacing: 0.05em;">Filter by:</span>
@@ -162,22 +208,30 @@
       </div>
     <% end %>
 
-    <%# LISTINGS GRID %>
-    <div class="row g-4">
-      <% if @available_listings.empty? %>
-        <div class="col-12">
-          <p class="text-muted text-center py-5" style="font-size: 14px;">No listings match your current filters.</p>
-        </div>
-      <% else %>
-        <% @available_listings.each do |listing| %>
-          <%= render 'shared/listing_card',
-              listing: listing,
-              badge_text: listing.urgency == "emergency" ? "Emergency" : "New Job",
-              badge_style: listing.urgency == "emergency" ? "background-color: #EF4444; color: #FFFFFF;" : "background-color: #F1F5F9; color: #475569;",
-              action_path: listing_path(listing, from: 'available'),
-              link_label: "View Listing →" %>
+    <%# 3. LIST VIEW %>
+    <div data-map-target="listContainer">
+      <div class="row g-4">
+        <% if @available_listings.empty? %>
+          <div class="col-12">
+            <p class="text-muted text-center py-5" style="font-size: 14px;">No listings match your current filters.</p>
+          </div>
+        <% else %>
+          <% @available_listings.each do |listing| %>
+            <%= render 'shared/listing_card',
+                listing: listing,
+                badge_text: listing.urgency == "emergency" ? "Emergency" : "New Job",
+                badge_style: listing.urgency == "emergency" ? "background-color: #EF4444; color: #FFFFFF;" : "background-color: #F1F5F9; color: #475569;",
+                action_path: listing_path(listing, from: 'available'),
+                link_label: "View Listing →" %>
+          <% end %>
         <% end %>
-      <% end %>
+      </div>
+    </div>
+
+    <%# 4. MAP VIEW %>
+    <div data-map-target="mapContainer"
+         class="d-none"
+         style="height: 600px; border-radius: 16px; overflow: hidden; border: 1px solid #E2E8F0;">
     </div>
 
   </div>
@@ -193,3 +247,4 @@
   .custom-filter-btn.active { background-color: #F8FAFC !important; color: #2F6BFF !important; border-color: #2F6BFF !important; }
   .custom-filter-btn .badge { background-color: #EFF6FF; color: #2F6BFF; }
 </style>
+<% end %>
