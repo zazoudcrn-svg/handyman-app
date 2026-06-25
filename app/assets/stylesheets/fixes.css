@@ -1,0 +1,42 @@
+/* ADDED: object-fit fallback for card images */
+.object-fit-cover {
+  object-fit: cover;
+}
+
+/* ADDED: global subtle hover state for all interactive elements */
+.btn,
+button,
+a.btn,
+input[type="submit"],
+input[type="button"] {
+  transition: filter 0.15s ease, transform 0.15s ease;
+  cursor: pointer;
+}
+
+.btn:hover,
+button:hover,
+a.btn:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
+  filter: brightness(0.85); /* CHANGED: was 0.93, now darker/more visible */
+}
+
+a:not(.btn) {
+  transition: opacity 0.15s ease;
+  cursor: pointer;
+}
+
+a:not(.btn):hover {
+  opacity: 0.6; /* CHANGED: was 0.75, now more visible dim */
+}
+
+[role="button"],
+.clickable {
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+[role="button"]:hover,
+.clickable:hover {
+  filter: brightness(0.85); /* CHANGED: was 0.93 */
+}

@@ -1,0 +1,39 @@
+/* ADDED: global subtle hover state for all interactive elements
+   — buttons, links, and anything clickable (profile links, card buttons, etc.) */
+
+// Buttons — covers Bootstrap .btn, button_to forms, and link_to styled as buttons
+.btn,
+button,
+a.btn,
+input[type="submit"],
+input[type="button"] {
+  transition: filter 0.15s ease, transform 0.15s ease;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(0.93); // subtle darken — works on any background color/inline style
+  }
+}
+
+// Plain links — anything clickable that isn't styled as a button
+// (e.g. profile name links using inline style="color: #2F6BFF")
+a:not(.btn) {
+  transition: opacity 0.15s ease;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+// Catch-all for anything explicitly marked clickable but not a real <a>/<button>
+// (e.g. a div or span with a Stimulus click action)
+[role="button"],
+.clickable {
+  cursor: pointer;
+  transition: filter 0.15s ease;
+
+  &:hover {
+    filter: brightness(0.93);
+  }
+}
