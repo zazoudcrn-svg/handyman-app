@@ -3,8 +3,6 @@
 
 <%# app/views/shared/_calendar.html.erb %>
 
-<%# app/views/shared/_calendar.html.erb %>
-
 <div class="card p-4 border-0 shadow-sm" style="border-radius: 20px; border: 1px solid #E2E8F0 !important;">
   <%= week_calendar(number_of_weeks: 1, events: calendar_bookings, attribute: :scheduled_date_and_time) do |date, bookings| %>
 
@@ -18,9 +16,13 @@
       <% bookings = bookings.select { |b| b.booking_status == "confirmed" } %>
 
       <% bookings.each do |booking| %>
-        <%= link_to booking_path(booking), class: "calendar-icon-wrapper", title: booking.listing.title do %>
-          <i class="<%= booking.listing.category_icon %> calendar-icon"></i>
-        <% end %>
+        <% address_line1, address_line2 = booking.listing.full_address.split(',', 2).map(&:strip) %>
+
+<% tooltip = "#{booking.listing.title}\n#{booking.scheduled_date_and_time.strftime('%H:%M')}\n#{address_line1}\n#{address_line2}" %>
+
+<%= link_to booking_path(booking), class: "calendar-icon-wrapper", title: tooltip do %>
+  <i class="<%= booking.listing.category_icon %> calendar-icon"></i>
+<% end %>
       <% end %>
 
     </div>
@@ -58,7 +60,7 @@
   position: relative;
   cursor: pointer;
 }
-
+/*
 .calendar-icon-wrapper:hover::after {
   content: attr(title);
   position: absolute;
@@ -73,5 +75,6 @@
   font-size: 12px;
   z-index: 9999;
 }
+*/
 
 </style>
