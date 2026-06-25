@@ -1,8 +1,14 @@
 <% upcoming_booking = @all_bookings
   .select { |b| ["pending", "confirmed", "date_change_requested"].include?(b.booking_status) }
   .select { |b| b.scheduled_date_and_time.present? && b.scheduled_date_and_time > Time.current }
-  .sort_by(&:scheduled_date_and_time)
-  .first %>
+  .first
+%>
+
+<% later_bookings = @all_bookings
+  .select { |b| ["pending", "confirmed", "date_change_requested"].include?(b.booking_status) }
+  .select { |b| b.scheduled_date_and_time.present? && b.scheduled_date_and_time > Time.current }
+  .reject { |b| b == upcoming_booking }
+%>
 
 <% def friendly_date_label(date)
      return "Today" if date.to_date == Date.today
@@ -46,11 +52,11 @@
           <h4 class="fw-bold mb-3"><%= upcoming_booking.listing.title %></h4>
 
           <p class="mb-1">
-            <i class="bi bi-geo-alt-fill text-danger"></i>
-            <%= upcoming_booking.listing.street %>,
-            <%= upcoming_booking.listing.city %>,
-            <%= upcoming_booking.listing.postcode %>,
-            <%= upcoming_booking.listing.country %>
+           <i class="bi bi-geo-alt-fill" style="color: #2F6BFF;"></i>
+           <%= upcoming_booking.listing.street %>,
+           <%= upcoming_booking.listing.city %>,
+           <%= upcoming_booking.listing.postcode %>,
+           <%= upcoming_booking.listing.country %>
           </p>
 
           <p class="mb-1">
@@ -129,11 +135,11 @@
             </div>
             <div class="form-check mb-2">
               <%= radio_button_tag :status, "cancelled", params[:status] == "cancelled", class: "form-check-input", id: "status_cancelled" %>
-              <%= label_tag "status_cancelled", "cancelled", class: "form-check-label", style: "font-size: 13px;" %>
+              <%= label_tag "status_cancelled", "Cancelled", class: "form-check-label", style: "font-size: 13px;" %>
             </div>
             <div class="form-check mb-2">
               <%= radio_button_tag :status, "completed", params[:status] == "completed", class: "form-check-input", id: "status_completed" %>
-              <%= label_tag "status_completed", "completed", class: "form-check-label", style: "font-size: 13px;" %>
+              <%= label_tag "status_completed", "Completed", class: "form-check-label", style: "font-size: 13px;" %>
             </div>
           </div>
         </div>
