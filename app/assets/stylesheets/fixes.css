@@ -3,40 +3,40 @@
   object-fit: cover;
 }
 
-/* ADDED: global subtle hover state for all interactive elements */
-.btn,
-button,
-a.btn,
-input[type="submit"],
-input[type="button"] {
+/* ADDED: global subtle hover state for all interactive elements, excluding the navbar */
+.btn:not(.navbar-zone .btn),
+button:not(.navbar-zone button),
+a.btn:not(.navbar-zone a.btn),
+input[type="submit"]:not(.navbar-zone input[type="submit"]),
+input[type="button"]:not(.navbar-zone input[type="button"]) {
   transition: filter 0.15s ease, transform 0.15s ease;
   cursor: pointer;
 }
 
-.btn:hover,
-button:hover,
-a.btn:hover,
-input[type="submit"]:hover,
-input[type="button"]:hover {
-  filter: brightness(0.85); /* CHANGED: was 0.93, now darker/more visible */
+.btn:hover:not(.navbar-zone .btn),
+button:hover:not(.navbar-zone button),
+a.btn:hover:not(.navbar-zone a.btn),
+input[type="submit"]:hover:not(.navbar-zone input[type="submit"]),
+input[type="button"]:hover:not(.navbar-zone input[type="button"]) {
+  filter: brightness(0.75);
 }
 
-a:not(.btn) {
+a:not(.btn):not(.navbar-zone a) {
   transition: opacity 0.15s ease;
   cursor: pointer;
 }
 
-a:not(.btn):hover {
-  opacity: 0.6; /* CHANGED: was 0.75, now more visible dim */
+a:not(.btn):not(.navbar-zone a):hover {
+  opacity: 0.5;
 }
 
-[role="button"],
-.clickable {
+[role="button"]:not(.navbar-zone [role="button"]),
+.clickable:not(.navbar-zone .clickable) {
   cursor: pointer;
   transition: filter 0.15s ease;
 }
 
-[role="button"]:hover,
-.clickable:hover {
-  filter: brightness(0.85); /* CHANGED: was 0.93 */
+[role="button"]:hover:not(.navbar-zone [role="button"]),
+.clickable:hover:not(.navbar-zone .clickable) {
+  filter: brightness(0.75);
 }
