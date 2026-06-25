@@ -30,17 +30,17 @@
         <div class="row g-4 mb-4">
           <div class="col-md-6">
             <label class="form-label fw-semibold" style="color: #0B1B33; font-size: 14px;">Your Quote (€)</label>
-            <%= f.number_field :quote, step: 0.01, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; padding: 10px 14px; font-size: 14px;", placeholder: "e.g. 150.00" %>
+            <%= f.number_field :quote, step: 0.01, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; padding: 10px 14px; font-size: 14px;", placeholder: "e.g. 150.00", required: true, oninvalid: "this.setCustomValidity('Please fill out this field.')", oninput: "this.setCustomValidity('')" %>
           </div>
           <div class="col-md-6">
             <label class="form-label fw-semibold" style="color: #0B1B33; font-size: 14px;">Estimated Duration (hours)</label>
-            <%= f.number_field :estimated_duration_hours, step: 0.5, min: 0.5, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; padding: 10px 14px; font-size: 14px;", placeholder: "e.g. 2.5" %>
+            <%= f.number_field :estimated_duration_hours, step: 0.5, min: 0.5, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; padding: 10px 14px; font-size: 14px;", placeholder: "e.g. 2.5", required: true, oninvalid: "this.setCustomValidity('Please fill out this field.')", oninput: "this.setCustomValidity('')" %>
           </div>
         </div>
 
         <div class="mb-4">
           <label class="form-label fw-semibold" style="color: #0B1B33; font-size: 14px;">Suggested Date & Time</label>
-          <%= f.datetime_field :suggested_date_and_time, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; padding: 10px 14px; font-size: 14px;" %>
+          <%= f.datetime_field :suggested_date_and_time, class: "form-control", style: "border-radius: 10px; border: 1px solid #E2E8F0; padding: 10px 14px; font-size: 14px;", required: true, oninvalid: "this.setCustomValidity('Please fill out this field.')", oninput: "this.setCustomValidity('')" %>
         </div>
 
         <div class="mb-4">
