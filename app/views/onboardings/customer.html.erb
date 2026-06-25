@@ -63,6 +63,15 @@
           <%= f.text_field :country, value: "Germany", class: "form-control", required: true,
               oninvalid: "this.setCustomValidity('Please fill out this field.')",
               oninput: "this.setCustomValidity('')" %>
+
+              <%# NEW CODE STARTS HERE %>
+          <%= f.country_select :country,
+                { priority_countries: ["GB", "DE", "AT", "CH"], include_blank: "Select country" },
+                { class: "form-select", required: true,
+                  oninvalid: "this.setCustomValidity('Please select your country.')",
+                  oninput: "this.setCustomValidity('')" }
+          %>
+          <%# NEW CODE ENDS HERE %>
         </div>
       </div>
 
