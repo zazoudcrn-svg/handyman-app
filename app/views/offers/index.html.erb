@@ -3,9 +3,17 @@
 
     <%# HEADER %>
     <div class="mb-5 pb-4 border-bottom" style="border-color: #E2E8F0 !important;">
+      <% if current_user.customer? %>
+        <span class="badge bg-primary-subtle text-primary px-2 py-1 rounded-pill fw-semibold mb-2 d-inline-block" style="font-size: 11px; background-color: #EFF6FF; color: #2F6BFF !important;">
+          <i class="bi bi-person-fill"></i> Client Account
+        </span>
+      <% end %>
       <h1 class="h2 mb-0" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">
         <%= current_user.customer? ? "Offers Received" : "My Offers" %>
       </h1>
+      <% if current_user.customer? %>
+        <p class="text-muted small mb-0 mt-2">Find and manage all your active offers here!</p>
+      <% end %>
     </div>
 
     <%# FILTER FORM %>

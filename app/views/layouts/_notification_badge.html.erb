@@ -1,0 +1,7 @@
+<% if unread_count > 0 %>
+  <span id="notification-badge" style="position: absolute; top: -4px; right: -4px; background: #2F6BFF; color: white; font-size: 10px; font-weight: 600; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; line-height: 1;">
+    <%= unread_count > 9 ? "9+" : unread_count %>
+  </span>
+<% else %>
+  <span id="notification-badge"></span>
+<% end %>
