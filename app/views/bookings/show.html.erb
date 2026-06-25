@@ -87,11 +87,12 @@
                 <i class="bi bi-activity"></i> Status: <strong class="text-capitalize" style="color: <%= status_color %>;"><%= @booking.booking_status || "pending" %></strong>
                 </span>
               </div>
-              <div class="d-flex justify-content-between align-items-center mb-3">
-  <h3 class="fw-bold m-0"
-      style="font-family: 'Outfit', sans-serif; color: #0B1B33; max-width: 75%;">
-    <%= @booking.listing.title %>
-  </h3>
+              <div class="d-flex justify-content-between align-items-start mb-3">
+  <h3 class="fw-bold m-0 booking-title"
+    style="font-family: 'Outfit', sans-serif; color: #0B1B33; max-width: 75%;">
+  <%= @booking.listing.title %>
+</h3>
+
 
   <% unless ["completed", "cancelled"].include?(@booking.booking_status) %>
     <div class="d-flex gap-2">
@@ -186,7 +187,7 @@
       accept_date_booking_path(@booking),
       method: :patch,
       data: { turbo: false },
-      class: "btn fw-semibold",
+      class: "btn fw-semibold mark-completed-btn",
       style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 8px; font-size: 13px; padding: 12px 20px;" %>
 </div>
           <% end %>
@@ -211,7 +212,7 @@
                     <%= link_to "Mark as Completed",
                       complete_booking_path(@booking),
                       data: { turbo_method: :patch },
-                      class: "btn fw-semibold",
+                      class: "btn fw-semibold mark-completed-btn",
                      style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 8px; font-size: 13px; padding: 12px 20px;" %>
                  </div>
               <% end %>
@@ -226,7 +227,7 @@
     <% else %>
       <%= link_to "Leave a Review",
           new_review_path(booking_id: @booking.id),
-          class: "btn fw-semibold",
+          class: "btn fw-semibold mark-completed-btn",
           style: "background-color: #2F6BFF; color: #FFFFFF; border-radius: 8px; font-size: 13px; padding: 12px 20px;" %>
     <% end %>
   </div>
@@ -239,7 +240,7 @@
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title">Cancel Booking</h5>
+        <h5 class="modal-title cancel-title">Cancel Booking</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
@@ -247,18 +248,19 @@
         <%= form_with model: @booking,
                       url: cancel_booking_booking_path(@booking),
                       method: :patch,
-                      data: { turbo: false } do |f| %>
-
+                      data: { turbo: false } do |f|%>
           <div class="mb-3">
-            <%= f.label :cancellation_note, "Reason for cancellation" %>
-            <%= f.text_area :cancellation_note, class: "form-control", rows: 4 %>
+            <%= f.label :cancellation_note, "Reason for cancellation", class: "cancel-label" %>
+            <%= f.text_area :cancellation_note, class: "form-control cancel-reason-input", rows: 4 %>
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" data-bs-dismiss="modal"
+        class="btn close-btn"
+        style="background-color: #c6c7c8; color: #334155; font-size: 13px; font-weight: 500; font-family: 'Inter', sans-serif; padding: 12px 20px; border-radius: 8px; border: none;">Close</button>
             <%= f.submit "Cancel Booking",
-            class: "btn fw-semibold",
-            style: "background-color: #2F6BFF; color: #FFFFFF;" %>
+            class: "btn cancel-booking-btn",
+            style: "background-color: #2F6BFF; color: #FFFFFF; font-size: 13px; font-weight: 500; font-family: 'Inter', sans-serif; padding: 12px 20px; border-radius: 8px; border: none;" %>
            </div>
 
         <% end %>
@@ -277,7 +279,7 @@
 
           <div class="px-4 py-3 border-bottom" style="border-color: #E2E8F0;">
             <h5 class="fw-bold mb-0 d-flex align-items-center gap-2" style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 1.05rem;">
-              <i class="bi bi-chat-dots"></i> Messages
+              <i class="bi bi-chat-dots"></i> Chat
             </h5>
           </div>
 
@@ -360,5 +362,59 @@
   background: #F1F5F9;        /* same background */
   border-color: #94A3B8;      /* grey ring */
 }
+
+.mark-completed-btn:hover {
+  background-color: #212529 !important; /* the dark color you want */
+  color: #FFFFFF !important;
+}
+
+.cancel-booking-btn:hover {
+  background-color: #212529 !important; /* the dark color you want */
+  color: #FFFFFF !important;
+}
+
+.cancel-reason-input {
+  border: 1px solid #2F6BFF !important;   /* blue border */
+  border-radius: 8px;
+  color: #0f172a;                         /* dark text */
+}
+
+.cancel-reason-input:focus {
+  border-color: #2F6BFF !important;       /* blue border on focus */
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.25) !important; /* soft blue glow */
+}
+
+.cancel-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a; /* deep slate */
+}
+
+.cancel-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155; /* slate grey */
+}
+
+.close-btn {
+  background-color: #c6c7c8 !important; /* light grey */
+  color: #334155 !important;            /* slate text */
+  border-radius: 8px;
+  font-size: 13px;
+  padding: 10px 20px;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background-color: #64748b !important; /* dark slate */
+  color: #ffffff !important;            /* white text */
+}
+
+.booking-title {
+  margin-bottom: 0 !important;
+  line-height: 1.2;
+}
+
 
   </style>
