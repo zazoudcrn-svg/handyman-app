@@ -4,30 +4,32 @@ class BookingsController < ApplicationController
 
 # CUSTOMER or CONTRACTOR: See all bookings
 def index
+  # 1. Load ALL bookings first
   if current_user.customer?
-    # Customer sees bookings for their own listings
-    @bookings = Booking.where(listing_id: current_user.listings.pluck(:id))
+    @all_bookings = Booking.where(listing_id: current_user.listings.pluck(:id))
   else
-    # Contractor sees bookings for offers they made
-    @bookings = Booking.joins(:offer).where(offers: { user_id: current_user.id })
+    @all_bookings = Booking.joins(:offer).where(offers: { user_id: current_user.id })
   end
 
-   # Status filtering (works for both roles)
-   if params[:status].present?
-  case params[:status]
-  when "confirmed"
-    @bookings = @bookings.where(booking_status: [ :pending, :confirmed, :date_change_requested ])
-  else
-    @bookings = @bookings.where(booking_status: params[:status])
+  # 2. Start @bookings as a copy (for filtering only)
+  @bookings = @all_bookings
+
+  # 3. STATUS FILTER (affects ONLY @bookings)
+  if params[:status].present?
+    case params[:status]
+    when "confirmed"
+      @bookings = @bookings.where(booking_status: [ "confirmed", "pending", "date_change_requested" ])
+    when "cancelled"
+      @bookings = @bookings.where(booking_status: "cancelled")
+    when "completed"
+      @bookings = @bookings.where(booking_status: "completed")
+    end
   end
-   end
-   # calendar Filter bookings correctly
-   if current_user.contractor?
-      @calendar_bookings = Booking.joins(:offer).where(offers: { user_id: current_user.id }).where(booking_status: "confirmed")
-   else
-     @calendar_bookings = Booking.joins(:listing).where(listings: { user_id: current_user.id }).where(booking_status: "confirmed")
-   end
+
+  # 4. CALENDAR should ALWAYS use ALL confirmed bookings
+  @calendar_bookings = @all_bookings.where(booking_status: "confirmed")
 end
+
 
 # CUSTOMER: View booking details
 def show
