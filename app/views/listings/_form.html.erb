@@ -186,8 +186,7 @@
     </div>
 
     <button type="button" class="prev-btn">&larr; Back</button>
-    <%= f.submit "Post Listing", class: "submit-btn" %>
-    <% if @listing.persisted? %>
+    <%= f.submit @listing.persisted? ? "Update Listing" : "Post Listing", class: "submit-btn" %>    <% if @listing.persisted? %>
       <%= link_to "Cancel", listing_path(@listing), class: "btn btn-light border fw-semibold ms-2", style: "border-radius: 9999px; padding: 12px 28px; color: #64748b;" %>
     <% end %>
   </div>
