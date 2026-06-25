@@ -35,51 +35,72 @@
   <div class="row mb-5">
 
     <!-- LEFT: UPCOMING BOOKING -->
-    <div class="col-md-6">
-      <div class="card p-4 h-100" style="border-radius: 16px; border: 1px solid #E2E8F0;">
-
-        <h1 class="h2" style="font-family: 'Outfit', sans-serif; color: #0B1B33;">
-          Upcoming Booking
-        </h1>
+    <%# NEW CODE STARTS HERE %>
+    <div class="col-md-5">
+      <div style="background: white; border-radius: 16px; border: 1px solid #E2E8F0; overflow: hidden; height: 100%;">
 
         <% if upcoming_booking.present? %>
 
-          <p class="mb-1" style="color: #2F6BFF; font-weight: 600;">
-            <%= friendly_date_label(upcoming_booking.scheduled_date_and_time) %> •
-            <%= upcoming_booking.scheduled_date_and_time.strftime("%I:%M %p") %>
-          </p>
-
-          <h4 class="fw-bold mb-3"><%= upcoming_booking.listing.title %></h4>
-
-          <p class="mb-1">
-           <i class="bi bi-geo-alt-fill" style="color: #2F6BFF;"></i>
-           <%= upcoming_booking.listing.street %>,
-           <%= upcoming_booking.listing.city %>,
-           <%= upcoming_booking.listing.postcode %>,
-           <%= upcoming_booking.listing.country %>
-          </p>
-
-          <p class="mb-1">
-            <i class="bi bi-person-circle text-primary"></i>
-            <% if current_user.customer? %>
-              <%= upcoming_booking.offer.user.first_name %>
+          <%# Photo banner %>
+          <div style="position: relative; height: 250px; background: #E2E8F0; overflow: hidden;">
+            <% if upcoming_booking.listing.photos.attached? %>
+              <%= cl_image_tag upcoming_booking.listing.photos.first.key,
+                  style: "width: 100%; height: 100%; object-fit: cover;" %>
             <% else %>
-              <%= upcoming_booking.listing.user.first_name %>
+              <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #F1F5F9;">
+                <i class="bi bi-camera" style="font-size: 32px; color: #CBD5E1;"></i>
+              </div>
             <% end %>
-          </p>
+            <div style="position: absolute; top: 12px; left: 12px; background: #2F6BFF; color: white; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 9999px;">
+              Upcoming
+            </div>
+          </div>
 
-          <div class="mt-auto d-flex justify-content-between align-items-center pt-3">
-            <%= link_to "View Booking →", booking_path(upcoming_booking), class: "btn btn-outline-primary btn-sm", style: "border-radius: 8px;" %>
+          <%# Content %>
+          <div style="padding: 1.25rem;">
+            <p style="font-size: 12px; color: #2F6BFF; font-weight: 600; margin: 0 0 4px;">
+              <%= friendly_date_label(upcoming_booking.scheduled_date_and_time) %> ·
+              <%= upcoming_booking.scheduled_date_and_time.strftime("%I:%M %p") %>
+            </p>
+            <h3 style="font-family: 'Outfit', sans-serif; color: #0B1B33; font-size: 16px; font-weight: 700; margin: 0 0 12px;">
+              <%= upcoming_booking.listing.title %>
+            </h3>
+
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #64748b;">
+                <i class="bi bi-geo-alt" style="color: #2F6BFF;"></i>
+                <%= upcoming_booking.listing.city %>, <%= upcoming_booking.listing.postcode %>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #64748b;">
+                <i class="bi bi-person-circle" style="color: #2F6BFF;"></i>
+                <% if current_user.customer? %>
+                  <%= upcoming_booking.offer.user.first_name %>
+                <% else %>
+                  <%= upcoming_booking.listing.user.first_name %>
+                <% end %>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #F1F5F9;">
+              <span style="background: #ECFDF5; color: #059669; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 9999px;">
+                <%= upcoming_booking.booking_status.humanize %>
+              </span>
+              <%= link_to "View Booking →", booking_path(upcoming_booking),
+                  style: "background: #2F6BFF; color: white; font-size: 13px; font-weight: 500; padding: 8px 18px; border-radius: 9999px; text-decoration: none;" %>
+            </div>
           </div>
 
         <% else %>
 
-          <p class="text-muted mt-3">No upcoming bookings</p>
+          <div style="padding: 1.25rem;">
+            <p class="text-muted mt-3">No upcoming bookings</p>
+          </div>
 
         <% end %>
 
       </div>
     </div>
+    <%# NEW CODE ENDS HERE %>
 
     <!-- RIGHT: CALENDAR (ALWAYS VISIBLE) -->
     <div class="col-md-6">
