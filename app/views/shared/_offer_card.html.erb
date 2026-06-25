@@ -106,7 +106,7 @@
           </div>
 
           <% if offer.offer_status.nil? || offer.offer_status == "pending" %>
-            <%= link_to "View Offer", listing_offer_path(offer.listing, offer), class: "btn btn-sm px-4 py-2 text-white fw-semibold flex-shrink-0", style: "background-color: #2F6BFF; border-radius: 9999px; font-size: 13px;" %>
+            <%= link_to "View Offer →", listing_offer_path(offer.listing, offer), class: "btn btn-sm px-4 py-2 text-white fw-semibold flex-shrink-0", style: "background-color: #2F6BFF; border-radius: 9999px; font-size: 13px;" %>
           <% elsif offer.offer_status == "accepted" %>
             <% if offer.booking.present? %>
               <%= link_to "View Booking →", booking_path(offer.booking), class: "btn btn-sm px-4 py-2 text-white fw-semibold flex-shrink-0", style: "background-color: #2F6BFF; border-radius: 9999px; font-size: 13px;" %>

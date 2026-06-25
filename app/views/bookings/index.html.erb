@@ -36,7 +36,7 @@
 
     <!-- LEFT: UPCOMING BOOKING -->
     <%# NEW CODE STARTS HERE %>
-    <div class="col-md-5">
+    <div class="col-md-5 mb-5" style="max-width: 420px;">
       <div style="background: white; border-radius: 16px; border: 1px solid #E2E8F0; overflow: hidden; height: 100%;">
 
         <% if upcoming_booking.present? %>
@@ -103,7 +103,7 @@
     <%# NEW CODE ENDS HERE %>
 
     <!-- RIGHT: CALENDAR (ALWAYS VISIBLE) -->
-    <div class="col-md-6">
+     <div class="col-md-7" style="padding-left: 8px;">
       <%= render "shared/calendar", calendar_bookings: @calendar_bookings %>
     </div>
 
