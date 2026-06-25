@@ -20,7 +20,7 @@
 
 <% tooltip = "#{booking.listing.title}\n#{booking.scheduled_date_and_time.strftime('%H:%M')}\n#{address_line1}\n#{address_line2}" %>
 
-<%= link_to booking_path(booking), class: "calendar-icon-wrapper", title: tooltip do %>
+<%= link_to booking_path(booking), class: "calendar-icon-wrapper", data: { "tooltip": tooltip }, "aria-label": tooltip do %>
   <i class="<%= booking.listing.category_icon %> calendar-icon"></i>
 <% end %>
       <% end %>
@@ -60,21 +60,22 @@
   position: relative;
   cursor: pointer;
 }
-/*
 .calendar-icon-wrapper:hover::after {
-  content: attr(title);
+  content: attr(aria-label);
   position: absolute;
-  top: -40px;
+  top: 28px;
   left: 0;
   background: white;
   padding: 6px 10px;
   border-radius: 6px;
   border: 1px solid #E2E8F0;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  white-space: nowrap;
+  white-space: pre;
   font-size: 12px;
+  color: #0B1B33;
   z-index: 9999;
+  transition-delay: 0s;
+  pointer-events: none;
 }
-*/
 
 </style>
