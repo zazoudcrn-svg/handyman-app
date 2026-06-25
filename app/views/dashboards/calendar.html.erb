@@ -14,12 +14,15 @@
       <p class="text-muted">Manage all your confirmed bookings and completed projects.</p>
     </div>
 
-    <% # 3. Hier rendern wir jetzt das Kalender-Partial hinein %>
-    <%= render "shared/calendar", calendar_bookings: @bookings %>
+    <% # 3. Render Calender here %>
+    <div class="calendar-compact">
+      <%= render "shared/calendar", calendar_bookings: @bookings %>
+    </div>
 
   </div>
 </div>
 
 <style>
   .text-muted-hover:hover { color: #0B1B33 !important; }
+  .calendar-compact .d-flex.flex-column { min-height: 200px !important; }
 </style>
