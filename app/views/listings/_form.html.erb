@@ -362,6 +362,22 @@
 
         let isStepValid = true;
 
+        // NEW CODE STARTS HERE
+        if (currentStep === 3) {
+          const descArea = getDescriptionArea();
+          if (descArea && descArea.value.trim().length > 0 && descArea.value.trim().length < 10) {
+            isStepValid = false;
+            descArea.classList.add("is-invalid");
+            const errorBox = currentStepEl.querySelector(".step-error-message");
+            if (errorBox) {
+              errorBox.innerText = "Your description must be at least 10 characters long.";
+              errorBox.style.display = "block";
+            }
+            return;
+          }
+        }
+        // NEW CODE ENDS HERE
+
         // 2. Custom Checkbox verification logic specifically for step 2 criteria bounds
         if (currentStep === 1) {
           const checkboxes = currentStepEl.querySelectorAll(".sub-cb");
@@ -385,7 +401,7 @@
               isStepValid = false;
               input.closest(".custom-radio-group")?.classList.add("is-invalid-group");
             }
-          } else if (input.type !== "checkbox" && !input.value.trim()) {
+          } else if (input.type !== "checkbox" && (!input.value.trim() || (input.tagName === "TEXTAREA" && input.value.trim().length < 10))) {
             isStepValid = false;
             input.classList.add("is-invalid");
 
@@ -400,7 +416,13 @@
 
         if (!isStepValid) {
           if (errorMessageContainer) {
-            errorMessageContainer.innerText = "Please fill out all required parts inside this step before shifting forward.";
+            // NEW CODE STARTS HERE
+            const descArea = getDescriptionArea();
+            const isDescStep = currentStep === 3;
+            errorMessageContainer.innerText = isDescStep && descArea && descArea.value.trim().length > 0 && descArea.value.trim().length < 10
+              ? "Your description must be at least 10 characters long."
+              : "Please fill out all required parts inside this step before shifting forward.";
+            // NEW CODE ENDS HERE
             errorMessageContainer.style.display = "block";
             errorMessageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }
@@ -437,6 +459,12 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", initializeMultiStepForm);
+  // NEW CODE STARTS HERE
   document.addEventListener("turbo:load", initializeMultiStepForm);
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    initializeMultiStepForm();
+  } else {
+    document.addEventListener("DOMContentLoaded", initializeMultiStepForm);
+  }
+  // NEW CODE ENDS HERE
 </script>
